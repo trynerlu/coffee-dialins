@@ -615,6 +615,96 @@ function SettingsScreen({ settings, onSave, onSync, syncing }) {
   );
 }
 
+// ── IMPORT FROM CLAUDE ─────────────────────────────────────────────────────────
+function ImportScreen({ kits, onImport, nav }) {
+  const [raw,     setRaw]     = useState("");
+  const [preview, setPreview] = useState(null);
+  const [err,     setErr]     = useState("");
+
+  const parse = () => {
+    setErr(""); setPreview(null);
+    try {
+      const trimmed = raw.trim().replace(/^```json|^```|```$/gm,"").trim();
+      let parsed = JSON.parse(trimmed);
+      if (!Array.isArray(parsed)) parsed = [parsed];
+      // Basic validation
+      const invalid = parsed.filter(e=>!e.coffeeName);
+      if (invalid.length) { setErr("Every entry needs at least a coffeeName."); return; }
+      // Fill missing ids/dates
+      parsed = parsed.map(e=>({
+        ...e,
+        id: e.id || uid(),
+        date: e.date || new Date().toISOString().split("T")[0],
+        kitId: e.kitId || kits[0]?.id || "home-espresso",
+      }));
+      setPreview(parsed);
+    } catch(e) { setErr("Could not parse JSON — copy the full block Claude generated."); }
+  };
+
+  const kit = (id) => kits.find(k=>k.id===id);
+
+  return (
+    <div className="screen fade-in">
+      <div className="hdr">
+        <button className="icon-btn" onClick={()=>nav("logbook")}>←</button>
+        <div style={{flex:1}}>
+          <div className="hdr-title">Import from Claude</div>
+          <div className="hdr-sub">Paste · Preview · Save</div>
+        </div>
+      </div>
+
+      {/* How it works */}
+      <div style={{margin:"14px 18px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"14px"}}>
+        <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"9px"}}>How it works</div>
+        <div style={{fontSize:"12px",color:"var(--tx2)",lineHeight:"1.65"}}>
+          1. Chat with Claude about a new coffee<br/>
+          2. Ask Claude to <em style={{color:"var(--tx1)"}}>generate a dial-in JSON entry</em><br/>
+          3. Copy the JSON block Claude outputs<br/>
+          4. Paste it below → Preview → Save to GitHub
+        </div>
+      </div>
+
+      {!preview ? <>
+        <div className="sec">Paste JSON from Claude</div>
+        <div className="f-grp">
+          <textarea className="f-ta" style={{minHeight:"160px",fontFamily:"'DM Mono',monospace",fontSize:"12px"}}
+            placeholder={'{\n  "coffeeName": "Ethiopia Yirgacheffe",\n  "roaster": "The Barn",\n  "grindSetting": "12.5",\n  ...\n}'}
+            value={raw} onChange={e=>{setRaw(e.target.value);setErr("");}}/>
+          {err && <div style={{fontSize:"12px",color:"#C05050",marginTop:"6px"}}>{err}</div>}
+        </div>
+        <div className="btn-area">
+          <button className="btn btn-p" onClick={parse} disabled={!raw.trim()}>Preview</button>
+          <button className="btn btn-s" onClick={()=>nav("logbook")}>Cancel</button>
+        </div>
+      </> : <>
+        <div className="sec">Preview — {preview.length} entr{preview.length===1?"y":"ies"}</div>
+        {preview.map((e,i)=>(
+          <div key={i} style={{margin:"0 18px 10px",background:"var(--surface)",border:"1px solid var(--bh)",borderRadius:"12px",padding:"16px"}}>
+            <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"18px",fontWeight:500,marginBottom:"4px"}}>{e.coffeeName}</div>
+            <div style={{fontSize:"11px",color:"var(--tx2)",marginBottom:"11px"}}>{e.roaster} · {e.date}</div>
+            <div style={{display:"flex",gap:"16px",marginBottom:"10px"}}>
+              <div style={{textAlign:"center"}}>
+                <div style={{fontFamily:"'DM Mono',monospace",fontSize:"28px",fontWeight:500,color:"var(--accent)",lineHeight:1}}>{e.grindSetting||"—"}</div>
+                <div style={{fontSize:"9px",letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"2px"}}>Grind</div>
+              </div>
+              <div style={{flex:1,display:"flex",flexDirection:"column",gap:"4px",justifyContent:"center"}}>
+                {e.doseIn   && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Dose: <span style={{color:"var(--tx1)"}}>{e.doseIn}g → {e.yieldOut}g</span> ({e.timeSeconds}s)</div>}
+                {e.process  && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Process: <span style={{color:"var(--tx1)"}}>{e.process}</span></div>}
+                {e.kitId    && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Kit: <span style={{color:"var(--tx1)"}}>{kit(e.kitId)?.name||e.kitId}</span></div>}
+              </div>
+            </div>
+            {e.flavorNotes && <div style={{fontSize:"12px",color:"var(--tx2)",fontStyle:"italic"}}>"{e.flavorNotes}"</div>}
+          </div>
+        ))}
+        <div className="btn-area">
+          <button className="btn btn-p" onClick={()=>onImport(preview)}>Save to GitHub</button>
+          <button className="btn btn-s" onClick={()=>setPreview(null)}>← Edit</button>
+        </div>
+      </>}
+    </div>
+  );
+}
+
 // ── SPLASH ─────────────────────────────────────────────────────────────────────
 function Splash() {
   return (
@@ -697,6 +787,18 @@ function App() {
     setScreen("logbook");
   };
 
+  const importDialins = async (entries) => {
+    const updated = [...entries.map(e=>({...e, id:e.id||uid()})), ...dialins];
+    setDialins(updated); lsSet(LS.dialins, updated);
+    if (settings.token) {
+      try { await ghWrite(settings, "dialins.json", updated); flash(`✓ ${entries.length} entr${entries.length===1?"y":"ies"} saved to GitHub`); }
+      catch(e) { flash(`⚠ Saved locally. GitHub: ${e.message}`); }
+    } else {
+      flash(`✓ ${entries.length} entr${entries.length===1?"y":"ies"} saved locally`);
+    }
+    setScreen("logbook");
+  };
+
   const saveSettings = async (s) => {
     setSettings(s); lsSet(LS.settings, s); flash("✓ Settings saved — syncing…");
     setSyncing(true);
@@ -717,7 +819,7 @@ function App() {
     setScreen(to);
   };
 
-  const isDetail = ["kit","dialin","add"].includes(screen);
+  const isDetail = ["kit","dialin","add","import"].includes(screen);
 
   if (!ready) return <Splash/>;
 
@@ -727,6 +829,7 @@ function App() {
     logbook:  <LogbookScreen kits={kits} dialins={dialins} nav={nav}/>,
     dialin:   <DialInDetail  d={curDial} kits={kits} nav={nav}/>,
     add:      <AddDialIn     kits={kits} onSave={addDialin} nav={nav}/>,
+    import:   <ImportScreen  kits={kits} onImport={importDialins} nav={nav}/>,
     settings: <SettingsScreen settings={settings} onSave={saveSettings} onSync={syncPull} syncing={syncing}/>,
   };
 
@@ -735,7 +838,7 @@ function App() {
       {views[screen]||views.home}
       {!isDetail && (
         <nav className="bnav">
-          {[{id:"home",ico:"⊞",lbl:"Kits"},{id:"logbook",ico:"◉",lbl:"Log"},{id:"add",ico:"+",lbl:"Add"},{id:"settings",ico:"◎",lbl:"Settings"}]
+          {[{id:"home",ico:"⊞",lbl:"Kits"},{id:"logbook",ico:"◉",lbl:"Log"},{id:"import",ico:"⊕",lbl:"Import"},{id:"settings",ico:"◎",lbl:"Settings"}]
             .map(item=>(
               <button key={item.id} className={`nav-btn${screen===item.id?" nav-btn-on":""}`} onClick={()=>setScreen(item.id)}>
                 <span className="nav-ico">{item.ico}</span>
