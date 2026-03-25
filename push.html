@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0C0501"/>
+  <title>Dial-In · Push</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --bg:#0C0501; --surface:#170C06; --elevated:#201208;
+      --border:rgba(200,118,58,0.16); --bh:rgba(200,118,58,0.38);
+      --accent:#C87840; --accent-b:#E09050; --accent-d:rgba(200,120,64,0.13);
+      --tx1:#EDD8B4; --tx2:#9A7050; --tx3:#5A3A22;
+      --green:#5A8860; --green-d:rgba(90,136,96,0.15);
+      --red:#A05050; --red-d:rgba(160,80,80,0.15);
+    }
+    html,body { min-height:100%; background:var(--bg); color:var(--tx1); font-family:'Jost',sans-serif; -webkit-font-smoothing:antialiased; }
+    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); opacity:.5; }
+
+    .wrap { max-width:480px; margin:0 auto; padding:24px 20px 60px; }
+
+    /* Header */
+    .hdr { display:flex; align-items:center; gap:14px; margin-bottom:28px; }
+    .hdr-title { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:500; letter-spacing:.02em; flex:1; }
+    .hdr-sub { font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx2); margin-top:2px; }
+    .back { font-size:12px; color:var(--tx2); text-decoration:none; border:1px solid var(--border); border-radius:7px; padding:6px 12px; }
+    .back:hover { color:var(--tx1); border-color:var(--bh); }
+
+    /* State cards */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; text-align:center; margin-bottom:16px; }
+    .card-ico { font-size:40px; margin-bottom:14px; }
+    .card-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:6px; }
+    .card-sub { font-size:13px; color:var(--tx2); line-height:1.55; }
+
+    /* Preview card */
+    .preview { background:var(--surface); border:1px solid var(--bh); border-radius:14px; padding:20px; margin-bottom:16px; }
+    .preview-label { font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin-bottom:12px; }
+    .preview-name { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:4px; }
+    .preview-roaster { font-size:12px; color:var(--tx2); margin-bottom:14px; }
+    .preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+    .preview-stat { background:var(--elevated); border-radius:8px; padding:10px 12px; }
+    .preview-stat-v { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--accent); line-height:1; }
+    .preview-stat-l { font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); margin-top:3px; }
+    .preview-row { display:flex; gap:8px; margin-bottom:6px; }
+    .preview-key { font-size:11px; color:var(--tx3); min-width:80px; }
+    .preview-val { font-size:11px; color:var(--tx1); }
+    .preview-notes { font-family:'Cormorant Garamond',serif; font-size:14px; font-style:italic; color:var(--tx2); margin-top:10px; line-height:1.6; border-top:1px solid var(--border); padding-top:10px; }
+    .stars { color:var(--accent); letter-spacing:2px; font-size:14px; }
+
+    /* Buttons */
+    .btn { width:100%; border:none; border-radius:10px; padding:14px; font-family:'Jost',sans-serif; font-size:15px; font-weight:500; cursor:pointer; transition:all .15s; letter-spacing:.04em; margin-bottom:10px; }
+    .btn-p { background:var(--accent); color:#0C0501; }
+    .btn-p:hover { background:var(--accent-b); }
+    .btn-p:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-s { background:var(--elevated); border:1px solid var(--border); color:var(--tx2); }
+    .btn-s:hover { border-color:var(--bh); color:var(--tx1); }
+
+    /* Token input */
+    .token-section { margin-bottom:16px; }
+    .f-lbl { display:block; font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx2); margin-bottom:6px; }
+    .f-in { width:100%; background:var(--elevated); border:1px solid var(--border); border-radius:8px; color:var(--tx1); font-family:'DM Mono',monospace; font-size:13px; padding:10px 12px; outline:none; transition:border-color .15s; margin-bottom:6px; }
+    .f-in:focus { border-color:var(--accent); }
+    .f-hint { font-size:11px; color:var(--tx3); line-height:1.5; }
+
+    /* Success */
+    .success { background:var(--green-d); border:1px solid rgba(90,136,96,0.3); border-radius:14px; padding:24px; text-align:center; }
+    .success-ico { font-size:44px; margin-bottom:12px; }
+    .success-title { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--green); margin-bottom:6px; }
+    .success-sub { font-size:13px; color:var(--tx2); }
+
+    /* Error */
+    .error { background:var(--red-d); border:1px solid rgba(160,80,80,0.3); border-radius:14px; padding:20px; margin-bottom:16px; }
+    .error-title { font-size:13px; font-weight:600; color:var(--red); margin-bottom:4px; }
+    .error-msg { font-size:12px; color:var(--tx2); font-family:'DM Mono',monospace; }
+
+    .spin { animation:spin .7s linear infinite; display:inline-block; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+    .badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:.06em; padding:3px 8px; border-radius:4px; }
+    .b-dialin  { background:var(--accent-d); color:var(--accent); }
+    .b-appupdate { background:rgba(90,112,152,0.14); color:#5A7098; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div style="flex:1">
+      <div class="hdr-title">Push</div>
+      <div class="hdr-sub">One-tap deploy</div>
+    </div>
+    <a href="/" class="back">← App</a>
+  </div>
+
+  <div id="root"></div>
+</div>
+
+<script>
+const OWNER = "trynerlu";
+const REPO  = "coffee-dialins";
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function getToken() {
+  const manual = document.getElementById('manualToken');
+  if (manual && manual.value.trim()) return manual.value.trim();
+  try { return JSON.parse(localStorage.getItem('ca_settings')||'{}').token || ''; } catch { return ''; }
+}
+
+function b64decode(str) {
+  return decodeURIComponent(escape(atob(str.replace(/-/g,'+').replace(/_/g,'/'))));
+}
+
+function stars(n) { return '★'.repeat(n) + '☆'.repeat(5-n); }
+
+async function getSha(token, file) {
+  const r = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}?ref=main`,
+    { headers:{ Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' } }
+  );
+  if (!r.ok) return null;
+  return (await r.json()).sha || null;
+}
+
+async function ghWrite(token, file, content) {
+  const sha = await getSha(token, file);
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const res = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}`,
+    {
+      method:'PUT',
+      headers:{ Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:`Update ${file} via Push link`, content:encoded, branch:'main', ...(sha?{sha}:{}) })
+    }
+  );
+  if (!res.ok) { const e=await res.json(); throw new Error(e.message); }
+  return await res.json();
+}
+
+async function fetchDialins(token) {
+  const r = await fetch(
+    `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/dialins.json?_=${Date.now()}`
+  );
+  if (!r.ok) throw new Error('Could not fetch current dialins.json');
+  return r.json();
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+const root = document.getElementById('root');
+
+function renderLoading(msg) {
+  root.innerHTML = `
+    <div class="card">
+      <div class="card-ico"><span class="spin">↻</span></div>
+      <div class="card-title">${msg}</div>
+    </div>`;
+}
+
+function renderError(title, msg, showRetry=true) {
+  root.innerHTML = `
+    <div class="error"><div class="error-title">${title}</div><div class="error-msg">${msg}</div></div>
+    ${showRetry ? `<button class="btn btn-s" onclick="location.reload()">Retry</button>` : ''}
+    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+}
+
+function renderSuccess(msg, sub) {
+  root.innerHTML = `
+    <div class="success">
+      <div class="success-ico">✓</div>
+      <div class="success-title">${msg}</div>
+      <div class="success-sub">${sub}</div>
+    </div>
+    <br/>
+    <a href="/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+}
+
+function renderNoToken(onPush) {
+  root.innerHTML = `
+    <div class="card" style="text-align:left;margin-bottom:16px">
+      <div class="card-ico" style="text-align:center">🔑</div>
+      <div class="card-title" style="text-align:center">Token needed</div>
+      <div class="card-sub" style="text-align:center;margin-bottom:18px">Your GitHub token wasn't found in app settings. Enter it once to proceed.</div>
+      <label class="f-lbl">Personal Access Token</label>
+      <input class="f-in" type="password" id="manualToken" placeholder="ghp_… or github_pat_…"/>
+      <div class="f-hint">Needs <code style="background:var(--elevated);padding:1px 4px;border-radius:3px">repo</code> scope. Will be saved to app settings.</div>
+    </div>
+    <button class="btn btn-p" id="proceedBtn" onclick="onTokenEntered()">Continue →</button>`;
+  window._onTokenPush = onPush;
+}
+
+window.onTokenEntered = function() {
+  const t = document.getElementById('manualToken').value.trim();
+  if (!t) return;
+  try {
+    const s = JSON.parse(localStorage.getItem('ca_settings')||'{}');
+    s.token = t; localStorage.setItem('ca_settings', JSON.stringify(s));
+  } catch(e) {}
+  if (window._onTokenPush) window._onTokenPush(t);
+};
+
+// ── DIAL-IN PUSH ─────────────────────────────────────────────────────────────
+function renderDialinPreview(entry, token) {
+  const ratio = (entry.doseIn && entry.yieldOut)
+    ? `1:${(entry.yieldOut/entry.doseIn).toFixed(1)}` : '—';
+
+  root.innerHTML = `
+    <div class="preview">
+      <div class="preview-label">New dial-in · <span class="badge b-dialin">${entry.process||'Espresso'}</span></div>
+      <div class="preview-name">${entry.coffeeName}</div>
+      <div class="preview-roaster">${entry.roaster||''} · ${entry.date||''}</div>
+      <div class="preview-grid">
+        <div class="preview-stat">
+          <div class="preview-stat-v">${entry.grindSetting||'—'}</div>
+          <div class="preview-stat-l">Grind setting</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-stat-v">${ratio}</div>
+          <div class="preview-stat-l">Ratio</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-stat-v">${entry.doseIn||'—'}<span style="font-size:11px">g</span></div>
+          <div class="preview-stat-l">Dose</div>
+        </div>
+        <div class="preview-stat">
+          <div class="preview-stat-v">${entry.timeSeconds||'—'}<span style="font-size:11px">s</span></div>
+          <div class="preview-stat-l">Time</div>
+        </div>
+      </div>
+      ${entry.flavorNotes ? `<div class="preview-row"><span class="preview-key">Flavour</span><span class="preview-val">${entry.flavorNotes}</span></div>`:''}
+      ${entry.origin     ? `<div class="preview-row"><span class="preview-key">Origin</span><span class="preview-val">${entry.origin}${entry.region?' · '+entry.region:''}</span></div>`:''}
+      ${entry.temperature? `<div class="preview-row"><span class="preview-key">Temp</span><span class="preview-val">${entry.temperature}°C</span></div>`:''}
+      ${entry.rating>0   ? `<div class="preview-row"><span class="preview-key">Rating</span><span class="preview-val stars">${stars(entry.rating)}</span></div>`:''}
+      ${entry.dialDifficulty ? `<div class="preview-row"><span class="preview-key">Difficulty</span><span class="preview-val">${entry.dialDifficulty}/5</span></div>`:''}
+      ${entry.shotStability  ? `<div class="preview-row"><span class="preview-key">Stability</span><span class="preview-val">${entry.shotStability}/5</span></div>`:''}
+      ${entry.notes ? `<div class="preview-notes">"${entry.notes}"</div>`:''}
+    </div>
+    <button class="btn btn-p" id="pushBtn" onclick="executePushDialin()">Save to GitHub →</button>
+    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+
+  window._pendingEntry = entry;
+  window._pendingToken = token;
+}
+
+window.executePushDialin = async function() {
+  const btn = document.getElementById('pushBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Saving…';
+  try {
+    const current = await fetchDialins(window._pendingToken);
+    const entry = { ...window._pendingEntry,
+      id: window._pendingEntry.id || `d-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+      date: window._pendingEntry.date || new Date().toISOString().split('T')[0]
+    };
+    const updated = [entry, ...current];
+    await ghWrite(window._pendingToken, 'dialins.json', JSON.stringify(updated, null, 2));
+    // Update local cache too
+    try { localStorage.setItem('ca_dialins', JSON.stringify(updated)); } catch(e) {}
+    renderSuccess('Saved!', `${entry.coffeeName} added to your logbook. Open the app and it will sync automatically.`);
+  } catch(e) {
+    renderError('Push failed', e.message);
+  }
+};
+
+// ── APP UPDATE PUSH ──────────────────────────────────────────────────────────
+function renderAppUpdatePreview(meta, token) {
+  root.innerHTML = `
+    <div class="preview" style="text-align:center">
+      <div class="preview-label">App update · <span class="badge b-appupdate">index.html</span></div>
+      <div class="preview-name" style="margin-bottom:8px">${meta.title||'App update'}</div>
+      <div class="preview-roaster">${meta.description||''}</div>
+      ${meta.changes ? `<div style="margin-top:14px;text-align:left">${meta.changes.map(c=>`<div style="font-size:12px;color:var(--tx2);padding:4px 0;border-bottom:1px solid var(--border)">· ${c}</div>`).join('')}</div>` : ''}
+    </div>
+    <div class="token-section">
+      <label class="f-lbl">Paste updated index.html</label>
+      <textarea id="appContent" style="width:100%;background:var(--elevated);border:1px solid var(--border);border-radius:8px;color:var(--tx1);font-family:'DM Mono',monospace;font-size:11px;padding:10px 12px;outline:none;resize:vertical;min-height:90px;line-height:1.5" placeholder="Paste the full index.html content Claude prepared…" oninput="document.getElementById('appPushBtn').disabled=!this.value.trim()"></textarea>
+    </div>
+    <button class="btn btn-p" id="appPushBtn" disabled onclick="executePushApp()">Push Update →</button>
+    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+
+  window._pendingToken = token;
+}
+
+window.executePushApp = async function() {
+  const btn = document.getElementById('appPushBtn');
+  const content = document.getElementById('appContent').value.trim();
+  if (!content) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Pushing…';
+  try {
+    await ghWrite(window._pendingToken, 'index.html', content);
+    renderSuccess('App updated!', 'index.html pushed to GitHub. The app will reflect changes on next load.');
+  } catch(e) {
+    renderError('Push failed', e.message);
+  }
+};
+
+// ── MAIN ─────────────────────────────────────────────────────────────────────
+function main() {
+  const params = new URLSearchParams(window.location.search);
+  const type   = params.get('type');   // 'dialin' | 'app'
+  const data   = params.get('d');      // base64 encoded JSON payload
+
+  if (!type || !data) {
+    root.innerHTML = `
+      <div class="card">
+        <div class="card-ico">🔗</div>
+        <div class="card-title">No push link</div>
+        <div class="card-sub">This page is opened automatically via a link from Claude. Start a dial-in session in Claude.ai and use the push link it generates.</div>
+      </div>
+      <a href="/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+    return;
+  }
+
+  let parsed;
+  try { parsed = JSON.parse(b64decode(data)); }
+  catch(e) { renderError('Invalid link', 'Could not decode the push data. Try generating a new link from Claude.'); return; }
+
+  const token = getToken();
+
+  if (!token) {
+    renderNoToken((t) => {
+      if (type === 'dialin') renderDialinPreview(parsed, t);
+      else if (type === 'app') renderAppUpdatePreview(parsed, t);
+    });
+    return;
+  }
+
+  if (type === 'dialin') renderDialinPreview(parsed, token);
+  else if (type === 'app') renderAppUpdatePreview(parsed, token);
+  else renderError('Unknown type', `push type "${type}" not recognised`);
+}
+
+main();
+</script>
+</body>
+</html>
