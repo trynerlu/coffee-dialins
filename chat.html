@@ -99,6 +99,16 @@
 
   <div id="statusBar" style="display:none"></div>
 
+  <!-- Smart clipboard -->
+  <div style="margin:18px 22px 0;">
+    <button onclick="smartPaste()" style="width:100%;background:var(--surface);border:1px solid var(--bh);border-radius:10px;color:var(--accent);font-family:'Jost',sans-serif;font-size:14px;font-weight:500;padding:13px;cursor:pointer;transition:all .15s;letter-spacing:.04em;">
+      📋 Read Clipboard &amp; Auto-Detect File
+    </button>
+    <div style="font-size:11px;color:var(--tx3);margin-top:6px;text-align:center;line-height:1.5;">
+      Copy a file Claude prepared → tap here → right card fills automatically
+    </div>
+  </div>
+
   <!-- Token -->
   <div class="sec">GitHub Token</div>
   <div class="token-wrap">
@@ -119,7 +129,8 @@
       <textarea class="code-area" id="content-index" placeholder="Paste index.html content here…" spellcheck="false" oninput="onPaste('index')"></textarea>
       <div class="btn-row">
         <button class="btn btn-p" id="btn-index" onclick="deploy('index.html','content-index','badge-index','btn-index')" disabled>Push to GitHub</button>
-        <button class="btn btn-s" onclick="clear('content-index','badge-index','btn-index')">Clear</button>
+        <button class="btn btn-s" onclick="readClipboard('index')">📋 Clipboard</button>
+        <button class="btn btn-s" onclick="clearField('content-index','badge-index','btn-index')">Clear</button>
       </div>
     </div>
   </div>
@@ -136,6 +147,7 @@
       <textarea class="code-area" id="content-kits" placeholder="Paste kits.json content here…" spellcheck="false" oninput="onPaste('kits')"></textarea>
       <div class="btn-row">
         <button class="btn btn-p" id="btn-kits" onclick="deploy('kits.json','content-kits','badge-kits','btn-kits')" disabled>Push to GitHub</button>
+        <button class="btn btn-s" onclick="readClipboard('kits')">📋 Clipboard</button>
         <button class="btn btn-s" onclick="clearField('content-kits','badge-kits','btn-kits')">Clear</button>
       </div>
     </div>
@@ -153,6 +165,7 @@
       <textarea class="code-area" id="content-dialins" placeholder="Paste dialins.json content here…" spellcheck="false" oninput="onPaste('dialins')"></textarea>
       <div class="btn-row">
         <button class="btn btn-p" id="btn-dialins" onclick="deploy('dialins.json','content-dialins','badge-dialins','btn-dialins')" disabled>Push to GitHub</button>
+        <button class="btn btn-s" onclick="readClipboard('dialins')">📋 Clipboard</button>
         <button class="btn btn-s" onclick="clearField('content-dialins','badge-dialins','btn-dialins')">Clear</button>
       </div>
     </div>
@@ -185,6 +198,55 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function getToken() {
   return document.getElementById('tokenInput').value.trim();
+}
+
+// ── CLIPBOARD ────────────────────────────────────────────────────────────────
+function detectFile(text) {
+  const t = text.trim();
+  if (t.startsWith('<!DOCTYPE') || t.startsWith('<html')) return 'index';
+  try {
+    const parsed = JSON.parse(t);
+    const arr = Array.isArray(parsed) ? parsed : [parsed];
+    if (arr[0] && arr[0].equipment !== undefined) return 'kits';
+    if (arr[0] && (arr[0].coffeeName !== undefined || arr[0].kitId !== undefined)) return 'dialins';
+  } catch(e) {}
+  return null;
+}
+
+function fillCard(name, text) {
+  const area  = document.getElementById(`content-${name}`);
+  const badge = document.getElementById(`badge-${name}`);
+  const btn   = document.getElementById(`btn-${name}`);
+  area.value  = text;
+  area.classList.add('has-content');
+  badge.textContent = 'ready'; badge.className = 'deploy-badge b-ready';
+  btn.disabled = false;
+  area.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+async function readClipboard(name) {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text.trim()) { showStatus('warn', 'Clipboard is empty'); return; }
+    fillCard(name, text);
+    showStatus('ok', `✓ Clipboard → ${name === 'index' ? 'index.html' : name + '.json'}`);
+  } catch(e) {
+    showStatus('err', 'Clipboard access denied — paste manually instead');
+  }
+}
+
+async function smartPaste() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text.trim()) { showStatus('warn', 'Clipboard is empty — copy a file first'); return; }
+    const detected = detectFile(text);
+    if (!detected) { showStatus('warn', 'Could not detect file type — paste manually into the right card'); return; }
+    fillCard(detected, text);
+    const names = { index:'index.html', kits:'kits.json', dialins:'dialins.json' };
+    showStatus('ok', `✓ Detected ${names[detected]} — ready to push`);
+  } catch(e) {
+    showStatus('err', 'Clipboard access denied — use the 📋 Clipboard button on a specific card instead');
+  }
 }
 
 function onPaste(name) {
