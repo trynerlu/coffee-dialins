@@ -90,7 +90,7 @@
       <div class="hdr-title">Push</div>
       <div class="hdr-sub">One-tap deploy</div>
     </div>
-    <a href="/" class="back">← App</a>
+    <a href="/coffee-dialins/" class="back">← App</a>
   </div>
 
   <div id="root"></div>
@@ -160,7 +160,7 @@ function renderError(title, msg, showRetry=true) {
   root.innerHTML = `
     <div class="error"><div class="error-title">${title}</div><div class="error-msg">${msg}</div></div>
     ${showRetry ? `<button class="btn btn-s" onclick="location.reload()">Retry</button>` : ''}
-    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
 }
 
 function renderSuccess(msg, sub) {
@@ -171,7 +171,7 @@ function renderSuccess(msg, sub) {
       <div class="success-sub">${sub}</div>
     </div>
     <br/>
-    <a href="/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+    <a href="/coffee-dialins/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
 }
 
 function renderNoToken(onPush) {
@@ -235,7 +235,7 @@ function renderDialinPreview(entry, token) {
       ${entry.notes ? `<div class="preview-notes">"${entry.notes}"</div>`:''}
     </div>
     <button class="btn btn-p" id="pushBtn" onclick="executePushDialin()">Save to GitHub →</button>
-    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
 
   window._pendingEntry = entry;
   window._pendingToken = token;
@@ -275,7 +275,7 @@ function renderAppUpdatePreview(meta, token) {
       <textarea id="appContent" style="width:100%;background:var(--elevated);border:1px solid var(--border);border-radius:8px;color:var(--tx1);font-family:'DM Mono',monospace;font-size:11px;padding:10px 12px;outline:none;resize:vertical;min-height:90px;line-height:1.5" placeholder="Paste the full index.html content Claude prepared…" oninput="document.getElementById('appPushBtn').disabled=!this.value.trim()"></textarea>
     </div>
     <button class="btn btn-p" id="appPushBtn" disabled onclick="executePushApp()">Push Update →</button>
-    <a href="/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
 
   window._pendingToken = token;
 }
@@ -307,7 +307,7 @@ function main() {
         <div class="card-title">No push link</div>
         <div class="card-sub">This page is opened automatically via a link from Claude. Start a dial-in session in Claude.ai and use the push link it generates.</div>
       </div>
-      <a href="/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
+      <a href="/coffee-dialins/" class="btn btn-p" style="display:block;text-align:center;text-decoration:none;padding:14px">← Back to App</a>`;
     return;
   }
 
