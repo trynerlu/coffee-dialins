@@ -342,7 +342,7 @@ function HomeScreen({ kits, dialins, nav, onSync, syncing, lastSync }) {
   );
 }
 
-function KitScreen({ kit, dialins, kits, nav }) {
+function KitScreen({ kit, dialins, kits, nav, onEditKit }) {
   if (!kit) return null;
   const kd = dialins.filter(d=>d.kitId===kit.id);
   return (
@@ -353,6 +353,7 @@ function KitScreen({ kit, dialins, kits, nav }) {
           <div className="hdr-title">{kit.name}</div>
           <div className="hdr-sub">{kit.subtitle}</div>
         </div>
+        <button className="icon-btn" onClick={()=>onEditKit(kit)} title="Edit kit">✎</button>
       </div>
       <div className="sec">Equipment</div>
       {kit.equipment.length===0
@@ -401,7 +402,7 @@ function LogbookScreen({ kits, dialins, nav }) {
   );
 }
 
-function DialInDetail({ d, kits, nav }) {
+function DialInDetail({ d, kits, nav, onEdit }) {
   if (!d) return null;
   const kit = kits.find(k=>k.id===d.kitId);
   return (
@@ -410,12 +411,17 @@ function DialInDetail({ d, kits, nav }) {
         <button className="icon-btn" onClick={()=>nav("logbook")}>←</button>
         <div style={{flex:1}}><div className="hdr-title">Dial-In</div></div>
         {d.rating>0 && <Stars n={d.rating}/>}
+        <button className="icon-btn" onClick={()=>onEdit(d)} title="Edit">✎</button>
       </div>
       <div className="det-hero">
         <div className="det-date">{fmt(d.date)}</div>
         <div className="det-title">{d.coffeeName}</div>
-        <div className="det-roaster">{d.roaster}</div>
-        <div style={{display:"flex",gap:"7px",flexWrap:"wrap"}}>
+        <div className="det-roaster">
+          {d.roasterUrl
+            ? <a href={d.roasterUrl} target="_blank" rel="noopener" style={{color:"var(--accent)",textDecoration:"none"}}>{d.roaster} ↗</a>
+            : d.roaster}
+        </div>
+        <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginTop:"8px"}}>
           {d.status    && <span className={`badge b-${d.status}`}>{d.status}</span>}
           {kit         && <span className="badge b-kit">{kit.name}</span>}
           {d.process   && <span className="badge b-process">{d.process}</span>}
@@ -455,6 +461,17 @@ function DialInDetail({ d, kits, nav }) {
           </div>
         ))}
       </div>
+      {d.coffeeDescription&&<>
+        <div className="div"/>
+        <div className="sec">About this Coffee</div>
+        <div style={{padding:"0 18px 16px",fontSize:"13px",color:"var(--tx2)",lineHeight:"1.7"}}>{d.coffeeDescription}</div>
+        {d.coffeeUrl&&<div style={{padding:"0 18px 20px"}}>
+          <a href={d.coffeeUrl} target="_blank" rel="noopener"
+            style={{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"12px",color:"var(--accent)",textDecoration:"none",border:"1px solid var(--border)",borderRadius:"7px",padding:"7px 12px"}}>
+            View on roaster's website ↗
+          </a>
+        </div>}
+      </>}
       {d.notes&&<><div className="div"/><div className="sec">Notes</div><div className="det-notes">"{d.notes}"</div></>}
     </div>
   );
@@ -571,6 +588,139 @@ function AddDialIn({ kits, onSave, nav }) {
       <div className="btn-area">
         <button className="btn btn-p" onClick={save} disabled={!f.coffeeName||!f.kitId}>Save Dial-In</button>
         <button className="btn btn-s" onClick={()=>nav("logbook")}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function EditDialIn({ d, kits, onSave, nav }) {
+  const [f,setF]=useState({...d,
+    doseIn:d.doseIn||"", yieldOut:d.yieldOut||"", timeSeconds:d.timeSeconds||"", temperature:d.temperature||"",
+    roasterUrl:d.roasterUrl||"", coffeeUrl:d.coffeeUrl||"", coffeeDescription:d.coffeeDescription||"",
+    dialDifficulty:d.dialDifficulty||0, shotStability:d.shotStability||0,
+  });
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const r=f.doseIn&&f.yieldOut?ratio(+f.doseIn,+f.yieldOut):null;
+  const save=()=>{ if(!f.coffeeName) return; onSave({...f,doseIn:+f.doseIn,yieldOut:+f.yieldOut,timeSeconds:+f.timeSeconds,temperature:+f.temperature}); };
+  return (
+    <div className="screen fade-in">
+      <div className="hdr">
+        <button className="icon-btn" onClick={()=>nav("dialin",d)}>←</button>
+        <div style={{flex:1}}><div className="hdr-title">Edit Dial-In</div></div>
+      </div>
+      <div className="sec">Coffee</div>
+      <div className="f-grp"><label className="f-lbl">Kit</label>
+        <select className="f-sel" value={f.kitId} onChange={e=>s("kitId",e.target.value)}>
+          {kits.map(k=><option key={k.id} value={k.id}>{k.name}</option>)}
+        </select>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Coffee Name</label><input className="f-in" value={f.coffeeName} onChange={e=>s("coffeeName",e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Roaster</label><input className="f-in" value={f.roaster||""} onChange={e=>s("roaster",e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Roaster Website</label><input className="f-in" type="url" placeholder="https://…" value={f.roasterUrl} onChange={e=>s("roasterUrl",e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Coffee Page URL</label><input className="f-in" type="url" placeholder="https://… (specific product page)" value={f.coffeeUrl||""} onChange={e=>s("coffeeUrl",e.target.value)}/></div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Origin</label><input className="f-in" value={f.origin||""} onChange={e=>s("origin",e.target.value)}/></div>
+        <div className="f-grp"><label className="f-lbl">Region</label><input className="f-in" value={f.region||""} onChange={e=>s("region",e.target.value)}/></div>
+      </div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Process</label>
+          <select className="f-sel" value={f.process||""} onChange={e=>s("process",e.target.value)}>{PROCESSES.map(o=><option key={o}>{o}</option>)}</select>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Roast</label>
+          <select className="f-sel" value={f.roastLevel||""} onChange={e=>s("roastLevel",e.target.value)}>{ROASTS.map(o=><option key={o}>{o}</option>)}</select>
+        </div>
+      </div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Brewed as</label>
+          <select className="f-sel" value={f.intendedFor||""} onChange={e=>s("intendedFor",e.target.value)}>{BREWS.map(o=><option key={o}>{o}</option>)}</select>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Date</label>
+          <input className="f-in" type="date" value={f.date||""} onChange={e=>s("date",e.target.value)}/>
+        </div>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Flavour Notes</label><input className="f-in" value={f.flavorNotes||""} onChange={e=>s("flavorNotes",e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">About this Coffee</label>
+        <textarea className="f-ta" placeholder="Roaster's description, farm info, processing details…" value={f.coffeeDescription} onChange={e=>s("coffeeDescription",e.target.value)}/>
+      </div>
+      <div className="sec">Grind</div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Setting</label><input className="f-in" value={f.grindSetting||""} onChange={e=>s("grindSetting",e.target.value)}/></div>
+        <div className="f-grp"><label className="f-lbl">Grinder</label><input className="f-in" value={f.grinder||""} onChange={e=>s("grinder",e.target.value)}/></div>
+      </div>
+      <div className="sec">Extraction</div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Dose (g)</label><input className="f-in" type="number" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/></div>
+        <div className="f-grp">
+          <label className="f-lbl">Yield (g){r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
+          <input className="f-in" type="number" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/>
+        </div>
+      </div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Time (s)</label><input className="f-in" type="number" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/></div>
+        <div className="f-grp"><label className="f-lbl">Temp (°C)</label><input className="f-in" type="number" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/></div>
+      </div>
+      <div className="sec">Assessment</div>
+      <div className="f-grp"><label className="f-lbl">Status</label>
+        <div className="opt-chips">{["experimenting","dialed"].map(o=>(
+          <div key={o} className={`opt-chip${f.status===o?" opt-chip-on":""}`} onClick={()=>s("status",o)}>{o}</div>
+        ))}</div>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Rating</label><StarInput val={f.rating||0} set={v=>s("rating",v)}/></div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Dial Difficulty (1–5)</label>
+          <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.dialDifficulty===n?" opt-chip-on":""}`} onClick={()=>s("dialDifficulty",n)}>{n}</div>)}</div>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Shot Stability (1–5)</label>
+          <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.shotStability===n?" opt-chip-on":""}`} onClick={()=>s("shotStability",n)}>{n}</div>)}</div>
+        </div>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Notes</label>
+        <textarea className="f-ta" value={f.notes||""} onChange={e=>s("notes",e.target.value)}/>
+      </div>
+      <div className="btn-area">
+        <button className="btn btn-p" onClick={save} disabled={!f.coffeeName}>Save Changes</button>
+        <button className="btn btn-s" onClick={()=>nav("dialin",d)}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function EditKit({ kit, onSave, nav }) {
+  const [name,    setName]    = useState(kit.name);
+  const [sub,     setSub]     = useState(kit.subtitle||"");
+  const [equip,   setEquip]   = useState(kit.equipment.map(e=>({...e})));
+  const updateEq = (i,k,v) => setEquip(p=>p.map((e,j)=>j===i?{...e,[k]:v}:e));
+  const addEq    = () => setEquip(p=>[...p,{category:"",name:"",notes:""}]);
+  const removeEq = i => setEquip(p=>p.filter((_,j)=>j!==i));
+  const save = () => onSave({...kit, name, subtitle:sub, equipment:equip.filter(e=>e.name)});
+  return (
+    <div className="screen fade-in">
+      <div className="hdr">
+        <button className="icon-btn" onClick={()=>nav("kit",kit)}>←</button>
+        <div style={{flex:1}}><div className="hdr-title">Edit Kit</div><div className="hdr-sub">{kit.name}</div></div>
+      </div>
+      <div className="sec">Kit Info</div>
+      <div className="f-grp"><label className="f-lbl">Name</label><input className="f-in" value={name} onChange={e=>setName(e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Subtitle</label><input className="f-in" value={sub} onChange={e=>setSub(e.target.value)}/></div>
+      <div className="sec">Equipment</div>
+      {equip.map((e,i)=>(
+        <div key={i} style={{margin:"0 18px 10px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"12px"}}>
+          <div style={{display:"flex",gap:"8px",marginBottom:"8px"}}>
+            <input className="f-in" style={{flex:"0 0 90px"}} placeholder="Category" value={e.category} onChange={v=>updateEq(i,"category",v.target.value)}/>
+            <input className="f-in" style={{flex:1}} placeholder="Product name" value={e.name} onChange={v=>updateEq(i,"name",v.target.value)}/>
+          </div>
+          <div style={{display:"flex",gap:"8px"}}>
+            <input className="f-in" style={{flex:1}} placeholder="Notes (optional)" value={e.notes||""} onChange={v=>updateEq(i,"notes",v.target.value)}/>
+            <button onClick={()=>removeEq(i)} style={{background:"var(--red-d,rgba(160,80,80,.15))",border:"1px solid rgba(160,80,80,.3)",color:"#A05050",borderRadius:"7px",padding:"0 10px",cursor:"pointer",flexShrink:0}}>✕</button>
+          </div>
+        </div>
+      ))}
+      <div style={{padding:"0 18px 14px"}}>
+        <button className="btn btn-s" onClick={addEq}>+ Add Equipment</button>
+      </div>
+      <div className="btn-area">
+        <button className="btn btn-p" onClick={save}>Save Kit</button>
+        <button className="btn btn-s" onClick={()=>nav("kit",kit)}>Cancel</button>
       </div>
     </div>
   );
@@ -829,18 +979,45 @@ function App() {
     setScreen(to);
   };
 
-  const isDetail = ["kit","dialin","add","import"].includes(screen);
+  const editDialin = (d) => { setCurDial(d); setScreen("editdialin"); };
+  const editKit    = (k) => { setCurKit(k);  setScreen("editkit"); };
+
+  const saveDialin = async (updated) => {
+    const newList = dialins.map(d=>d.id===updated.id?updated:d);
+    setDialins(newList); lsSet(LS.dialins, newList);
+    setCurDial(updated);
+    if (settings.token) {
+      try { await ghWrite(settings,"dialins.json",newList); flash("✓ Saved to GitHub"); }
+      catch(e) { flash(`⚠ Saved locally. GitHub: ${e.message}`); }
+    } else { flash("✓ Saved locally"); }
+    setScreen("dialin");
+  };
+
+  const saveKit = async (updated) => {
+    const newList = kits.map(k=>k.id===updated.id?updated:k);
+    setKits(newList); lsSet(LS.kits, newList);
+    setCurKit(updated);
+    if (settings.token) {
+      try { await ghWrite(settings,"kits.json",newList); flash("✓ Kit saved to GitHub"); }
+      catch(e) { flash(`⚠ Saved locally. GitHub: ${e.message}`); }
+    } else { flash("✓ Kit saved locally"); }
+    setScreen("kit");
+  };
+
+  const isDetail = ["kit","dialin","add","import","editdialin","editkit"].includes(screen);
 
   if (!ready) return <Splash/>;
 
   const views = {
-    home:     <HomeScreen    kits={kits} dialins={dialins} nav={nav} onSync={syncPull} syncing={syncing} lastSync={lastSync}/>,
-    kit:      <KitScreen     kit={curKit} dialins={dialins} kits={kits} nav={nav}/>,
-    logbook:  <LogbookScreen kits={kits} dialins={dialins} nav={nav}/>,
-    dialin:   <DialInDetail  d={curDial} kits={kits} nav={nav}/>,
-    add:      <AddDialIn     kits={kits} onSave={addDialin} nav={nav}/>,
-    import:   <ImportScreen  kits={kits} onImport={importDialins} nav={nav}/>,
-    settings: <SettingsScreen settings={settings} onSave={saveSettings} onSync={syncPull} syncing={syncing}/>,
+    home:       <HomeScreen    kits={kits} dialins={dialins} nav={nav} onSync={syncPull} syncing={syncing} lastSync={lastSync}/>,
+    kit:        <KitScreen     kit={curKit} dialins={dialins} kits={kits} nav={nav} onEditKit={editKit}/>,
+    logbook:    <LogbookScreen kits={kits} dialins={dialins} nav={nav}/>,
+    dialin:     <DialInDetail  d={curDial} kits={kits} nav={nav} onEdit={editDialin}/>,
+    add:        <AddDialIn     kits={kits} onSave={addDialin} nav={nav}/>,
+    import:     <ImportScreen  kits={kits} onImport={importDialins} nav={nav}/>,
+    editdialin: <EditDialIn    d={curDial} kits={kits} onSave={saveDialin} nav={nav}/>,
+    editkit:    <EditKit       kit={curKit} onSave={saveKit} nav={nav}/>,
+    settings:   <SettingsScreen settings={settings} onSave={saveSettings} onSync={syncPull} syncing={syncing}/>,
   };
 
   return (
