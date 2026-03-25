@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0C0501"/>
+  <title>Dial-In · Deploy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0C0501; --surface: #170C06; --elevated: #201208;
+      --border: rgba(200,118,58,0.16); --bh: rgba(200,118,58,0.38);
+      --accent: #C87840; --accent-d: rgba(200,120,64,0.13); --accent-b: #E09050;
+      --tx1: #EDD8B4; --tx2: #9A7050; --tx3: #5A3A22;
+      --green: #5A8860; --green-d: rgba(90,136,96,0.15);
+      --red: #A05050; --red-d: rgba(160,80,80,0.15);
+    }
+    html, body { min-height:100%; background:var(--bg); color:var(--tx1); font-family:'Jost',sans-serif; -webkit-font-smoothing:antialiased; }
+    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); opacity:.5; }
+
+    .wrap { max-width:560px; margin:0 auto; padding:0 0 60px; }
+
+    /* Header */
+    .hdr { padding:22px 22px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; }
+    .hdr-titles { flex:1; }
+    .hdr-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:500; letter-spacing:.02em; }
+    .hdr-sub { font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx2); margin-top:2px; }
+    .back-btn { font-size:12px; color:var(--tx2); text-decoration:none; border:1px solid var(--border); border-radius:7px; padding:6px 12px; transition:all .15s; }
+    .back-btn:hover { color:var(--tx1); border-color:var(--bh); }
+
+    /* Status bar */
+    .status-bar { margin:18px 22px 0; border-radius:10px; padding:13px 16px; font-size:12px; display:flex; align-items:center; gap:10px; }
+    .status-ok  { background:var(--green-d); border:1px solid rgba(90,136,96,0.3); color:var(--green); }
+    .status-err { background:var(--red-d);   border:1px solid rgba(160,80,80,0.3);  color:var(--red); }
+    .status-warn{ background:var(--accent-d);border:1px solid rgba(200,118,58,0.3); color:var(--accent); }
+    .status-ico { font-size:16px; flex-shrink:0; }
+
+    /* Section */
+    .sec { padding:24px 22px 10px; font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx2); }
+
+    /* Deploy card */
+    .deploy-card { margin:0 22px 12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .deploy-card-hdr { padding:14px 16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border); }
+    .deploy-file { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; color:var(--tx1); flex:1; }
+    .deploy-badge { font-size:10px; font-weight:600; letter-spacing:.08em; padding:3px 8px; border-radius:4px; }
+    .b-ready  { background:var(--green-d); color:var(--green); }
+    .b-empty  { background:var(--elevated); color:var(--tx3); border:1px solid var(--border); }
+    .b-pushed { background:var(--green-d); color:var(--green); }
+    .b-error  { background:var(--red-d); color:var(--red); }
+
+    .deploy-body { padding:14px 16px; }
+    .deploy-desc { font-size:12px; color:var(--tx2); margin-bottom:12px; line-height:1.5; }
+
+    /* Textarea */
+    .code-area { width:100%; background:var(--elevated); border:1px solid var(--border); border-radius:8px; color:var(--tx2); font-family:'DM Mono',monospace; font-size:11px; padding:10px 12px; outline:none; resize:vertical; min-height:110px; transition:border-color .15s; line-height:1.5; }
+    .code-area:focus { border-color:var(--accent); color:var(--tx1); }
+    .code-area.has-content { color:var(--tx1); border-color:rgba(200,118,58,0.35); }
+
+    /* Buttons */
+    .btn { border:none; border-radius:9px; padding:11px 18px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .15s; letter-spacing:.04em; }
+    .btn-p { background:var(--accent); color:#0C0501; }
+    .btn-p:hover { background:var(--accent-b); }
+    .btn-p:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-s { background:var(--elevated); border:1px solid var(--border); color:var(--tx2); }
+    .btn-s:hover { border-color:var(--bh); color:var(--tx1); }
+    .btn-row { display:flex; gap:9px; margin-top:12px; }
+    .btn-row .btn { flex:1; }
+
+    /* Token field */
+    .token-wrap { margin:0 22px; }
+    .f-lbl { display:block; font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx2); margin-bottom:5px; }
+    .f-in { width:100%; background:var(--elevated); border:1px solid var(--border); border-radius:8px; color:var(--tx1); font-family:'DM Mono',monospace; font-size:13px; padding:10px 12px; outline:none; transition:border-color .15s; }
+    .f-in:focus { border-color:var(--accent); }
+    .f-hint { font-size:11px; color:var(--tx3); margin-top:5px; line-height:1.5; }
+
+    /* Log */
+    .log { margin:14px 22px 0; background:var(--elevated); border:1px solid var(--border); border-radius:9px; padding:12px 14px; font-family:'DM Mono',monospace; font-size:11px; color:var(--tx2); line-height:1.8; max-height:160px; overflow-y:auto; display:none; }
+    .log.visible { display:block; }
+    .log-ok  { color:var(--green); }
+    .log-err { color:var(--red); }
+    .log-info{ color:var(--tx2); }
+
+    .spin { animation:spin .7s linear infinite; display:inline-block; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+    .div { height:1px; background:var(--border); margin:20px 0 0; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-titles">
+      <div class="hdr-title">Deploy</div>
+      <div class="hdr-sub">Push updates to GitHub</div>
+    </div>
+    <a href="/" class="back-btn">← App</a>
+  </div>
+
+  <div id="statusBar" style="display:none"></div>
+
+  <!-- Token -->
+  <div class="sec">GitHub Token</div>
+  <div class="token-wrap">
+    <label class="f-lbl">Personal Access Token</label>
+    <input class="f-in" type="password" id="tokenInput" placeholder="ghp_… or github_pat_…"/>
+    <div class="f-hint">Loaded automatically from the app's settings. Only needed if not set there yet.</div>
+  </div>
+
+  <!-- index.html -->
+  <div class="sec">App Update — index.html</div>
+  <div class="deploy-card" id="card-index">
+    <div class="deploy-card-hdr">
+      <div class="deploy-file">index.html</div>
+      <span class="deploy-badge b-empty" id="badge-index">empty</span>
+    </div>
+    <div class="deploy-body">
+      <div class="deploy-desc">Paste the full updated <code style="background:var(--elevated);padding:1px 5px;border-radius:3px;font-size:11px;">index.html</code> content Claude generated. The current live version will be replaced.</div>
+      <textarea class="code-area" id="content-index" placeholder="Paste index.html content here…" spellcheck="false" oninput="onPaste('index')"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-p" id="btn-index" onclick="deploy('index.html','content-index','badge-index','btn-index')" disabled>Push to GitHub</button>
+        <button class="btn btn-s" onclick="clear('content-index','badge-index','btn-index')">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- kits.json -->
+  <div class="sec">Data Update — kits.json</div>
+  <div class="deploy-card" id="card-kits">
+    <div class="deploy-card-hdr">
+      <div class="deploy-file">kits.json</div>
+      <span class="deploy-badge b-empty" id="badge-kits">empty</span>
+    </div>
+    <div class="deploy-body">
+      <div class="deploy-desc">Paste updated <code style="background:var(--elevated);padding:1px 5px;border-radius:3px;font-size:11px;">kits.json</code> to update equipment lists across all devices.</div>
+      <textarea class="code-area" id="content-kits" placeholder="Paste kits.json content here…" spellcheck="false" oninput="onPaste('kits')"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-p" id="btn-kits" onclick="deploy('kits.json','content-kits','badge-kits','btn-kits')" disabled>Push to GitHub</button>
+        <button class="btn btn-s" onclick="clearField('content-kits','badge-kits','btn-kits')">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- dialins.json -->
+  <div class="sec">Data Update — dialins.json</div>
+  <div class="deploy-card">
+    <div class="deploy-card-hdr">
+      <div class="deploy-file">dialins.json</div>
+      <span class="deploy-badge b-empty" id="badge-dialins">empty</span>
+    </div>
+    <div class="deploy-body">
+      <div class="deploy-desc">Paste updated <code style="background:var(--elevated);padding:1px 5px;border-radius:3px;font-size:11px;">dialins.json</code> to bulk-update the logbook. Use the Import screen in the app for single entries.</div>
+      <textarea class="code-area" id="content-dialins" placeholder="Paste dialins.json content here…" spellcheck="false" oninput="onPaste('dialins')"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-p" id="btn-dialins" onclick="deploy('dialins.json','content-dialins','badge-dialins','btn-dialins')" disabled>Push to GitHub</button>
+        <button class="btn btn-s" onclick="clearField('content-dialins','badge-dialins','btn-dialins')">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="sec">Activity Log</div>
+  <div class="log" id="log"></div>
+  <div style="height:30px"></div>
+</div>
+
+<script>
+const OWNER = "trynerlu";
+const REPO  = "coffee-dialins";
+
+// Load token from app localStorage on boot
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = JSON.parse(localStorage.getItem('ca_settings') || '{}');
+    if (s.token) {
+      document.getElementById('tokenInput').value = s.token;
+      showStatus('ok', '✓ Token loaded from app settings');
+    } else {
+      showStatus('warn', 'No token found — enter it manually below');
+    }
+  } catch(e) {
+    showStatus('warn', 'Could not read app settings — enter token manually');
+  }
+});
+
+function getToken() {
+  return document.getElementById('tokenInput').value.trim();
+}
+
+function onPaste(name) {
+  const val = document.getElementById(`content-${name}`).value.trim();
+  const badge = document.getElementById(`badge-${name}`);
+  const btn   = document.getElementById(`btn-${name}`);
+  const area  = document.getElementById(`content-${name}`);
+  if (val) {
+    badge.textContent = 'ready'; badge.className = 'deploy-badge b-ready';
+    btn.disabled = false;
+    area.classList.add('has-content');
+  } else {
+    badge.textContent = 'empty'; badge.className = 'deploy-badge b-empty';
+    btn.disabled = true;
+    area.classList.remove('has-content');
+  }
+}
+
+function clearField(contentId, badgeId, btnId) {
+  document.getElementById(contentId).value = '';
+  document.getElementById(contentId).classList.remove('has-content');
+  document.getElementById(badgeId).textContent = 'empty';
+  document.getElementById(badgeId).className = 'deploy-badge b-empty';
+  document.getElementById(btnId).disabled = true;
+}
+
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  el.classList.add('visible');
+  const line = document.createElement('div');
+  line.className = `log-${type}`;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('statusBar');
+  const icons = { ok:'✓', err:'✗', warn:'⚠' };
+  el.className = `status-bar status-${type}`;
+  el.innerHTML = `<span class="status-ico">${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  el.style.display = 'flex';
+}
+
+async function getSha(token, file) {
+  const r = await fetch(
+    `https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}?ref=main`,
+    { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+  );
+  if (!r.ok) return null;
+  const j = await r.json();
+  return j.sha || null;
+}
+
+async function deploy(filename, contentId, badgeId, btnId) {
+  const token = getToken();
+  if (!token) { showStatus('err', 'No token — enter it above'); return; }
+
+  const raw = document.getElementById(contentId).value.trim();
+  if (!raw) return;
+
+  const btn   = document.getElementById(btnId);
+  const badge = document.getElementById(badgeId);
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Pushing…';
+  badge.textContent = 'pushing…'; badge.className = 'deploy-badge b-empty';
+  log(`Getting SHA for ${filename}…`);
+
+  try {
+    const sha     = await getSha(token, filename);
+    const content = btoa(unescape(encodeURIComponent(raw)));
+    log(`SHA: ${sha ? sha.slice(0,8) : 'none (new file)'}`);
+    log(`Pushing ${filename}…`);
+
+    const res = await fetch(
+      `https://api.github.com/repos/${OWNER}/${REPO}/contents/${filename}`,
+      {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `Update ${filename} via Deploy tool`,
+          content,
+          branch: 'main',
+          ...(sha ? { sha } : {})
+        })
+      }
+    );
+
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(e.message);
+    }
+
+    const j = await res.json();
+    const newSha = j.content.sha.slice(0,8);
+    log(`✓ ${filename} pushed — new SHA: ${newSha}`, 'ok');
+    badge.textContent = '✓ pushed'; badge.className = 'deploy-badge b-pushed';
+    btn.textContent = '✓ Done';
+    showStatus('ok', `✓ ${filename} pushed to GitHub — refresh the app to see changes`);
+
+    // Save token back to app settings if not already there
+    try {
+      const s = JSON.parse(localStorage.getItem('ca_settings') || '{}');
+      if (!s.token) { s.token = token; localStorage.setItem('ca_settings', JSON.stringify(s)); }
+    } catch(e) {}
+
+  } catch(e) {
+    log(`✗ ${e.message}`, 'err');
+    badge.textContent = 'error'; badge.className = 'deploy-badge b-error';
+    btn.textContent = 'Push to GitHub'; btn.disabled = false;
+    showStatus('err', `✗ ${e.message}`);
+  }
+}
+</script>
+</body>
+</html>

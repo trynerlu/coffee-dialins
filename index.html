@@ -444,7 +444,9 @@ function DialInDetail({ d, kits, nav }) {
       <div className="div"/>
       <div className="sec">Coffee Info</div>
       <div style={{padding:"0 18px 18px"}}>
-        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Process",d.process],["Roast",d.roastLevel],["Brewed as",d.intendedFor],["Flavour",d.flavorNotes]]
+        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Process",d.process],["Roast",d.roastLevel],["Brewed as",d.intendedFor],["Flavour",d.flavorNotes],
+         ["Dial difficulty", d.dialDifficulty ? `${"◆".repeat(d.dialDifficulty)}${"◇".repeat(5-d.dialDifficulty)} (${d.dialDifficulty}/5)` : null],
+         ["Shot stability",  d.shotStability  ? `${"◆".repeat(d.shotStability)}${"◇".repeat(5-d.shotStability)} (${d.shotStability}/5)` : null]]
           .filter(([,v])=>v&&v.trim())
           .map(([lbl,val])=>(
           <div key={lbl} className="det-row">
@@ -466,7 +468,7 @@ function AddDialIn({ kits, onSave, nav }) {
     origin:"", region:"", process:"Washed", roastLevel:"Light", intendedFor:"Espresso",
     flavorNotes:"", grindSetting:"", grinder:defGrinder,
     doseIn:"", yieldOut:"", timeSeconds:"", temperature:"",
-    rating:0, status:"dialed", notes:"",
+    rating:0, status:"dialed", dialDifficulty:0, shotStability:0, notes:"",
   });
   const s=(k,v)=>setF(p=>({...p,[k]:v}));
   const changeKit=id=>{
@@ -555,6 +557,14 @@ function AddDialIn({ kits, onSave, nav }) {
         </div>
       </div>
       <div className="f-grp"><label className="f-lbl">Rating</label><StarInput val={f.rating} set={v=>s("rating",v)}/></div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Dial Difficulty (1–5)</label>
+          <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.dialDifficulty===n?" opt-chip-on":""}`} onClick={()=>s("dialDifficulty",n)}>{n}</div>)}</div>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Shot Stability (1–5)</label>
+          <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.shotStability===n?" opt-chip-on":""}`} onClick={()=>s("shotStability",n)}>{n}</div>)}</div>
+        </div>
+      </div>
       <div className="f-grp"><label className="f-lbl">Notes</label>
         <textarea className="f-ta" placeholder="Tasting notes, what to adjust next time…" value={f.notes} onChange={e=>s("notes",e.target.value)}/>
       </div>
