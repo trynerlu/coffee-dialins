@@ -74,6 +74,7 @@
     .b-kit { background:var(--elevated); color:var(--tx2); border:1px solid var(--border); }
     .b-process { background:var(--blue-d); color:var(--blue); }
     .b-roast { background:rgba(139,78,26,.14); color:#9A6A44; }
+    .b-early { background:rgba(120,100,60,0.15); color:#8A7040; border:1px solid rgba(120,100,60,0.25); font-size:9px; }
 
     /* Stars */
     .stars { display:flex; gap:2px; }
@@ -301,6 +302,7 @@ function DialInCard({ d, kits, onClick }) {
         {d.status  && <span className={`badge b-${d.status}`}>{d.status}</span>}
         {kit       && <span className="badge b-kit">{kit.tag}</span>}
         {d.process && <span className="badge b-process">{d.process}</span>}
+        {d.date && d.date < "2026-03-01" && <span className="badge b-early" title="Pulled on unseasoned grinder — grind settings & ratings carry reduced confidence">⚠ early period</span>}
         {d.rating>0 && <Stars n={d.rating}/>}
       </div>
     </div>
@@ -426,8 +428,14 @@ function DialInDetail({ d, kits, nav, onEdit }) {
           {kit         && <span className="badge b-kit">{kit.name}</span>}
           {d.process   && <span className="badge b-process">{d.process}</span>}
           {d.roastLevel&& <span className="badge b-roast">{d.roastLevel}</span>}
+          {d.date && d.date < "2026-03-01" && <span className="badge b-early">⚠ early period</span>}
         </div>
       </div>
+      {d.date && d.date < "2026-03-01" && (
+        <div style={{margin:"0 18px 0",padding:"11px 14px",background:"rgba(120,100,60,0.1)",border:"1px solid rgba(120,100,60,0.2)",borderRadius:"9px",fontSize:"11px",color:"#8A7040",lineHeight:"1.6"}}>
+          <strong>Early period entry</strong> — pulled on an unseasoned grinder (Nov 2025 hardware). Grind settings may run ~0.5–1.5 clicks coarser than equivalent today. Ratings carry reduced confidence — both positive and negative.
+        </div>
+      )}
       <div className="sec">Grind</div>
       <div style={{padding:"0 18px 20px",display:"flex",alignItems:"baseline",gap:"12px"}}>
         <div style={{fontFamily:"'DM Mono',monospace",fontSize:"52px",fontWeight:500,color:"var(--accent)",lineHeight:1}}>{d.grindSetting||"—"}</div>
