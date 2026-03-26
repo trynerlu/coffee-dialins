@@ -113,6 +113,8 @@ function b64decode(str) {
 
 function stars(n) { return '★'.repeat(n) + '☆'.repeat(5-n); }
 
+function log(msg) { console.log(msg); } // internal only
+
 async function getSha(token, file) {
   const r = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}?ref=main`,
@@ -303,10 +305,46 @@ window.executePushApp = async function() {
   }
 };
 
+// ── JSON FILE REPLACE ────────────────────────────────────────────────────────
+function renderJsonPreview(payload, token) {
+  const { file, data, description, itemCount } = payload;
+  root.innerHTML = `
+    <div class="preview" style="text-align:left">
+      <div class="preview-label">File update · <span class="badge b-appupdate">${file}</span></div>
+      <div class="preview-name" style="margin-bottom:6px">${description||'JSON file update'}</div>
+      ${itemCount ? `<div class="preview-roaster">${itemCount} entries</div>` : ''}
+      <div style="margin-top:14px;background:var(--elevated);border-radius:8px;padding:12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--tx2);max-height:120px;overflow-y:auto;line-height:1.6">
+        ${JSON.stringify(JSON.parse(data), null, 2).slice(0, 800).replace(/</g,'&lt;')}…
+      </div>
+    </div>
+    <button class="btn btn-p" id="jsonPushBtn" onclick="executePushJson()">Push ${file} to GitHub →</button>
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+  window._pendingJson = payload;
+  window._pendingToken = token;
+}
+
+window.executePushJson = async function() {
+  const btn = document.getElementById('jsonPushBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Pushing…';
+  const { file, data } = window._pendingJson;
+  try {
+    await ghWrite(window._pendingToken, file, data);
+    // Update local cache
+    try {
+      if (file === 'dialins.json') localStorage.setItem('ca_dialins', data);
+      if (file === 'kits.json')    localStorage.setItem('ca_kits',    data);
+    } catch(e) {}
+    renderSuccess(`${file} updated!`, `Pushed to GitHub. Open the app and it will sync automatically.`);
+  } catch(e) {
+    renderError('Push failed', e.message);
+  }
+};
+
 // ── MAIN ─────────────────────────────────────────────────────────────────────
 function main() {
   const params = new URLSearchParams(window.location.search);
-  const type   = params.get('type');   // 'dialin' | 'app'
+  const type   = params.get('type');   // 'dialin' | 'app' | 'json'
   const data   = params.get('d');      // base64 encoded JSON payload
 
   if (!type || !data) {
@@ -329,13 +367,15 @@ function main() {
   if (!token) {
     renderNoToken((t) => {
       if (type === 'dialin') renderDialinPreview(parsed, t);
-      else if (type === 'app') renderAppUpdatePreview(parsed, t);
+      else if (type === 'app')  renderAppUpdatePreview(parsed, t);
+      else if (type === 'json') renderJsonPreview(parsed, t);
     });
     return;
   }
 
   if (type === 'dialin') renderDialinPreview(parsed, token);
-  else if (type === 'app') renderAppUpdatePreview(parsed, token);
+  else if (type === 'app')  renderAppUpdatePreview(parsed, token);
+  else if (type === 'json') renderJsonPreview(parsed, token);
   else renderError('Unknown type', `push type "${type}" not recognised`);
 }
 
