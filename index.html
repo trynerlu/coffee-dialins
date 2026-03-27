@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="theme-color" content="#0C0501"/>
-  <title>Dial-In · Coffee Setup</title>
+  <title>Dial-In · Coffee</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -15,12 +15,13 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:       #0C0501; --surface:  #170C06; --elevated: #201208; --input-bg: #1A0D07;
-      --border:   rgba(200,118,58,0.16); --bh: rgba(200,118,58,0.38);
-      --accent:   #C87840; --accent-d: rgba(200,120,64,0.13); --accent-b: #E09050;
-      --tx1:      #EDD8B4; --tx2: #9A7050; --tx3: #5A3A22;
-      --green:    #5A8860; --green-d: rgba(90,136,96,0.14);
-      --blue:     #5A7098; --blue-d: rgba(90,112,152,0.14);
+      --bg:#0C0501; --surface:#170C06; --elevated:#201208; --input-bg:#1A0D07;
+      --border:rgba(200,118,58,0.16); --bh:rgba(200,118,58,0.38);
+      --accent:#C87840; --accent-d:rgba(200,120,64,0.13); --accent-b:#E09050;
+      --tx1:#EDD8B4; --tx2:#9A7050; --tx3:#5A3A22;
+      --green:#5A8860; --green-d:rgba(90,136,96,0.14);
+      --blue:#5A7098; --blue-d:rgba(90,112,152,0.14);
+      --red:#A05050; --red-d:rgba(160,80,80,0.15);
     }
     html,body { height:100%; background:var(--bg); color:var(--tx1); font-family:'Jost',sans-serif; font-weight:400; -webkit-font-smoothing:antialiased; overscroll-behavior:none; }
     body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
@@ -32,24 +33,26 @@
     @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 
     /* Header */
-    .hdr { position:sticky; top:0; z-index:100; background:rgba(12,5,1,.93); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:14px 18px; display:flex; align-items:center; gap:12px; }
+    .hdr { position:sticky; top:0; z-index:100; background:rgba(12,5,1,.93); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); padding:14px 18px; display:flex; align-items:center; gap:10px; }
     .hdr-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; letter-spacing:.02em; flex:1; }
     .hdr-sub { font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--tx2); margin-top:1px; }
     .icon-btn { width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--tx2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:15px; flex-shrink:0; }
     .icon-btn:hover { border-color:var(--bh); color:var(--tx1); }
+    .sort-sel { background:var(--surface); border:1px solid var(--border); border-radius:7px; color:var(--tx2); font-family:'Jost',sans-serif; font-size:11px; padding:5px 8px; outline:none; cursor:pointer; flex-shrink:0; }
+    .sort-sel option { background:var(--elevated); }
 
     .sec { padding:22px 18px 10px; font-size:10px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx2); }
 
     /* Kit grid */
     .kit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 18px 6px; }
-    .kit-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 16px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; }
+    .kit-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 14px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; }
     .kit-card::after { content:''; position:absolute; top:-24px; right:-24px; width:90px; height:90px; border-radius:50%; background:currentColor; opacity:.055; transition:all .3s; }
     .kit-card:hover { border-color:var(--bh); transform:translateY(-2px); }
     .kit-card:hover::after { opacity:.1; transform:scale(1.4); }
-    .kit-tag { font-family:'DM Mono',monospace; font-size:9px; font-weight:500; letter-spacing:.1em; padding:3px 7px; border-radius:4px; display:inline-block; margin-bottom:13px; }
-    .kit-name { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:500; line-height:1.2; margin-bottom:3px; }
-    .kit-sub { font-size:11px; color:var(--tx2); }
-    .kit-count { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); margin-top:11px; }
+    .kit-tag { font-family:'DM Mono',monospace; font-size:9px; font-weight:500; letter-spacing:.1em; padding:3px 7px; border-radius:4px; display:inline-block; margin-bottom:11px; }
+    .kit-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; line-height:1.2; margin-bottom:3px; }
+    .kit-sub { font-size:10px; color:var(--tx2); line-height:1.4; }
+    .kit-count { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); margin-top:9px; }
 
     /* Equipment */
     .eq-row { display:flex; align-items:flex-start; gap:14px; padding:14px 18px; border-bottom:1px solid var(--border); }
@@ -57,24 +60,39 @@
     .eq-name { font-size:14px; font-weight:500; }
     .eq-note { font-size:12px; color:var(--tx2); margin-top:2px; }
 
-    /* Dial-in card */
-    .dc { margin:0 18px 9px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; cursor:pointer; transition:border-color .15s; }
+    /* Dial-in card — redesigned */
+    .dc { margin:0 18px 9px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 16px; cursor:pointer; transition:border-color .15s; }
     .dc:hover { border-color:var(--bh); }
-    .dc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:9px; }
-    .dc-name { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:500; }
-    .dc-roaster { font-size:11px; color:var(--tx2); margin-top:2px; }
-    .dc-grind { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); text-align:right; }
-    .dc-grind-lbl { font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); text-align:right; margin-top:1px; }
-    .dc-meta { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+    .dc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:10px; }
+    .dc-roaster-name { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:3px; }
+    .dc-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; line-height:1.2; }
+    .dc-origin { font-size:11px; color:var(--tx3); margin-top:3px; }
+    .dc-grind { font-family:'DM Mono',monospace; font-size:24px; font-weight:500; color:var(--accent); text-align:right; line-height:1; }
+    .dc-grind-lbl { font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); text-align:right; margin-top:2px; }
+    .dc-meta { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .dc-params { display:flex; gap:10px; margin-top:9px; padding-top:8px; border-top:1px solid var(--border); }
+    .dc-param { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx3); }
+    .dc-param span { color:var(--tx2); }
 
     /* Badges */
-    .badge { font-size:10px; font-weight:500; letter-spacing:.05em; padding:3px 7px; border-radius:4px; }
+    .badge { font-size:10px; font-weight:500; letter-spacing:.05em; padding:3px 7px; border-radius:4px; white-space:nowrap; }
     .b-dialed { background:var(--green-d); color:var(--green); }
     .b-experimenting { background:var(--accent-d); color:var(--accent); }
     .b-kit { background:var(--elevated); color:var(--tx2); border:1px solid var(--border); }
     .b-process { background:var(--blue-d); color:var(--blue); }
     .b-roast { background:rgba(139,78,26,.14); color:#9A6A44; }
     .b-early { background:rgba(120,100,60,0.15); color:#8A7040; border:1px solid rgba(120,100,60,0.25); font-size:9px; }
+    .b-brew-espresso { background:rgba(200,120,64,0.12); color:#C87840; border:1px solid rgba(200,120,64,0.2); font-size:9px; letter-spacing:.08em; }
+    .b-brew-filter { background:rgba(90,112,152,0.12); color:#7A9AC0; border:1px solid rgba(90,112,152,0.2); font-size:9px; letter-spacing:.08em; }
+    .b-brew-both { background:rgba(90,136,96,0.12); color:#7AAA80; border:1px solid rgba(90,136,96,0.2); font-size:9px; letter-spacing:.08em; }
+    .b-would-buy { background:rgba(90,136,96,0.14); color:var(--green); font-size:10px; }
+    .b-choice { background:rgba(200,120,64,0.18); color:var(--accent-b); border:1px solid rgba(200,120,64,0.3); }
+    .b-bag-waiting { background:rgba(90,112,152,0.12); color:#7A9AC0; font-size:9px; }
+    .b-bag-ready { background:rgba(90,136,96,0.14); color:var(--green); font-size:9px; }
+    .b-bag-open { background:rgba(200,120,64,0.12); color:var(--accent); font-size:9px; }
+    .b-bag-active { background:rgba(90,136,96,0.2); color:var(--green); border:1px solid rgba(90,136,96,0.35); font-size:9px; }
+    .b-bag-finished { background:var(--elevated); color:var(--tx3); font-size:9px; }
+    .b-bag-freezer { background:rgba(90,112,152,0.14); color:#7A9AC0; border:1px solid rgba(90,112,152,0.25); font-size:9px; }
 
     /* Stars */
     .stars { display:flex; gap:2px; }
@@ -94,7 +112,7 @@
     .chip-on { background:var(--accent-d); border-color:var(--accent); color:var(--accent); }
 
     /* Stats */
-    .stats { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; margin:10px 0; }
+    .stats { display:flex; border:1px solid var(--border); border-radius:9px; overflow:hidden; }
     .stat { flex:1; padding:11px 6px; text-align:center; border-right:1px solid var(--border); }
     .stat:last-child { border-right:none; }
     .stat-v { font-family:'DM Mono',monospace; font-size:17px; font-weight:500; color:var(--accent); }
@@ -108,7 +126,7 @@
     .det-roaster { font-size:13px; color:var(--tx2); margin-bottom:13px; }
     .det-row { display:flex; gap:14px; padding:8px 0; border-bottom:1px solid var(--border); }
     .det-label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); min-width:88px; margin-top:2px; }
-    .det-val { font-size:13px; color:var(--tx1); }
+    .det-val { font-size:13px; color:var(--tx1); flex:1; }
     .det-notes { padding:12px 18px 20px; font-family:'Cormorant Garamond',serif; font-size:16px; font-style:italic; color:var(--tx2); line-height:1.65; }
 
     /* Form */
@@ -127,6 +145,15 @@
     .star-btn { background:none; border:none; cursor:pointer; font-size:22px; color:var(--tx3); transition:color .1s,transform .1s; padding:0; }
     .star-btn:hover { transform:scale(1.15); }
     .star-btn-on { color:var(--accent); }
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 18px; }
+    .toggle-lbl { font-size:13px; color:var(--tx1); }
+    .toggle-sub { font-size:11px; color:var(--tx3); margin-top:1px; }
+    .toggle-btn { width:40px; height:24px; border-radius:12px; border:none; cursor:pointer; transition:background .2s; position:relative; flex-shrink:0; }
+    .toggle-btn::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; transition:left .2s; }
+    .toggle-off { background:var(--elevated); }
+    .toggle-off::after { left:3px; }
+    .toggle-on { background:var(--accent); }
+    .toggle-on::after { left:19px; }
 
     /* Buttons */
     .btn { border:none; border-radius:9px; padding:12px 18px; font-family:'Jost',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; letter-spacing:.04em; width:100%; }
@@ -137,12 +164,19 @@
     .btn-s:hover { border-color:var(--bh); color:var(--tx1); }
     .btn-area { padding:14px 18px; display:flex; flex-direction:column; gap:9px; }
 
-    /* Bottom nav */
+    /* Profile */
+    .profile-top-item { margin:0 18px 8px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; gap:12px; }
+    .dna-tag { padding:4px 10px; background:var(--surface); border:1px solid var(--border); border-radius:6px; font-size:12px; color:var(--tx2); }
+    .taste-card { margin:0 18px 16px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; font-size:13px; color:var(--tx2); line-height:1.75; }
+    .taste-subhead { font-family:'Cormorant Garamond',serif; font-size:16px; font-style:italic; color:var(--tx1); margin-bottom:6px; margin-top:12px; }
+    .taste-subhead:first-child { margin-top:0; }
+
+    /* Bottom nav — 5 items */
     .bnav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:rgba(12,5,1,.93); backdrop-filter:blur(14px); border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-    .nav-btn { flex:1; padding:10px 6px; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; color:var(--tx3); border:none; background:none; transition:color .15s; }
+    .nav-btn { flex:1; padding:9px 4px; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; color:var(--tx3); border:none; background:none; transition:color .15s; }
     .nav-btn-on { color:var(--accent); }
-    .nav-ico { font-size:18px; }
-    .nav-lbl { font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+    .nav-ico { font-size:17px; }
+    .nav-lbl { font-size:8px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
 
     /* Empty */
     .empty { text-align:center; padding:55px 18px; }
@@ -154,33 +188,36 @@
     .toast { position:fixed; bottom:84px; left:50%; transform:translateX(-50%); background:var(--elevated); border:1px solid var(--border); border-radius:9px; padding:11px 18px; font-size:13px; color:var(--tx1); z-index:1000; white-space:nowrap; animation:toastIn .2s ease; }
     @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
-    /* Sync indicator */
+    /* Misc */
     .sync-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; margin-left:6px; animation:pulse 1.4s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
     .spin { animation:spin .7s linear infinite; display:inline-block; }
     @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
     .div { height:1px; background:var(--border); }
-
-    /* Splash */
     .splash { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; gap:16px; }
     .splash-title { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:300; letter-spacing:.06em; color:var(--tx1); }
     .splash-sub { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--tx3); }
     .splash-bar { width:120px; height:1px; background:var(--border); position:relative; overflow:hidden; }
     .splash-bar::after { content:''; position:absolute; left:-40%; width:40%; height:100%; background:var(--accent); animation:load 1.2s ease infinite; }
     @keyframes load { from{left:-40%} to{left:100%} }
+    .alert-prime { margin:12px 18px 0; padding:10px 14px; background:rgba(90,136,96,0.1); border:1px solid rgba(90,136,96,0.25); border-radius:9px; font-size:11px; color:var(--green); line-height:1.5; }
+    .controls-row { display:flex; align-items:center; gap:8px; padding:10px 18px 0; }
+    .controls-chips { display:flex; gap:7px; flex:1; }
   </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useCallback } = React;
+const { useState, useEffect, useCallback, useMemo } = React;
 
 // ── CONSTANTS ──────────────────────────────────────────────────────────────────
-const APP_VERSION = "1.0.0";
-const LS = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", kitsSha:"ca_kits_sha", dialinsSha:"ca_dialins_sha" };
+const APP_VERSION = "2.0.0";
+const LS = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins" };
 const PROCESSES  = ["Washed","Natural","Honey","Anaerobic","Wet-Hulled","Other"];
 const ROASTS     = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
 const BREWS      = ["Espresso","Filter","Both"];
+const BAG_STATUSES = ["waiting","ready","open","active","finished","freezer"];
+const DIAL_TAGS  = ["good for milk","interesting","easy dial","good value","affogato","funky","complex","crowd-pleaser"];
 
 // ── UTILS ──────────────────────────────────────────────────────────────────────
 const fmt    = d => d ? new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "";
@@ -189,44 +226,74 @@ const uid    = () => `d-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
 const lsGet  = k => { try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch{ return null; } };
 const lsSet  = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} };
 
+function getFreshness(roastDate, bagStatus, intendedFor) {
+  if (bagStatus === 'freezer') return {label:'❄ Frozen', color:'#7A9AC0', bg:'rgba(90,112,152,0.14)'};
+  if (!roastDate) return null;
+  const days = Math.floor((Date.now() - new Date(roastDate)) / 86400000);
+  if (days < 0) return null;
+  const isFilter = intendedFor === 'Filter';
+  if (days < 5)                     return {label:'⏳ Too Fresh',  color:'#8A7040', bg:'rgba(120,100,60,0.15)'};
+  if (days <= (isFilter ? 14 : 21)) return {label:'✓ Prime',      color:'var(--green)', bg:'rgba(90,136,96,0.14)'};
+  if (days <= 45)                   return {label:'◷ Good',        color:'var(--tx2)', bg:'rgba(154,112,80,0.12)'};
+  if (days <= 90)                   return {label:'⚡ Aging',      color:'var(--accent)', bg:'rgba(200,120,64,0.12)'};
+  return                                   {label:'⚠ Past Peak',  color:'var(--red)', bg:'var(--red-d)'};
+}
+
+function normalizeDiaLin(d) {
+  return {
+    roastDate: "", bagStatus: "open",
+    wouldBuy: false, isChoice: false, tags: [],
+    filterBloomGrams: 0, filterBloomSeconds: 0, filterPours: 0,
+    ...d
+  };
+}
+
 // ── DEFAULT DATA ───────────────────────────────────────────────────────────────
 const DEF_KITS = [
-  { id:"home-espresso", name:"Home Espresso", subtitle:"Quick Mill Pop-Up", tag:"ESPR", color:"#C87840",
+  { id:"home-espresso", name:"Home Espresso", subtitle:"Quick Mill Pop-Up · Timemore Sculptor 064S", tag:"ESPR", color:"#C87840",
     equipment:[
-      {category:"Machine",       name:"Quick Mill Pop-Up",                  notes:"Single boiler, PID + pressure profiling — filtered water only"},
+      {category:"Machine",       name:"Quick Mill Pop-Up",                  notes:"Single boiler, PID + pressure profiling"},
       {category:"Shower Screen", name:"IMS Competition Shower Screen",      notes:"Precision water distribution upgrade"},
       {category:"Portafilter",   name:"MHW-3BOMBER Bottomless Portafilter", notes:"Naked / bottomless — 58mm"},
-      {category:"Basket",        name:"Pullman Barista Basket",             notes:"Precision 58mm extraction basket"},
+      {category:"Basket",        name:"Pullman Barista Basket",             notes:"Precision 58mm — main basket"},
+      {category:"Basket",        name:"IKAPE Step-Down Basket",             notes:"58→33mm tapered — for body & experimentation"},
       {category:"Tamper",        name:"Ikape V6 Calibrated Tamper",         notes:"Constant-pressure click tamper"},
       {category:"Puck Prep",     name:"Ikape Blind Basket",                 notes:"For backflushing & cleaning"},
       {category:"Grinder",       name:"Timemore Sculptor 064S",             notes:"64mm flat burrs, stock — stepless adjustment"},
       {category:"Scale",         name:"Timemore Black Mirror Mini",         notes:"With real-time flow rate display"},
-      {category:"Kettle",        name:"Sencor Clever Gooseneck Kettle",     notes:"600ml max — variable temperature control"},
+      {category:"Kettle",        name:"Sencor Clever Gooseneck Kettle",     notes:"600ml max — variable temperature"},
     ]},
-  { id:"office-espresso", name:"Office Espresso", subtitle:"Gaggia Classic Evo Pro", tag:"OFFC", color:"#5A886A",
+  { id:"home-pour-over", name:"Home Pour-Over", subtitle:"Hario V60 · Timemore Sculptor 064S", tag:"POUR", color:"#7A9870",
     equipment:[
-      {category:"Machine",       name:"Gaggia Classic Evo Pro",                      notes:"Black — bought used, single previous owner"},
-      {category:"Grinder",       name:"Eureka Zenith 65E",                           notes:"65mm flat burrs — used, burrs roughly mid-life"},
-      {category:"Portafilter",   name:"MHW-3BOMBER Bottomless Portafilter",          notes:"Naked / bottomless — Gaggia-specific 58mm"},
-      {category:"Basket",        name:"Gaggia 58mm Double / Single / Blind Baskets", notes:"Stock Gaggia baskets"},
-      {category:"Tamper",        name:"Ikape V6 Calibrated Tamper",                  notes:"Constant-pressure click tamper"},
-      {category:"Puck Prep",     name:"58mm Puck Screen + IWS WDT Tools",            notes:"Standard puck prep set"},
-      {category:"Scale",         name:"Generic Digital Scale",                       notes:"No Bluetooth — AliExpress, manual read"},
-      {category:"Water",         name:"Filtered Water",                              notes:""},
-      {category:"Incoming",      name:"GaggiMate Standard Kit",                      notes:"Smart PID + temperature control upgrade — arriving ~2–3 weeks"},
+      {category:"Dripper",  name:"Hario V60 Drip Coffee Dripper 02",  notes:""},
+      {category:"Filters",  name:"Hario V60 02 Paper Filters",        notes:""},
+      {category:"Grinder",  name:"Timemore Sculptor 064S",            notes:"Shared home grinder"},
+      {category:"Scale",    name:"Timemore Black Mirror Mini",        notes:"Shared with home espresso"},
+      {category:"Kettle",   name:"Sencor Clever Gooseneck Kettle",    notes:"Shared with home espresso"},
     ]},
-  { id:"pour-over", name:"Pour Over", subtitle:"Office Filter", tag:"POUR", color:"#5A7098",
+  { id:"office-espresso", name:"Office Espresso", subtitle:"Gaggia Classic Evo Pro · Eureka Zenith 65E", tag:"OFFC", color:"#5A886A",
     equipment:[
-      {category:"Dripper",  name:"Hario V60 Drip Coffee Dripper 02",   notes:"Moving from home to office"},
-      {category:"Filters",  name:"Hario V60 02 Paper Filters",         notes:""},
-      {category:"Grinder",  name:"Baratza Encore ESP",                 notes:"Bought used via Aukro — condition TBD, burr upgrade for filter planned"},
-      {category:"Scale",    name:"Generic Digital Scale",              notes:"Shared with espresso kit — Bluetooth + flow rate scale TBD"},
-      {category:"Kettle",   name:"Timemore Fish Smart Electric Kettle",notes:"TBD — shortlisted for gooseneck"},
+      {category:"Machine",    name:"Gaggia Classic Evo Pro",                      notes:"Black — bought used, single previous owner"},
+      {category:"Grinder",    name:"Eureka Zenith 65E",                           notes:"65mm flat burrs — used, burrs roughly mid-life"},
+      {category:"Portafilter",name:"MHW-3BOMBER Bottomless Portafilter",          notes:"Naked / bottomless — Gaggia-specific 58mm"},
+      {category:"Basket",     name:"Gaggia 58mm Double / Single / Blind Baskets", notes:"Stock Gaggia baskets"},
+      {category:"Tamper",     name:"Ikape V6 Calibrated Tamper",                  notes:"Constant-pressure click tamper"},
+      {category:"Puck Prep",  name:"58mm Puck Screen + IWS WDT Tools",            notes:"Standard puck prep set"},
+      {category:"Scale",      name:"Generic Digital Scale",                       notes:"No Bluetooth — AliExpress, manual read"},
+      {category:"Incoming",   name:"GaggiMate Standard Kit",                      notes:"Smart PID + temperature control upgrade"},
     ]},
-  { id:"french-press", name:"French Press", subtitle:"Home Immersion", tag:"FRPR", color:"#8A5A7A",
+  { id:"pour-over", name:"Office Pour-Over", subtitle:"Hario V60 · Baratza Encore ESP", tag:"FILT", color:"#5A7098",
     equipment:[
-      {category:"Brewer",  name:"IKEA UPPHETTA French Press",  notes:"Stainless steel & glass — premium model with wooden accents"},
-      {category:"Grinder", name:"Timemore Sculptor 064S",      notes:"Shared home grinder — espresso, pour over & French press"},
+      {category:"Dripper",  name:"Hario V60 Drip Coffee Dripper 02",  notes:""},
+      {category:"Filters",  name:"Hario V60 02 Paper Filters",        notes:""},
+      {category:"Grinder",  name:"Baratza Encore ESP",                notes:"Bought used via Aukro — burr upgrade planned"},
+      {category:"Scale",    name:"Generic Digital Scale",             notes:"Shared with espresso kit"},
+      {category:"Kettle",   name:"Sencor Clever Gooseneck Kettle",    notes:"Shared from home setup"},
+    ]},
+  { id:"french-press", name:"French Press", subtitle:"IKEA UPPHETTA · Timemore Sculptor 064S", tag:"FRPR", color:"#8A5A7A",
+    equipment:[
+      {category:"Brewer",  name:"IKEA UPPHETTA French Press", notes:"Stainless steel & glass"},
+      {category:"Grinder", name:"Timemore Sculptor 064S",     notes:"Shared home grinder"},
     ]},
 ];
 
@@ -237,37 +304,31 @@ const DEF_DIALINS = [
     flavorNotes:"Blueberry, dark chocolate, red wine",
     grindSetting:"12.5", grinder:"Timemore Sculptor 064S",
     doseIn:18, yieldOut:36, timeSeconds:29, temperature:93, rating:5, status:"dialed",
-    notes:"Perfect shot. Clean berry notes with dark chocolate finish. 1:2 at 29s is the sweet spot." },
+    notes:"Perfect shot. Clean berry notes with dark chocolate finish." },
   { id:"ex-002", date:"2024-02-20", kitId:"home-espresso",
     coffeeName:"Colombia El Paraíso Washed", roaster:"Nomad Coffee",
     origin:"Colombia", region:"Huila", process:"Washed", roastLevel:"Light", intendedFor:"Espresso",
     flavorNotes:"Red apple, caramel, orange blossom",
     grindSetting:"11", grinder:"Timemore Sculptor 064S",
     doseIn:18, yieldOut:38, timeSeconds:32, temperature:94, rating:4, status:"dialed",
-    notes:"Slightly longer pull brings out more sweetness. Setting 11 was the sweet spot after testing 10.5 and 11.5." },
+    notes:"Slightly longer pull brings out more sweetness." },
 ];
 
 // ── GITHUB API ─────────────────────────────────────────────────────────────────
 async function ghRead(s, file) {
-  const url = `https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/${file}?_=${Date.now()}`;
-  const r = await fetch(url);
+  const r = await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/${file}?_=${Date.now()}`);
   if (!r.ok) throw new Error(`${file}: HTTP ${r.status}`);
   return r.json();
 }
-
 async function ghGetSha(s, file) {
   if (!s.token) return null;
-  const r = await fetch(
-    `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}?ref=main`,
-    { headers:{ Authorization:`Bearer ${s.token}`, Accept:"application/vnd.github+json" } }
-  );
+  const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}?ref=main`,
+    { headers:{ Authorization:`Bearer ${s.token}`, Accept:"application/vnd.github+json" } });
   if (!r.ok) return null;
-  const j = await r.json();
-  return j.sha || null;
+  return (await r.json()).sha || null;
 }
-
 async function ghWrite(s, file, data) {
-  if (!s.token) throw new Error("No token — set it in Settings");
+  if (!s.token) throw new Error("No token");
   const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}`;
   const hdr = { Authorization:`Bearer ${s.token}`, Accept:"application/vnd.github+json", "Content-Type":"application/json" };
   const sha = await ghGetSha(s, file);
@@ -287,136 +348,218 @@ function StarInput({ val, set }) {
     <button key={i} type="button" className={`star-btn${i<=val?" star-btn-on":""}`} onClick={()=>set(i)}>★</button>
   )}</div>;
 }
+function Toggle({ on, onToggle }) {
+  return <button className={`toggle-btn ${on?"toggle-on":"toggle-off"}`} onClick={onToggle}/>;
+}
+
+function BrewBadge({ intendedFor }) {
+  if (!intendedFor) return null;
+  if (intendedFor === "Espresso") return <span className="badge b-brew-espresso">ESPR</span>;
+  if (intendedFor === "Filter")   return <span className="badge b-brew-filter">FILT</span>;
+  return <span className="badge b-brew-both">BOTH</span>;
+}
+
+function BagStatusBadge({ status }) {
+  if (!status || status === "open") return null;
+  const labels = { waiting:"⏳ Waiting", ready:"✓ Ready", active:"◉ Active", finished:"✓ Done", freezer:"❄ Frozen" };
+  return <span className={`badge b-bag-${status}`}>{labels[status]||status}</span>;
+}
+
+// ── DIAL-IN CARD ───────────────────────────────────────────────────────────────
 function DialInCard({ d, kits, onClick }) {
   const kit = kits.find(k=>k.id===d.kitId);
+  const norm = normalizeDiaLin(d);
+  const freshness = getFreshness(norm.roastDate, norm.bagStatus, d.intendedFor);
+  const hasParams = d.temperature > 0 || d.yieldOut > 0 || d.timeSeconds > 0;
+  const origin = [d.origin, d.region, d.process].filter(Boolean).join(" · ");
+  const isEarly = d.date && d.date < "2026-03-01";
+
   return (
     <div className="dc" onClick={onClick}>
       <div className="dc-top">
-        <div>
+        <div style={{flex:1,minWidth:0}}>
+          {d.roaster && <div className="dc-roaster-name">{d.roaster}</div>}
           <div className="dc-name">{d.coffeeName}</div>
-          <div className="dc-roaster">{d.roaster} · {fmt(d.date)}</div>
+          {origin && <div className="dc-origin">{origin}</div>}
         </div>
-        {d.grindSetting && <div><div className="dc-grind">{d.grindSetting}</div><div className="dc-grind-lbl">Grind</div></div>}
+        {d.grindSetting && (
+          <div style={{textAlign:"right",flexShrink:0,paddingLeft:"8px"}}>
+            <div className="dc-grind">{d.grindSetting}</div>
+            <div className="dc-grind-lbl">Grind</div>
+          </div>
+        )}
       </div>
+
       <div className="dc-meta">
-        {d.status  && <span className={`badge b-${d.status}`}>{d.status}</span>}
-        {kit       && <span className="badge b-kit">{kit.tag}</span>}
-        {d.process && <span className="badge b-process">{d.process}</span>}
-        {d.date && d.date < "2026-03-01" && <span className="badge b-early" title="Pulled on unseasoned grinder — grind settings & ratings carry reduced confidence">⚠ early period</span>}
-        {d.rating>0 && <Stars n={d.rating}/>}
+        {kit && <span className="badge b-kit">{kit.tag}</span>}
+        <BrewBadge intendedFor={d.intendedFor}/>
+        {freshness && <span className="badge" style={{background:freshness.bg,color:freshness.color,fontSize:"9px"}}>{freshness.label}</span>}
+        <BagStatusBadge status={norm.bagStatus}/>
+        {isEarly && <span className="badge b-early" title="Unseasoned grinder period — reduced confidence">⚠ early</span>}
+        {d.rating > 0 && <Stars n={d.rating}/>}
+        {norm.wouldBuy && <span className="badge b-would-buy">🛒 Would buy</span>}
+        {norm.isChoice && <span className="badge b-choice">★ Pick</span>}
       </div>
+
+      {hasParams && (
+        <div className="dc-params">
+          {d.temperature > 0 && <span className="dc-param"><span>{d.temperature}°C</span></span>}
+          {d.doseIn > 0 && d.yieldOut > 0 && <span className="dc-param"><span>{d.doseIn}→{d.yieldOut}g</span></span>}
+          {d.timeSeconds > 0 && <span className="dc-param"><span>{d.timeSeconds}s</span></span>}
+          {d.doseIn > 0 && d.yieldOut > 0 && <span className="dc-param"><span>{ratio(d.doseIn,d.yieldOut)}</span></span>}
+        </div>
+      )}
     </div>
   );
 }
 
-// ── SCREENS ────────────────────────────────────────────────────────────────────
+// ── HOME SCREEN (active coffees) ───────────────────────────────────────────────
 function HomeScreen({ kits, dialins, nav, onSync, syncing, lastSync }) {
+  const [showAll, setShowAll] = useState(false);
+  const [sort, setSort] = useState("recent");
+
+  const norm = useMemo(() => dialins.map(normalizeDiaLin), [dialins]);
+
+  const active = useMemo(() =>
+    norm.filter(d => d.bagStatus !== "finished"),
+  [norm]);
+
+  const display = showAll ? norm : active;
+
+  const sorted = useMemo(() => [...display].sort((a,b) => {
+    if (sort === "rating") return (b.rating||0) - (a.rating||0);
+    if (sort === "roast")  return (b.roastDate||b.date||"").localeCompare(a.roastDate||a.date||"");
+    if (sort === "name")   return (a.coffeeName||"").localeCompare(b.coffeeName||"");
+    return (b.date||"").localeCompare(a.date||"");
+  }), [display, sort]);
+
+  // Entering prime window soon (4–7 days post roast, not yet prime)
+  const comingSoon = norm.filter(d => {
+    if (!d.roastDate || d.bagStatus === "freezer" || d.bagStatus === "finished") return false;
+    const days = Math.floor((Date.now() - new Date(d.roastDate)) / 86400000);
+    return days >= 4 && days <= 6;
+  });
+
   return (
     <div className="screen fade-in">
       <div className="hdr">
         <div style={{flex:1}}>
-          <div className="hdr-title">Dial-In</div>
-          <div className="hdr-sub">{lastSync ? `Synced ${lastSync}` : "Coffee Setup"}</div>
+          <div className="hdr-title">My Coffees</div>
+          <div className="hdr-sub">{lastSync ? `Synced ${lastSync}` : `${dialins.length} coffees logged`}</div>
         </div>
         <button className="icon-btn" onClick={onSync} title="Sync from GitHub">
           <span className={syncing?"spin":""}>{syncing?"↻":"↓"}</span>
         </button>
       </div>
-      <div className="sec">Your Kits</div>
-      <div className="kit-grid">
-        {kits.map(k=>{
-          const cnt = dialins.filter(d=>d.kitId===k.id).length;
-          return (
-            <div key={k.id} className="kit-card" style={{color:k.color}} onClick={()=>nav("kit",k)}>
-              <div className="kit-tag" style={{background:`${k.color}22`,color:k.color}}>{k.tag}</div>
-              <div className="kit-name">{k.name}</div>
-              <div className="kit-sub">{k.subtitle}</div>
-              <div className="kit-count">{cnt} dial-in{cnt!==1?"s":""}</div>
-            </div>
-          );
-        })}
-      </div>
-      {dialins.length>0 && <>
-        <div className="sec">Recent Dial-Ins</div>
-        {dialins.slice(0,3).map(d=><DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d)}/>)}
-      </>}
-    </div>
-  );
-}
 
-function KitScreen({ kit, dialins, kits, nav, onEditKit }) {
-  if (!kit) return null;
-  const kd = dialins.filter(d=>d.kitId===kit.id);
-  return (
-    <div className="screen fade-in">
-      <div className="hdr">
-        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
-        <div style={{flex:1}}>
-          <div className="hdr-title">{kit.name}</div>
-          <div className="hdr-sub">{kit.subtitle}</div>
-        </div>
-        <button className="icon-btn" onClick={()=>onEditKit(kit)} title="Edit kit">✎</button>
-      </div>
-      <div className="sec">Equipment</div>
-      {kit.equipment.length===0
-        ? <div className="empty"><div className="empty-ico">⚙</div><div className="empty-t">No equipment</div><div className="empty-s">Edit kits.json in GitHub</div></div>
-        : kit.equipment.map((e,i)=>(
-          <div key={i} className="eq-row">
-            <div className="eq-cat">{e.category}</div>
-            <div><div className="eq-name">{e.name}</div>{e.notes&&<div className="eq-note">{e.notes}</div>}</div>
+      <div className="controls-row">
+        <div className="controls-chips">
+          <div className={`chip${!showAll?" chip-on":""}`} onClick={()=>setShowAll(false)}>
+            Active {!showAll && active.length > 0 && `(${active.length})`}
           </div>
-        ))}
-      {kd.length>0 && <>
-        <div className="sec">Dial-Ins</div>
-        {kd.map(d=><DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d)}/>)}
-      </>}
+          <div className={`chip${showAll?" chip-on":""}`} onClick={()=>setShowAll(true)}>All</div>
+        </div>
+        <select className="sort-sel" value={sort} onChange={e=>setSort(e.target.value)}>
+          <option value="recent">Recent</option>
+          <option value="roast">Roast Date</option>
+          <option value="rating">Rating</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+
+      {comingSoon.length > 0 && (
+        <div className="alert-prime">
+          ✓ Entering prime window: {comingSoon.map(d=>d.coffeeName).join(", ")}
+        </div>
+      )}
+
+      <div style={{marginTop:"12px"}}>
+        {sorted.length === 0
+          ? <div className="empty">
+              <div className="empty-ico">☕</div>
+              <div className="empty-t">{showAll ? "No coffees yet" : "No active coffees"}</div>
+              <div className="empty-s">{showAll ? "Add your first dial-in" : "All bags are finished — tap All to see history"}</div>
+            </div>
+          : sorted.map(d => <DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d,"home")}/>)
+        }
+      </div>
     </div>
   );
 }
 
+// ── LOGBOOK ────────────────────────────────────────────────────────────────────
 function LogbookScreen({ kits, dialins, nav }) {
-  const [q,setQ]=useState(""); const [kitF,setKitF]=useState("all");
-  const filtered = dialins.filter(d=>{
-    const km = kitF==="all"||d.kitId===kitF;
-    const sm = !q||[d.coffeeName,d.roaster,d.origin,d.process,d.grindSetting,d.flavorNotes].join(" ").toLowerCase().includes(q.toLowerCase());
-    return km&&sm;
-  });
+  const [q, setQ]       = useState("");
+  const [kitF, setKitF] = useState("all");
+  const [sort, setSort] = useState("recent");
+
+  const filtered = useMemo(() => {
+    return dialins
+      .filter(d => {
+        const km = kitF==="all" || d.kitId===kitF;
+        const sm = !q || [d.coffeeName,d.roaster,d.origin,d.process,d.grindSetting,d.flavorNotes].join(" ").toLowerCase().includes(q.toLowerCase());
+        return km && sm;
+      })
+      .sort((a,b) => {
+        if (sort==="rating") return (b.rating||0)-(a.rating||0);
+        if (sort==="name")   return (a.coffeeName||"").localeCompare(b.coffeeName||"");
+        if (sort==="roast")  return ((b.roastDate||b.date||"")).localeCompare(a.roastDate||a.date||"");
+        return (b.date||"").localeCompare(a.date||"");
+      });
+  }, [dialins, q, kitF, sort]);
+
   return (
     <div className="screen fade-in">
       <div className="hdr">
         <div style={{flex:1}}>
           <div className="hdr-title">Logbook</div>
-          <div className="hdr-sub">{dialins.length} dial-in{dialins.length!==1?"s":""}</div>
+          <div className="hdr-sub">{dialins.length} total · {filtered.length} shown</div>
         </div>
+        <select className="sort-sel" value={sort} onChange={e=>setSort(e.target.value)}>
+          <option value="recent">Recent</option>
+          <option value="roast">Roast Date</option>
+          <option value="rating">Rating ↓</option>
+          <option value="name">Name A–Z</option>
+        </select>
       </div>
       <div className="search-wrap">
         <span className="search-ico">⌕</span>
-        <input className="search-input" placeholder="Search coffee, origin, grind…" value={q} onChange={e=>setQ(e.target.value)}/>
+        <input className="search-input" placeholder="Search coffee, origin, grind, flavour…" value={q} onChange={e=>setQ(e.target.value)}/>
       </div>
       <div className="chips">
         <div className={`chip${kitF==="all"?" chip-on":""}`} onClick={()=>setKitF("all")}>All</div>
-        {kits.map(k=><div key={k.id} className={`chip${kitF===k.id?" chip-on":""}`} onClick={()=>setKitF(k.id)}>{k.name}</div>)}
+        {kits.map(k=><div key={k.id} className={`chip${kitF===k.id?" chip-on":""}`} onClick={()=>setKitF(k.id)}>{k.tag}</div>)}
       </div>
-      {filtered.length===0
+      {filtered.length === 0
         ? <div className="empty"><div className="empty-ico">◉</div><div className="empty-t">No results</div><div className="empty-s">{q?"Try a different search":"Add your first dial-in"}</div></div>
-        : filtered.map(d=><DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d)}/>)}
+        : filtered.map(d=><DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d,"logbook")}/>)
+      }
     </div>
   );
 }
 
-function DialInDetail({ d, kits, nav, onEdit }) {
+// ── DIAL-IN DETAIL ─────────────────────────────────────────────────────────────
+function DialInDetail({ d, kits, nav, onEdit, prevScreen }) {
   if (!d) return null;
-  const kit = kits.find(k=>k.id===d.kitId);
+  const kit  = kits.find(k=>k.id===d.kitId);
+  const norm = normalizeDiaLin(d);
+  const freshness = getFreshness(norm.roastDate, norm.bagStatus, d.intendedFor);
+  const isEarly = d.date && d.date < "2026-03-01";
+  const isFilter = d.intendedFor === "Filter" || d.intendedFor === "Both";
+  const r = d.doseIn && d.yieldOut ? ratio(d.doseIn, d.yieldOut) : null;
+
   return (
     <div className="screen fade-in">
       <div className="hdr">
-        <button className="icon-btn" onClick={()=>nav("logbook")}>←</button>
+        <button className="icon-btn" onClick={()=>nav(prevScreen||"home")}>←</button>
         <div style={{flex:1}}><div className="hdr-title">Dial-In</div></div>
-        {d.rating>0 && <Stars n={d.rating}/>}
+        {d.rating > 0 && <Stars n={d.rating}/>}
         <button className="icon-btn" onClick={()=>onEdit(d)} title="Edit">✎</button>
       </div>
+
+      {/* Hero */}
       <div className="det-hero">
-        <div className="det-date">{fmt(d.date)}</div>
+        <div className="det-date">{fmt(d.date)}{norm.roastDate && ` · Roasted ${fmt(norm.roastDate)}`}</div>
         <div className="det-title">{d.coffeeName}</div>
         <div className="det-roaster">
           {d.roasterUrl
@@ -426,16 +569,29 @@ function DialInDetail({ d, kits, nav, onEdit }) {
         <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginTop:"8px"}}>
           {d.status    && <span className={`badge b-${d.status}`}>{d.status}</span>}
           {kit         && <span className="badge b-kit">{kit.name}</span>}
+          <BrewBadge intendedFor={d.intendedFor}/>
           {d.process   && <span className="badge b-process">{d.process}</span>}
           {d.roastLevel&& <span className="badge b-roast">{d.roastLevel}</span>}
-          {d.date && d.date < "2026-03-01" && <span className="badge b-early">⚠ early period</span>}
+          {freshness   && <span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
+          <BagStatusBadge status={norm.bagStatus}/>
+          {norm.wouldBuy && <span className="badge b-would-buy">🛒 Would buy</span>}
+          {norm.isChoice && <span className="badge b-choice">★ My Pick</span>}
+          {isEarly && <span className="badge b-early">⚠ early period</span>}
         </div>
+        {norm.tags && norm.tags.length > 0 && (
+          <div style={{display:"flex",gap:"6px",flexWrap:"wrap",marginTop:"8px"}}>
+            {norm.tags.map(t=><span key={t} style={{fontSize:"10px",padding:"2px 8px",background:"var(--elevated)",borderRadius:"4px",color:"var(--tx3)"}}>{t}</span>)}
+          </div>
+        )}
       </div>
-      {d.date && d.date < "2026-03-01" && (
-        <div style={{margin:"0 18px 0",padding:"11px 14px",background:"rgba(120,100,60,0.1)",border:"1px solid rgba(120,100,60,0.2)",borderRadius:"9px",fontSize:"11px",color:"#8A7040",lineHeight:"1.6"}}>
-          <strong>Early period entry</strong> — pulled on an unseasoned grinder (Nov 2025 hardware). Grind settings may run ~0.5–1.5 clicks coarser than equivalent today. Ratings carry reduced confidence — both positive and negative.
+
+      {isEarly && (
+        <div style={{margin:"12px 18px 0",padding:"11px 14px",background:"rgba(120,100,60,0.1)",border:"1px solid rgba(120,100,60,0.2)",borderRadius:"9px",fontSize:"11px",color:"#8A7040",lineHeight:"1.6"}}>
+          <strong>Early period entry</strong> — pulled on an unseasoned grinder (Nov 2025 hardware). Grind settings run ~0.5–1.5 clicks coarser than today. Ratings carry reduced confidence.
         </div>
       )}
+
+      {/* Grind — dominant */}
       <div className="sec">Grind</div>
       <div style={{padding:"0 18px 20px",display:"flex",alignItems:"baseline",gap:"12px"}}>
         <div style={{fontFamily:"'DM Mono',monospace",fontSize:"52px",fontWeight:500,color:"var(--accent)",lineHeight:1}}>{d.grindSetting||"—"}</div>
@@ -444,71 +600,107 @@ function DialInDetail({ d, kits, nav, onEdit }) {
           <div style={{fontSize:"10px",letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"2px"}}>Setting</div>
         </div>
       </div>
-      <div className="div"/>
-      <div className="sec">Extraction</div>
-      <div style={{padding:"0 18px 18px"}}>
-        <div className="stats">
-          <div className="stat"><div className="stat-v">{d.doseIn||"—"}<span>g</span></div><div className="stat-l">Dose</div></div>
-          <div className="stat"><div className="stat-v">{d.yieldOut||"—"}<span>g</span></div><div className="stat-l">Yield</div></div>
-          <div className="stat"><div className="stat-v">{d.timeSeconds||"—"}<span>s</span></div><div className="stat-l">Time</div></div>
-          <div className="stat"><div className="stat-v" style={{fontSize:"15px"}}>{ratio(d.doseIn,d.yieldOut)}</div><div className="stat-l">Ratio</div></div>
+
+      {/* Extraction */}
+      {(d.doseIn || d.yieldOut || d.timeSeconds || d.temperature) && <>
+        <div className="div"/>
+        <div className="sec">{isFilter ? "Brew Recipe" : "Extraction"}</div>
+        <div style={{padding:"0 18px 18px"}}>
+          {!isFilter ? (
+            <div className="stats">
+              {d.doseIn     && <div className="stat"><div className="stat-v">{d.doseIn}<span>g</span></div><div className="stat-l">Dose</div></div>}
+              {d.yieldOut   && <div className="stat"><div className="stat-v">{d.yieldOut}<span>g</span></div><div className="stat-l">Yield</div></div>}
+              {r            && <div className="stat"><div className="stat-v" style={{fontSize:"14px"}}>{r}</div><div className="stat-l">Ratio</div></div>}
+              {d.timeSeconds> 0 && <div className="stat"><div className="stat-v">{d.timeSeconds}<span>s</span></div><div className="stat-l">Time</div></div>}
+              {d.temperature> 0 && <div className="stat"><div className="stat-v">{d.temperature}<span>°</span></div><div className="stat-l">Temp</div></div>}
+            </div>
+          ) : (
+            <div className="stats" style={{flexWrap:"wrap"}}>
+              {d.doseIn > 0    && <div className="stat"><div className="stat-v">{d.doseIn}<span>g</span></div><div className="stat-l">Coffee</div></div>}
+              {d.yieldOut > 0  && <div className="stat"><div className="stat-v">{d.yieldOut}<span>ml</span></div><div className="stat-l">Water</div></div>}
+              {r               && <div className="stat"><div className="stat-v" style={{fontSize:"14px"}}>{r}</div><div className="stat-l">Ratio</div></div>}
+              {d.temperature>0 && <div className="stat"><div className="stat-v">{d.temperature}<span>°</span></div><div className="stat-l">Temp</div></div>}
+              {d.timeSeconds>0 && <div className="stat"><div className="stat-v">{Math.floor(d.timeSeconds/60)}:{String(d.timeSeconds%60).padStart(2,"0")}</div><div className="stat-l">Total</div></div>}
+            </div>
+          )}
+          {/* Filter phases */}
+          {isFilter && (norm.filterBloomGrams > 0 || norm.filterPours > 0) && (
+            <div style={{marginTop:"12px",padding:"12px 14px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"9px",fontSize:"12px",color:"var(--tx2)",lineHeight:"2"}}>
+              {norm.filterBloomGrams > 0 && <div>① Bloom: <span style={{color:"var(--tx1)",fontFamily:"'DM Mono',monospace"}}>{norm.filterBloomGrams}g</span> · <span style={{color:"var(--tx1)",fontFamily:"'DM Mono',monospace"}}>{norm.filterBloomSeconds||45}s</span></div>}
+              {norm.filterPours > 0 && <div>Pours: <span style={{color:"var(--tx1)",fontFamily:"'DM Mono',monospace"}}>{norm.filterPours}x</span> after bloom</div>}
+            </div>
+          )}
         </div>
-        {d.temperature&&<div style={{fontSize:"12px",color:"var(--tx2)",marginTop:"6px"}}>Temp: <span style={{color:"var(--tx1)",fontFamily:"'DM Mono',monospace"}}>{d.temperature}°C</span></div>}
-      </div>
+      </>}
+
+      {/* Coffee info */}
       <div className="div"/>
       <div className="sec">Coffee Info</div>
       <div style={{padding:"0 18px 18px"}}>
-        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Process",d.process],["Roast",d.roastLevel],["Brewed as",d.intendedFor],["Flavour",d.flavorNotes],
-         ["Dial difficulty", d.dialDifficulty ? `${"◆".repeat(d.dialDifficulty)}${"◇".repeat(5-d.dialDifficulty)} (${d.dialDifficulty}/5)` : null],
-         ["Shot stability",  d.shotStability  ? `${"◆".repeat(d.shotStability)}${"◇".repeat(5-d.shotStability)} (${d.shotStability}/5)` : null]]
-          .filter(([,v])=>v&&v.trim())
-          .map(([lbl,val])=>(
+        {[
+          ["Origin", `${d.origin||""}${d.region?` · ${d.region}`:""}`],
+          ["Process", d.process],
+          ["Roast", d.roastLevel],
+          ["Brewed as", d.intendedFor],
+          ["Roast date", norm.roastDate ? fmt(norm.roastDate) : null],
+          ["Flavour", d.flavorNotes],
+          ["Dial difficulty", d.dialDifficulty ? `${"◆".repeat(d.dialDifficulty)}${"◇".repeat(5-d.dialDifficulty)} (${d.dialDifficulty}/5)` : null],
+          ["Shot stability",  d.shotStability  ? `${"◆".repeat(d.shotStability)}${"◇".repeat(5-d.shotStability)} (${d.shotStability}/5)` : null],
+        ].filter(([,v])=>v&&v.trim()).map(([lbl,val])=>(
           <div key={lbl} className="det-row">
             <div className="det-label">{lbl}</div>
             <div className="det-val">{val}</div>
           </div>
         ))}
       </div>
-      {d.coffeeDescription&&<>
+
+      {/* About this Coffee */}
+      {d.coffeeDescription && <>
         <div className="div"/>
         <div className="sec">About this Coffee</div>
         <div style={{padding:"0 18px 16px",fontSize:"13px",color:"var(--tx2)",lineHeight:"1.7"}}>{d.coffeeDescription}</div>
-        {d.coffeeUrl&&<div style={{padding:"0 18px 20px"}}>
+        {d.coffeeUrl && <div style={{padding:"0 18px 20px"}}>
           <a href={d.coffeeUrl} target="_blank" rel="noopener"
             style={{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"12px",color:"var(--accent)",textDecoration:"none",border:"1px solid var(--border)",borderRadius:"7px",padding:"7px 12px"}}>
-            View on roaster's website ↗
+            View on roaster website ↗
           </a>
         </div>}
       </>}
-      {d.notes&&<><div className="div"/><div className="sec">Notes</div><div className="det-notes">"{d.notes}"</div></>}
+
+      {/* Notes */}
+      {d.notes && <><div className="div"/><div className="sec">Tasting Notes</div><div className="det-notes">"{d.notes}"</div></>}
     </div>
   );
 }
 
+// ── ADD DIAL-IN ────────────────────────────────────────────────────────────────
 function AddDialIn({ kits, onSave, nav }) {
   const today = new Date().toISOString().split("T")[0];
   const defGrinder = kits[0]?.equipment.find(e=>e.category==="Grinder")?.name||"";
   const [f,setF]=useState({
     date:today, kitId:kits[0]?.id||"", coffeeName:"", roaster:"",
     origin:"", region:"", process:"Washed", roastLevel:"Light", intendedFor:"Espresso",
-    flavorNotes:"", grindSetting:"", grinder:defGrinder,
+    roastDate:"", flavorNotes:"", grindSetting:"", grinder:defGrinder,
     doseIn:"", yieldOut:"", timeSeconds:"", temperature:"",
-    rating:0, status:"dialed", dialDifficulty:0, shotStability:0, notes:"",
+    rating:0, status:"dialed", dialDifficulty:0, shotStability:0,
+    bagStatus:"open", wouldBuy:false, isChoice:false, tags:[],
+    filterBloomGrams:"", filterBloomSeconds:"", filterPours:"",
+    notes:"", roasterUrl:"", coffeeUrl:"", coffeeDescription:"",
   });
   const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  const changeKit=id=>{
-    const kit=kits.find(k=>k.id===id);
-    s("kitId",id); s("grinder",kit?.equipment.find(e=>e.category==="Grinder")?.name||"");
-  };
-  const r=f.doseIn&&f.yieldOut?ratio(+f.doseIn,+f.yieldOut):null;
-  const save=()=>{
+  const toggleTag = t => s("tags", f.tags.includes(t) ? f.tags.filter(x=>x!==t) : [...f.tags,t]);
+  const changeKit = id => { const kit=kits.find(k=>k.id===id); s("kitId",id); s("grinder",kit?.equipment.find(e=>e.category==="Grinder")?.name||""); };
+  const r = f.doseIn&&f.yieldOut ? ratio(+f.doseIn,+f.yieldOut) : null;
+  const isFilter = f.intendedFor !== "Espresso";
+  const save = () => {
     if(!f.coffeeName||!f.kitId) return;
-    onSave({...f, id:uid(), doseIn:+f.doseIn, yieldOut:+f.yieldOut, timeSeconds:+f.timeSeconds, temperature:+f.temperature});
+    onSave({...f, id:uid(), doseIn:+f.doseIn, yieldOut:+f.yieldOut, timeSeconds:+f.timeSeconds, temperature:+f.temperature,
+      filterBloomGrams:+f.filterBloomGrams, filterBloomSeconds:+f.filterBloomSeconds, filterPours:+f.filterPours});
   };
   return (
     <div className="screen fade-in">
       <div className="hdr">
-        <button className="icon-btn" onClick={()=>nav("logbook")}>←</button>
+        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
         <div style={{flex:1}}><div className="hdr-title">New Dial-In</div><div className="hdr-sub">Log a coffee</div></div>
       </div>
       <div className="sec">Coffee</div>
@@ -539,8 +731,18 @@ function AddDialIn({ kits, onSave, nav }) {
         <div className="f-grp"><label className="f-lbl">Brewed as</label>
           <select className="f-sel" value={f.intendedFor} onChange={e=>s("intendedFor",e.target.value)}>{BREWS.map(o=><option key={o}>{o}</option>)}</select>
         </div>
-        <div className="f-grp"><label className="f-lbl">Date</label>
+        <div className="f-grp"><label className="f-lbl">Dial-In Date</label>
           <input className="f-in" type="date" value={f.date} onChange={e=>s("date",e.target.value)}/>
+        </div>
+      </div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Roast Date</label>
+          <input className="f-in" type="date" value={f.roastDate} onChange={e=>s("roastDate",e.target.value)}/>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Bag Status</label>
+          <select className="f-sel" value={f.bagStatus} onChange={e=>s("bagStatus",e.target.value)}>
+            {BAG_STATUSES.map(o=><option key={o} value={o}>{o.charAt(0).toUpperCase()+o.slice(1)}</option>)}
+          </select>
         </div>
       </div>
       <div className="f-grp"><label className="f-lbl">Flavour Notes</label>
@@ -555,24 +757,57 @@ function AddDialIn({ kits, onSave, nav }) {
           <input className="f-in" placeholder="Model" value={f.grinder} onChange={e=>s("grinder",e.target.value)}/>
         </div>
       </div>
-      <div className="sec">Extraction</div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Dose (g)</label>
-          <input className="f-in" type="number" placeholder="18" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/>
+      <div className="sec">{isFilter ? "Brew Recipe" : "Extraction"}</div>
+      {!isFilter ? <>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Dose (g)</label>
+            <input className="f-in" type="number" placeholder="18" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/>
+          </div>
+          <div className="f-grp">
+            <label className="f-lbl">Yield (g){r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
+            <input className="f-in" type="number" placeholder="36" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/>
+          </div>
         </div>
-        <div className="f-grp">
-          <label className="f-lbl">Yield (g){r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
-          <input className="f-in" type="number" placeholder="36" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Time (s)</label>
+            <input className="f-in" type="number" placeholder="28" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/>
+          </div>
+          <div className="f-grp"><label className="f-lbl">Temp (°C)</label>
+            <input className="f-in" type="number" placeholder="93" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/>
+          </div>
         </div>
-      </div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Time (s)</label>
-          <input className="f-in" type="number" placeholder="28" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/>
+      </> : <>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Coffee (g)</label>
+            <input className="f-in" type="number" placeholder="20" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/>
+          </div>
+          <div className="f-grp">
+            <label className="f-lbl">Water (ml){r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
+            <input className="f-in" type="number" placeholder="300" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/>
+          </div>
         </div>
-        <div className="f-grp"><label className="f-lbl">Temp (°C)</label>
-          <input className="f-in" type="number" placeholder="93" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Temp (°C)</label>
+            <input className="f-in" type="number" placeholder="91" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/>
+          </div>
+          <div className="f-grp"><label className="f-lbl">Total Time (s)</label>
+            <input className="f-in" type="number" placeholder="195" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/>
+          </div>
         </div>
-      </div>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Bloom (g)</label>
+            <input className="f-in" type="number" placeholder="40" value={f.filterBloomGrams} onChange={e=>s("filterBloomGrams",e.target.value)}/>
+          </div>
+          <div className="f-grp"><label className="f-lbl">Bloom Time (s)</label>
+            <input className="f-in" type="number" placeholder="45" value={f.filterBloomSeconds} onChange={e=>s("filterBloomSeconds",e.target.value)}/>
+          </div>
+        </div>
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Number of Pours</label>
+            <input className="f-in" type="number" placeholder="4" value={f.filterPours} onChange={e=>s("filterPours",e.target.value)}/>
+          </div>
+        </div>
+      </>}
       <div className="sec">Assessment</div>
       <div className="f-grp"><label className="f-lbl">Status</label>
         <div className="opt-chips">
@@ -586,30 +821,57 @@ function AddDialIn({ kits, onSave, nav }) {
         <div className="f-grp"><label className="f-lbl">Dial Difficulty (1–5)</label>
           <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.dialDifficulty===n?" opt-chip-on":""}`} onClick={()=>s("dialDifficulty",n)}>{n}</div>)}</div>
         </div>
-        <div className="f-grp"><label className="f-lbl">Shot Stability (1–5)</label>
+        <div className="f-grp"><label className="f-lbl">{isFilter?"Consistency (1–5)":"Shot Stability (1–5)"}</label>
           <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.shotStability===n?" opt-chip-on":""}`} onClick={()=>s("shotStability",n)}>{n}</div>)}</div>
         </div>
       </div>
-      <div className="f-grp"><label className="f-lbl">Notes</label>
+      <div className="f-grp">
+        <label className="f-lbl">Tags</label>
+        <div className="opt-chips">
+          {DIAL_TAGS.map(t=>(
+            <div key={t} className={`opt-chip${f.tags.includes(t)?" opt-chip-on":""}`} onClick={()=>toggleTag(t)}>{t}</div>
+          ))}
+        </div>
+      </div>
+      <div className="toggle-row">
+        <div><div className="toggle-lbl">Would Buy Again</div><div className="toggle-sub">I'd order this coffee again</div></div>
+        <Toggle on={f.wouldBuy} onToggle={()=>s("wouldBuy",!f.wouldBuy)}/>
+      </div>
+      <div className="toggle-row">
+        <div><div className="toggle-lbl">My Pick</div><div className="toggle-sub">Something special about this one</div></div>
+        <Toggle on={f.isChoice} onToggle={()=>s("isChoice",!f.isChoice)}/>
+      </div>
+      <div className="f-grp" style={{marginTop:"10px"}}><label className="f-lbl">Notes</label>
         <textarea className="f-ta" placeholder="Tasting notes, what to adjust next time…" value={f.notes} onChange={e=>s("notes",e.target.value)}/>
       </div>
       <div className="btn-area">
         <button className="btn btn-p" onClick={save} disabled={!f.coffeeName||!f.kitId}>Save Dial-In</button>
-        <button className="btn btn-s" onClick={()=>nav("logbook")}>Cancel</button>
+        <button className="btn btn-s" onClick={()=>nav("home")}>Cancel</button>
       </div>
     </div>
   );
 }
 
+// ── EDIT DIAL-IN ───────────────────────────────────────────────────────────────
 function EditDialIn({ d, kits, onSave, nav }) {
-  const [f,setF]=useState({...d,
+  const norm = normalizeDiaLin(d);
+  const [f,setF]=useState({...norm,
     doseIn:d.doseIn||"", yieldOut:d.yieldOut||"", timeSeconds:d.timeSeconds||"", temperature:d.temperature||"",
     roasterUrl:d.roasterUrl||"", coffeeUrl:d.coffeeUrl||"", coffeeDescription:d.coffeeDescription||"",
     dialDifficulty:d.dialDifficulty||0, shotStability:d.shotStability||0,
+    filterBloomGrams:norm.filterBloomGrams||"", filterBloomSeconds:norm.filterBloomSeconds||"", filterPours:norm.filterPours||"",
+    tags: norm.tags||[], bagStatus: norm.bagStatus||"open",
+    wouldBuy:norm.wouldBuy||false, isChoice:norm.isChoice||false,
   });
   const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  const r=f.doseIn&&f.yieldOut?ratio(+f.doseIn,+f.yieldOut):null;
-  const save=()=>{ if(!f.coffeeName) return; onSave({...f,doseIn:+f.doseIn,yieldOut:+f.yieldOut,timeSeconds:+f.timeSeconds,temperature:+f.temperature}); };
+  const toggleTag = t => s("tags", f.tags.includes(t) ? f.tags.filter(x=>x!==t) : [...f.tags,t]);
+  const r = f.doseIn&&f.yieldOut ? ratio(+f.doseIn,+f.yieldOut) : null;
+  const isFilter = f.intendedFor !== "Espresso";
+  const save = () => {
+    if(!f.coffeeName) return;
+    onSave({...f, doseIn:+f.doseIn, yieldOut:+f.yieldOut, timeSeconds:+f.timeSeconds, temperature:+f.temperature,
+      filterBloomGrams:+f.filterBloomGrams, filterBloomSeconds:+f.filterBloomSeconds, filterPours:+f.filterPours});
+  };
   return (
     <div className="screen fade-in">
       <div className="hdr">
@@ -625,7 +887,7 @@ function EditDialIn({ d, kits, onSave, nav }) {
       <div className="f-grp"><label className="f-lbl">Coffee Name</label><input className="f-in" value={f.coffeeName} onChange={e=>s("coffeeName",e.target.value)}/></div>
       <div className="f-grp"><label className="f-lbl">Roaster</label><input className="f-in" value={f.roaster||""} onChange={e=>s("roaster",e.target.value)}/></div>
       <div className="f-grp"><label className="f-lbl">Roaster Website</label><input className="f-in" type="url" placeholder="https://…" value={f.roasterUrl} onChange={e=>s("roasterUrl",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Coffee Page URL</label><input className="f-in" type="url" placeholder="https://… (specific product page)" value={f.coffeeUrl||""} onChange={e=>s("coffeeUrl",e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Coffee Page URL</label><input className="f-in" type="url" placeholder="https://…" value={f.coffeeUrl||""} onChange={e=>s("coffeeUrl",e.target.value)}/></div>
       <div className="f-row">
         <div className="f-grp"><label className="f-lbl">Origin</label><input className="f-in" value={f.origin||""} onChange={e=>s("origin",e.target.value)}/></div>
         <div className="f-grp"><label className="f-lbl">Region</label><input className="f-in" value={f.region||""} onChange={e=>s("region",e.target.value)}/></div>
@@ -642,24 +904,34 @@ function EditDialIn({ d, kits, onSave, nav }) {
         <div className="f-grp"><label className="f-lbl">Brewed as</label>
           <select className="f-sel" value={f.intendedFor||""} onChange={e=>s("intendedFor",e.target.value)}>{BREWS.map(o=><option key={o}>{o}</option>)}</select>
         </div>
-        <div className="f-grp"><label className="f-lbl">Date</label>
+        <div className="f-grp"><label className="f-lbl">Dial-In Date</label>
           <input className="f-in" type="date" value={f.date||""} onChange={e=>s("date",e.target.value)}/>
+        </div>
+      </div>
+      <div className="f-row">
+        <div className="f-grp"><label className="f-lbl">Roast Date</label>
+          <input className="f-in" type="date" value={f.roastDate||""} onChange={e=>s("roastDate",e.target.value)}/>
+        </div>
+        <div className="f-grp"><label className="f-lbl">Bag Status</label>
+          <select className="f-sel" value={f.bagStatus} onChange={e=>s("bagStatus",e.target.value)}>
+            {BAG_STATUSES.map(o=><option key={o} value={o}>{o.charAt(0).toUpperCase()+o.slice(1)}</option>)}
+          </select>
         </div>
       </div>
       <div className="f-grp"><label className="f-lbl">Flavour Notes</label><input className="f-in" value={f.flavorNotes||""} onChange={e=>s("flavorNotes",e.target.value)}/></div>
       <div className="f-grp"><label className="f-lbl">About this Coffee</label>
-        <textarea className="f-ta" placeholder="Roaster's description, farm info, processing details…" value={f.coffeeDescription} onChange={e=>s("coffeeDescription",e.target.value)}/>
+        <textarea className="f-ta" style={{minHeight:"90px"}} value={f.coffeeDescription} onChange={e=>s("coffeeDescription",e.target.value)}/>
       </div>
       <div className="sec">Grind</div>
       <div className="f-row">
         <div className="f-grp"><label className="f-lbl">Setting</label><input className="f-in" value={f.grindSetting||""} onChange={e=>s("grindSetting",e.target.value)}/></div>
         <div className="f-grp"><label className="f-lbl">Grinder</label><input className="f-in" value={f.grinder||""} onChange={e=>s("grinder",e.target.value)}/></div>
       </div>
-      <div className="sec">Extraction</div>
+      <div className="sec">{isFilter ? "Brew Recipe" : "Extraction"}</div>
       <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Dose (g)</label><input className="f-in" type="number" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/></div>
+        <div className="f-grp"><label className="f-lbl">{isFilter?"Coffee (g)":"Dose (g)"}</label><input className="f-in" type="number" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/></div>
         <div className="f-grp">
-          <label className="f-lbl">Yield (g){r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
+          <label className="f-lbl">{isFilter?"Water (ml)":"Yield (g)"}{r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label>
           <input className="f-in" type="number" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/>
         </div>
       </div>
@@ -667,6 +939,17 @@ function EditDialIn({ d, kits, onSave, nav }) {
         <div className="f-grp"><label className="f-lbl">Time (s)</label><input className="f-in" type="number" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/></div>
         <div className="f-grp"><label className="f-lbl">Temp (°C)</label><input className="f-in" type="number" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/></div>
       </div>
+      {isFilter && (
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Bloom (g)</label><input className="f-in" type="number" value={f.filterBloomGrams} onChange={e=>s("filterBloomGrams",e.target.value)}/></div>
+          <div className="f-grp"><label className="f-lbl">Bloom (s)</label><input className="f-in" type="number" value={f.filterBloomSeconds} onChange={e=>s("filterBloomSeconds",e.target.value)}/></div>
+        </div>
+      )}
+      {isFilter && (
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Pours</label><input className="f-in" type="number" value={f.filterPours} onChange={e=>s("filterPours",e.target.value)}/></div>
+        </div>
+      )}
       <div className="sec">Assessment</div>
       <div className="f-grp"><label className="f-lbl">Status</label>
         <div className="opt-chips">{["experimenting","dialed"].map(o=>(
@@ -678,11 +961,27 @@ function EditDialIn({ d, kits, onSave, nav }) {
         <div className="f-grp"><label className="f-lbl">Dial Difficulty (1–5)</label>
           <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.dialDifficulty===n?" opt-chip-on":""}`} onClick={()=>s("dialDifficulty",n)}>{n}</div>)}</div>
         </div>
-        <div className="f-grp"><label className="f-lbl">Shot Stability (1–5)</label>
+        <div className="f-grp"><label className="f-lbl">Stability (1–5)</label>
           <div className="opt-chips">{[1,2,3,4,5].map(n=><div key={n} className={`opt-chip${f.shotStability===n?" opt-chip-on":""}`} onClick={()=>s("shotStability",n)}>{n}</div>)}</div>
         </div>
       </div>
-      <div className="f-grp"><label className="f-lbl">Notes</label>
+      <div className="f-grp">
+        <label className="f-lbl">Tags</label>
+        <div className="opt-chips">
+          {DIAL_TAGS.map(t=>(
+            <div key={t} className={`opt-chip${f.tags.includes(t)?" opt-chip-on":""}`} onClick={()=>toggleTag(t)}>{t}</div>
+          ))}
+        </div>
+      </div>
+      <div className="toggle-row">
+        <div><div className="toggle-lbl">Would Buy Again</div></div>
+        <Toggle on={f.wouldBuy} onToggle={()=>s("wouldBuy",!f.wouldBuy)}/>
+      </div>
+      <div className="toggle-row">
+        <div><div className="toggle-lbl">My Pick</div></div>
+        <Toggle on={f.isChoice} onToggle={()=>s("isChoice",!f.isChoice)}/>
+      </div>
+      <div className="f-grp" style={{marginTop:"10px"}}><label className="f-lbl">Notes</label>
         <textarea className="f-ta" value={f.notes||""} onChange={e=>s("notes",e.target.value)}/>
       </div>
       <div className="btn-area">
@@ -693,14 +992,47 @@ function EditDialIn({ d, kits, onSave, nav }) {
   );
 }
 
+// ── KIT SCREEN ─────────────────────────────────────────────────────────────────
+function KitScreen({ kit, dialins, kits, nav, onEditKit }) {
+  if (!kit) return null;
+  const kd = dialins.filter(d=>d.kitId===kit.id);
+  return (
+    <div className="screen fade-in">
+      <div className="hdr">
+        <button className="icon-btn" onClick={()=>nav("settings")}>←</button>
+        <div style={{flex:1}}>
+          <div className="hdr-title">{kit.name}</div>
+          <div className="hdr-sub">{kit.subtitle}</div>
+        </div>
+        <button className="icon-btn" onClick={()=>onEditKit(kit)} title="Edit kit">✎</button>
+      </div>
+      <div className="sec">Equipment</div>
+      {kit.equipment.length===0
+        ? <div className="empty"><div className="empty-ico">⚙</div><div className="empty-t">No equipment</div></div>
+        : kit.equipment.map((e,i)=>(
+          <div key={i} className="eq-row">
+            <div className="eq-cat">{e.category}</div>
+            <div><div className="eq-name">{e.name}</div>{e.notes&&<div className="eq-note">{e.notes}</div>}</div>
+          </div>
+        ))}
+      {kd.length>0 && <>
+        <div className="sec">Dial-Ins with this kit</div>
+        {kd.slice(0,5).map(d=><DialInCard key={d.id} d={d} kits={kits} onClick={()=>nav("dialin",d,"kit")}/>)}
+        {kd.length>5 && <div style={{textAlign:"center",padding:"8px 18px",fontSize:"12px",color:"var(--tx3)"}}>{kd.length-5} more in Logbook</div>}
+      </>}
+    </div>
+  );
+}
+
+// ── EDIT KIT ───────────────────────────────────────────────────────────────────
 function EditKit({ kit, onSave, nav }) {
-  const [name,    setName]    = useState(kit.name);
-  const [sub,     setSub]     = useState(kit.subtitle||"");
-  const [equip,   setEquip]   = useState(kit.equipment.map(e=>({...e})));
-  const updateEq = (i,k,v) => setEquip(p=>p.map((e,j)=>j===i?{...e,[k]:v}:e));
-  const addEq    = () => setEquip(p=>[...p,{category:"",name:"",notes:""}]);
-  const removeEq = i => setEquip(p=>p.filter((_,j)=>j!==i));
-  const save = () => onSave({...kit, name, subtitle:sub, equipment:equip.filter(e=>e.name)});
+  const [name,setName]=useState(kit.name);
+  const [sub,setSub]=useState(kit.subtitle||"");
+  const [equip,setEquip]=useState(kit.equipment.map(e=>({...e})));
+  const updateEq=(i,k,v)=>setEquip(p=>p.map((e,j)=>j===i?{...e,[k]:v}:e));
+  const addEq=()=>setEquip(p=>[...p,{category:"",name:"",notes:""}]);
+  const removeEq=i=>setEquip(p=>p.filter((_,j)=>j!==i));
+  const save=()=>onSave({...kit,name,subtitle:sub,equipment:equip.filter(e=>e.name)});
   return (
     <div className="screen fade-in">
       <div className="hdr">
@@ -709,7 +1041,7 @@ function EditKit({ kit, onSave, nav }) {
       </div>
       <div className="sec">Kit Info</div>
       <div className="f-grp"><label className="f-lbl">Name</label><input className="f-in" value={name} onChange={e=>setName(e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Subtitle</label><input className="f-in" value={sub} onChange={e=>setSub(e.target.value)}/></div>
+      <div className="f-grp"><label className="f-lbl">Subtitle (Machine · Grinder)</label><input className="f-in" value={sub} onChange={e=>setSub(e.target.value)}/></div>
       <div className="sec">Equipment</div>
       {equip.map((e,i)=>(
         <div key={i} style={{margin:"0 18px 10px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"12px"}}>
@@ -719,7 +1051,7 @@ function EditKit({ kit, onSave, nav }) {
           </div>
           <div style={{display:"flex",gap:"8px"}}>
             <input className="f-in" style={{flex:1}} placeholder="Notes (optional)" value={e.notes||""} onChange={v=>updateEq(i,"notes",v.target.value)}/>
-            <button onClick={()=>removeEq(i)} style={{background:"var(--red-d,rgba(160,80,80,.15))",border:"1px solid rgba(160,80,80,.3)",color:"#A05050",borderRadius:"7px",padding:"0 10px",cursor:"pointer",flexShrink:0}}>✕</button>
+            <button onClick={()=>removeEq(i)} style={{background:"var(--red-d)",border:"1px solid rgba(160,80,80,.3)",color:"var(--red)",borderRadius:"7px",padding:"0 10px",cursor:"pointer",flexShrink:0}}>✕</button>
           </div>
         </div>
       ))}
@@ -734,115 +1066,216 @@ function EditKit({ kit, onSave, nav }) {
   );
 }
 
-function SettingsScreen({ settings, onSave, onSync, syncing }) {
-  const [f,setF]=useState({owner:settings.owner||"",repo:settings.repo||"",token:settings.token||""});
-  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+// ── PROFILE SCREEN ─────────────────────────────────────────────────────────────
+function ProfileScreen({ dialins, kits }) {
+  const norm = useMemo(()=>dialins.map(normalizeDiaLin),[dialins]);
+  const rated = norm.filter(d=>d.rating>0);
+  const avgRating = rated.length ? (rated.reduce((a,d)=>a+d.rating,0)/rated.length).toFixed(1) : "—";
+  const topRated = [...norm].filter(d=>d.rating>=4).sort((a,b)=>b.rating-a.rating).slice(0,5);
+  const wouldBuyList = norm.filter(d=>d.wouldBuy);
+  const myPicks = norm.filter(d=>d.isChoice);
+
+  const originCounts = {};
+  norm.forEach(d=>{if(d.origin) originCounts[d.origin]=(originCounts[d.origin]||0)+1;});
+  const topOrigins = Object.entries(originCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+
+  const processCounts = {};
+  norm.forEach(d=>{if(d.process) processCounts[d.process]=(processCounts[d.process]||0)+1;});
+
+  const roastCounts = {};
+  norm.forEach(d=>{if(d.roastLevel) roastCounts[d.roastLevel]=(roastCounts[d.roastLevel]||0)+1;});
+
   return (
     <div className="screen fade-in">
       <div className="hdr">
-        <div style={{flex:1}}><div className="hdr-title">Settings</div><div className="hdr-sub">GitHub Sync</div></div>
-      </div>
-      <div className="sec">GitHub Repository</div>
-      <div style={{padding:"0 18px 16px",fontSize:"12px",color:"var(--tx2)",lineHeight:"1.6"}}>
-        The app reads <strong style={{color:"var(--tx1)"}}>kits.json</strong> and <strong style={{color:"var(--tx1)"}}>dialins.json</strong> from your repo on every load. A token is only needed to write new dial-ins back.
-      </div>
-      <div style={{padding:"0 18px"}}>
-        <div className="f-grp" style={{padding:0,marginBottom:"13px"}}>
-          <label className="f-lbl">GitHub Username</label>
-          <input className="f-in" placeholder="your-username" value={f.owner} onChange={e=>s("owner",e.target.value)}/>
+        <div style={{flex:1}}>
+          <div className="hdr-title">My Profile</div>
+          <div className="hdr-sub">Coffee taste DNA</div>
         </div>
-        <div className="f-grp" style={{padding:0,marginBottom:"13px"}}>
-          <label className="f-lbl">Repository Name</label>
-          <input className="f-in" placeholder="coffee-dialins" value={f.repo} onChange={e=>s("repo",e.target.value)}/>
+      </div>
+
+      <div className="sec">Journey</div>
+      <div style={{padding:"0 18px 16px"}}>
+        <div className="stats">
+          <div className="stat"><div className="stat-v">{dialins.length}</div><div className="stat-l">Coffees</div></div>
+          <div className="stat"><div className="stat-v">{avgRating}</div><div className="stat-l">Avg Rating</div></div>
+          <div className="stat"><div className="stat-v">{rated.filter(d=>d.rating>=4).length}</div><div className="stat-l">4★+</div></div>
+          <div className="stat"><div className="stat-v">{wouldBuyList.length}</div><div className="stat-l">Would Buy</div></div>
         </div>
-        <div className="f-grp" style={{padding:0,marginBottom:"6px"}}>
-          <label className="f-lbl">Personal Access Token</label>
-          <input className="f-in" type="password" placeholder="ghp_…" value={f.token} onChange={e=>s("token",e.target.value)}/>
-          <div style={{fontSize:"11px",color:"var(--tx3)",marginTop:"5px",lineHeight:"1.4"}}>
-            Needs <code style={{background:"var(--elevated)",padding:"1px 5px",borderRadius:"3px"}}>repo</code> scope. Stored only in this device's localStorage.
+      </div>
+
+      {myPicks.length > 0 && <>
+        <div className="sec">My Picks</div>
+        {myPicks.map(d=>(
+          <div key={d.id} className="profile-top-item">
+            <div style={{flex:1}}>
+              <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"2px"}}>{d.roaster}</div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"16px",fontWeight:500}}>{d.coffeeName}</div>
+            </div>
+            {d.rating>0 && <Stars n={d.rating}/>}
+          </div>
+        ))}
+      </>}
+
+      {topRated.length > 0 && <>
+        <div className="sec">Top Rated</div>
+        {topRated.map(d=>(
+          <div key={d.id} className="profile-top-item">
+            <div style={{flex:1}}>
+              <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"2px"}}>{d.roaster}</div>
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"16px",fontWeight:500}}>{d.coffeeName}</div>
+              <div style={{fontSize:"11px",color:"var(--tx3)",marginTop:"2px"}}>{d.origin}{d.process?` · ${d.process}`:""}</div>
+            </div>
+            <Stars n={d.rating}/>
+          </div>
+        ))}
+      </>}
+
+      <div className="sec">Taste DNA</div>
+      {topOrigins.length > 0 && (
+        <div style={{padding:"0 18px 14px"}}>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginBottom:"8px"}}>Origins Explored</div>
+          <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+            {topOrigins.map(([o,c])=>(
+              <div key={o} className="dna-tag">{o} <span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px"}}>{c}</span></div>
+            ))}
           </div>
         </div>
+      )}
+      {Object.keys(processCounts).length > 0 && (
+        <div style={{padding:"0 18px 14px"}}>
+          <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginBottom:"8px"}}>Processes</div>
+          <div style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+            {Object.entries(processCounts).sort((a,b)=>b[1]-a[1]).map(([p,c])=>(
+              <div key={p} style={{padding:"4px 10px",background:"var(--blue-d)",border:"1px solid rgba(90,112,152,0.2)",borderRadius:"6px",fontSize:"12px",color:"var(--blue)"}}>
+                {p} <span style={{fontFamily:"'DM Mono',monospace",fontSize:"10px"}}>{c}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="sec">Palate Summary</div>
+      <div className="taste-card">
+        <div className="taste-subhead">What I enjoy</div>
+        <div>Expressive fruit-forward profiles — banana, tropical, berry. Anaerobic and experimental processes. Medium-light espresso roasts with character. Elegant filter coffees with floral notes (jasmine, white tea, bergamot). Costa Rica and Kenya as standout origins.</div>
+        <div className="taste-subhead">Anchor coffees</div>
+        <div>Well-structured blends that work for espresso and milk (Beskydská Směs type). Reliable, consistent profiles with good body and sweetness.</div>
+        <div className="taste-subhead">Less preferred</div>
+        <div>Flat or one-dimensional profiles. Very dark commercial roasts. Coffees that resist dialing without clear reward. One-note chocolatey profiles without complexity.</div>
+        <div className="taste-subhead">Quick reference for shops</div>
+        <div style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"var(--tx2)",lineHeight:"1.8",marginTop:"6px"}}>
+          ✓ Light–medium · washed or natural<br/>
+          ✓ Fruity / floral / tea-like<br/>
+          ✓ Ethiopia · Kenya · Colombia · Costa Rica<br/>
+          ✗ Dark roasts · flat chocolatey profiles
+        </div>
+        <div style={{marginTop:"12px",fontSize:"10px",color:"var(--tx3)",letterSpacing:".05em"}}>Updated March 2026 · {dialins.length} coffees tested</div>
+      </div>
+    </div>
+  );
+}
+
+// ── SETTINGS SCREEN ─────────────────────────────────────────────────────────────
+function SettingsScreen({ settings, onSave, kits, nav, syncing, onSync }) {
+  const [f,setF]=useState({owner:settings.owner||"",repo:settings.repo||"",token:settings.token||""});
+  const s=(k,v)=>setF(p=>({...p,[k]:v}));
+  const save=()=>onSave({...f});
+  return (
+    <div className="screen fade-in">
+      <div className="hdr">
+        <div style={{flex:1}}>
+          <div className="hdr-title">Settings</div>
+          <div className="hdr-sub">GitHub sync & kits</div>
+        </div>
+        <button className="icon-btn" onClick={onSync} title="Sync now">
+          <span className={syncing?"spin":""}>{syncing?"↻":"↓"}</span>
+        </button>
+      </div>
+
+      {/* Kits */}
+      <div className="sec">My Kits</div>
+      {kits.map(k=>(
+        <div key={k.id} onClick={()=>nav("kit",k)} style={{margin:"0 18px 8px",padding:"14px 16px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",cursor:"pointer",display:"flex",alignItems:"center",gap:"12px",transition:"border-color .15s"}}
+          onMouseEnter={e=>e.currentTarget.style.borderColor="var(--bh)"}
+          onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+          <div style={{width:"32px",height:"32px",borderRadius:"8px",background:`${k.color}22`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{fontFamily:"'DM Mono',monospace",fontSize:"9px",fontWeight:500,color:k.color}}>{k.tag}</span>
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:"14px",fontWeight:500}}>{k.name}</div>
+            <div style={{fontSize:"11px",color:"var(--tx3)",marginTop:"2px"}}>{k.subtitle}</div>
+          </div>
+          <span style={{color:"var(--tx3)"}}>›</span>
+        </div>
+      ))}
+
+      {/* GitHub */}
+      <div className="sec">GitHub Sync</div>
+      <div className="f-grp"><label className="f-lbl">GitHub Username</label>
+        <input className="f-in" placeholder="trynerlu" value={f.owner} onChange={e=>s("owner",e.target.value)}/>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Repository Name</label>
+        <input className="f-in" placeholder="coffee-dialins" value={f.repo} onChange={e=>s("repo",e.target.value)}/>
+      </div>
+      <div className="f-grp"><label className="f-lbl">Personal Access Token</label>
+        <input className="f-in" type="password" placeholder="ghp_… or github_pat_…" value={f.token} onChange={e=>s("token",e.target.value)}/>
+        <div style={{fontSize:"11px",color:"var(--tx3)",marginTop:"5px"}}>Required for writing. Leave empty for read-only.</div>
       </div>
       <div className="btn-area">
-        <button className="btn btn-p" onClick={()=>onSave(f)}>Save &amp; Sync</button>
-        <button className="btn btn-s" onClick={onSync} disabled={syncing}>{syncing?"Syncing…":"↓  Pull from GitHub now"}</button>
+        <button className="btn btn-p" onClick={save} disabled={!f.owner||!f.repo}>Save & Connect</button>
       </div>
-      <div className="sec">Expected repo layout</div>
-      <div style={{padding:"0 18px 30px"}}>
+      <div style={{padding:"0 18px 20px"}}>
         <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"9px",padding:"14px",fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"var(--tx2)",lineHeight:"1.9"}}>
           your-repo/<br/>
           ├── index.html &nbsp;&nbsp;← this app<br/>
           ├── kits.json &nbsp;&nbsp;&nbsp;← equipment lists<br/>
           └── dialins.json ← your dial-ins
         </div>
-        <div style={{marginTop:"11px",fontSize:"11px",color:"var(--tx3)",lineHeight:"1.6"}}>
-          App version: {APP_VERSION}
-        </div>
+        <div style={{marginTop:"11px",fontSize:"11px",color:"var(--tx3)"}}> App version: {APP_VERSION}</div>
       </div>
     </div>
   );
 }
 
-// ── IMPORT FROM CLAUDE ─────────────────────────────────────────────────────────
+// ── IMPORT ─────────────────────────────────────────────────────────────────────
 function ImportScreen({ kits, onImport, nav }) {
-  const [raw,     setRaw]     = useState("");
-  const [preview, setPreview] = useState(null);
-  const [err,     setErr]     = useState("");
-
-  const parse = () => {
+  const [raw,setRaw]=useState(""); const [preview,setPreview]=useState(null); const [err,setErr]=useState("");
+  const parse=()=>{
     setErr(""); setPreview(null);
     try {
-      const trimmed = raw.trim().replace(/^```json|^```|```$/gm,"").trim();
-      let parsed = JSON.parse(trimmed);
-      if (!Array.isArray(parsed)) parsed = [parsed];
-      // Basic validation
-      const invalid = parsed.filter(e=>!e.coffeeName);
-      if (invalid.length) { setErr("Every entry needs at least a coffeeName."); return; }
-      // Fill missing ids/dates
-      parsed = parsed.map(e=>({
-        ...e,
-        id: e.id || uid(),
-        date: e.date || new Date().toISOString().split("T")[0],
-        kitId: e.kitId || kits[0]?.id || "home-espresso",
-      }));
+      const trimmed=raw.trim().replace(/^```json|^```|```$/gm,"").trim();
+      let parsed=JSON.parse(trimmed);
+      if(!Array.isArray(parsed)) parsed=[parsed];
+      const invalid=parsed.filter(e=>!e.coffeeName);
+      if(invalid.length){setErr("Every entry needs at least a coffeeName.");return;}
+      parsed=parsed.map(e=>({...e,id:e.id||uid(),date:e.date||new Date().toISOString().split("T")[0],kitId:e.kitId||kits[0]?.id||"home-espresso"}));
       setPreview(parsed);
-    } catch(e) { setErr("Could not parse JSON — copy the full block Claude generated."); }
+    }catch(e){setErr("Could not parse JSON — copy the full block from Claude.");}
   };
-
-  const kit = (id) => kits.find(k=>k.id===id);
-
+  const kit=(id)=>kits.find(k=>k.id===id);
   return (
     <div className="screen fade-in">
       <div className="hdr">
-        <button className="icon-btn" onClick={()=>nav("logbook")}>←</button>
-        <div style={{flex:1}}>
-          <div className="hdr-title">Import from Claude</div>
-          <div className="hdr-sub">Paste · Preview · Save</div>
-        </div>
+        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
+        <div style={{flex:1}}><div className="hdr-title">Import from Claude</div><div className="hdr-sub">Paste · Preview · Save</div></div>
       </div>
-
-      {/* How it works */}
-      <div style={{margin:"14px 18px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"14px"}}>
-        <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"9px"}}>How it works</div>
-        <div style={{fontSize:"12px",color:"var(--tx2)",lineHeight:"1.65"}}>
+      {!preview ? <>
+        <div style={{margin:"14px 18px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"14px",fontSize:"12px",color:"var(--tx2)",lineHeight:"1.65"}}>
           1. Chat with Claude about a new coffee<br/>
           2. Ask Claude to <em style={{color:"var(--tx1)"}}>generate a dial-in JSON entry</em><br/>
           3. Copy the JSON block Claude outputs<br/>
-          4. Paste it below → Preview → Save to GitHub
+          4. Paste below → Preview → Save to GitHub
         </div>
-      </div>
-
-      {!preview ? <>
-        <div className="sec">Paste JSON from Claude</div>
         <div className="f-grp">
           <textarea className="f-ta" style={{minHeight:"160px",fontFamily:"'DM Mono',monospace",fontSize:"12px"}}
-            placeholder={'{\n  "coffeeName": "Ethiopia Yirgacheffe",\n  "roaster": "The Barn",\n  "grindSetting": "12.5",\n  ...\n}'}
+            placeholder={'{\n  "coffeeName": "Ethiopia Yirgacheffe",\n  "roaster": "The Barn",\n  ...\n}'}
             value={raw} onChange={e=>{setRaw(e.target.value);setErr("");}}/>
-          {err && <div style={{fontSize:"12px",color:"#C05050",marginTop:"6px"}}>{err}</div>}
+          {err&&<div style={{fontSize:"12px",color:"#C05050",marginTop:"6px"}}>{err}</div>}
         </div>
         <div className="btn-area">
           <button className="btn btn-p" onClick={parse} disabled={!raw.trim()}>Preview</button>
-          <button className="btn btn-s" onClick={()=>nav("logbook")}>Cancel</button>
+          <button className="btn btn-s" onClick={()=>nav("home")}>Cancel</button>
         </div>
       </> : <>
         <div className="sec">Preview — {preview.length} entr{preview.length===1?"y":"ies"}</div>
@@ -856,12 +1289,12 @@ function ImportScreen({ kits, onImport, nav }) {
                 <div style={{fontSize:"9px",letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"2px"}}>Grind</div>
               </div>
               <div style={{flex:1,display:"flex",flexDirection:"column",gap:"4px",justifyContent:"center"}}>
-                {e.doseIn   && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Dose: <span style={{color:"var(--tx1)"}}>{e.doseIn}g → {e.yieldOut}g</span> ({e.timeSeconds}s)</div>}
-                {e.process  && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Process: <span style={{color:"var(--tx1)"}}>{e.process}</span></div>}
-                {e.kitId    && <div style={{fontSize:"12px",color:"var(--tx2)"}}>Kit: <span style={{color:"var(--tx1)"}}>{kit(e.kitId)?.name||e.kitId}</span></div>}
+                {e.doseIn&&<div style={{fontSize:"12px",color:"var(--tx2)"}}>Dose: <span style={{color:"var(--tx1)"}}>{e.doseIn}g → {e.yieldOut}g</span> ({e.timeSeconds}s)</div>}
+                {e.process&&<div style={{fontSize:"12px",color:"var(--tx2)"}}>Process: <span style={{color:"var(--tx1)"}}>{e.process}</span></div>}
+                {e.kitId&&<div style={{fontSize:"12px",color:"var(--tx2)"}}>Kit: <span style={{color:"var(--tx1)"}}>{kit(e.kitId)?.name||e.kitId}</span></div>}
               </div>
             </div>
-            {e.flavorNotes && <div style={{fontSize:"12px",color:"var(--tx2)",fontStyle:"italic"}}>"{e.flavorNotes}"</div>}
+            {e.flavorNotes&&<div style={{fontSize:"12px",color:"var(--tx2)",fontStyle:"italic"}}>"{e.flavorNotes}"</div>}
           </div>
         ))}
         <div className="btn-area">
@@ -886,45 +1319,38 @@ function Splash() {
 
 // ── ROOT APP ───────────────────────────────────────────────────────────────────
 function App() {
-  const [ready,    setReady]   = useState(false);
-  const [screen,   setScreen]  = useState("home");
-  const [curKit,   setCurKit]  = useState(null);
-  const [curDial,  setCurDial] = useState(null);
-  const [kits,     setKits]    = useState(DEF_KITS);
-  const [dialins,  setDialins] = useState(DEF_DIALINS);
-  const [syncing,  setSyncing] = useState(false);
-  const [toast,    setToast]   = useState(null);
-  const [lastSync, setLastSync]= useState(null);
-  const [settings, setSettings]= useState(()=>lsGet(LS.settings)||{});
+  const [ready,    setReady]    = useState(false);
+  const [screen,   setScreen]   = useState("home");
+  const [prevScreen,setPrev]    = useState("home");
+  const [curKit,   setCurKit]   = useState(null);
+  const [curDial,  setCurDial]  = useState(null);
+  const [kits,     setKits]     = useState(DEF_KITS);
+  const [dialins,  setDialins]  = useState(DEF_DIALINS);
+  const [syncing,  setSyncing]  = useState(false);
+  const [toast,    setToast]    = useState(null);
+  const [lastSync, setLastSync] = useState(null);
+  const [settings, setSettings] = useState(()=>lsGet(LS.settings)||{});
 
-  // ── BOOT: load cache, then auto-sync from GitHub ──
   useEffect(()=>{
     const cachedKits    = lsGet(LS.kits);
     const cachedDialins = lsGet(LS.dialins);
     if (cachedKits)    setKits(cachedKits);
     if (cachedDialins) setDialins(cachedDialins);
     setReady(true);
-
-    // Auto-sync if GitHub is configured
     const s = lsGet(LS.settings)||{};
-    if (s.owner && s.repo && navigator.onLine) {
-      autoSync(s, cachedKits, cachedDialins);
-    }
+    if (s.owner && s.repo && navigator.onLine) autoSync(s, cachedKits, cachedDialins);
   }, []);
 
   const autoSync = async (s, localKits, localDialins) => {
     try {
-      const [remoteKits, remoteDialins] = await Promise.all([
-        ghRead(s, "kits.json").catch(()=>null),
-        ghRead(s, "dialins.json").catch(()=>null),
+      const [rk, rd] = await Promise.all([
+        ghRead(s,"kits.json").catch(()=>null),
+        ghRead(s,"dialins.json").catch(()=>null),
       ]);
-      let updated = false;
-      if (remoteKits    && JSON.stringify(remoteKits)    !== JSON.stringify(localKits))    { setKits(remoteKits);       lsSet(LS.kits,    remoteKits);    updated=true; }
-      if (remoteDialins && JSON.stringify(remoteDialins) !== JSON.stringify(localDialins)) { setDialins(remoteDialins); lsSet(LS.dialins, remoteDialins); updated=true; }
-      const t = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-      setLastSync(t);
-      if (updated) flash("↑ Updated from GitHub");
-    } catch(e) { /* silent fail — app still works offline */ }
+      if (rk && JSON.stringify(rk)!==JSON.stringify(localKits))    { setKits(rk);    lsSet(LS.kits,rk);    }
+      if (rd && JSON.stringify(rd)!==JSON.stringify(localDialins)) { setDialins(rd); lsSet(LS.dialins,rd); }
+      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
+    } catch(e) {}
   };
 
   const flash = (msg, ms=2800) => { setToast(msg); setTimeout(()=>setToast(null), ms); };
@@ -934,10 +1360,9 @@ function App() {
     setSyncing(true);
     try {
       const [k,d] = await Promise.all([ghRead(settings,"kits.json"), ghRead(settings,"dialins.json")]);
-      setKits(k);    lsSet(LS.kits,    k);
-      setDialins(d); lsSet(LS.dialins, d);
-      const t = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-      setLastSync(t);
+      setKits(k); lsSet(LS.kits,k);
+      setDialins(d); lsSet(LS.dialins,d);
+      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
       flash("✓ Synced from GitHub");
     } catch(e) { flash(`✗ ${e.message}`); }
     setSyncing(false);
@@ -945,43 +1370,39 @@ function App() {
 
   const addDialin = async (nd) => {
     const updated = [nd, ...dialins];
-    setDialins(updated); lsSet(LS.dialins, updated);
+    setDialins(updated); lsSet(LS.dialins,updated);
     if (settings.token) {
-      try { await ghWrite(settings, "dialins.json", updated); flash("✓ Saved to GitHub"); }
+      try { await ghWrite(settings,"dialins.json",updated); flash("✓ Saved to GitHub"); }
       catch(e) { flash(`⚠ Saved locally. GitHub: ${e.message}`); }
-    } else {
-      flash("✓ Saved locally (add token to push to GitHub)");
-    }
-    setScreen("logbook");
+    } else { flash("✓ Saved locally"); }
+    setScreen("home");
   };
 
   const importDialins = async (entries) => {
-    const updated = [...entries.map(e=>({...e, id:e.id||uid()})), ...dialins];
-    setDialins(updated); lsSet(LS.dialins, updated);
+    const updated = [...entries.map(e=>({...e,id:e.id||uid()})), ...dialins];
+    setDialins(updated); lsSet(LS.dialins,updated);
     if (settings.token) {
-      try { await ghWrite(settings, "dialins.json", updated); flash(`✓ ${entries.length} entr${entries.length===1?"y":"ies"} saved to GitHub`); }
+      try { await ghWrite(settings,"dialins.json",updated); flash(`✓ ${entries.length} saved to GitHub`); }
       catch(e) { flash(`⚠ Saved locally. GitHub: ${e.message}`); }
-    } else {
-      flash(`✓ ${entries.length} entr${entries.length===1?"y":"ies"} saved locally`);
-    }
-    setScreen("logbook");
+    } else { flash(`✓ ${entries.length} saved locally`); }
+    setScreen("home");
   };
 
   const saveSettings = async (s) => {
-    setSettings(s); lsSet(LS.settings, s); flash("✓ Settings saved — syncing…");
+    setSettings(s); lsSet(LS.settings,s); flash("✓ Settings saved — syncing…");
     setSyncing(true);
     try {
       const [k,d] = await Promise.all([ghRead(s,"kits.json"), ghRead(s,"dialins.json")]);
-      setKits(k);    lsSet(LS.kits,    k);
-      setDialins(d); lsSet(LS.dialins, d);
-      const t = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-      setLastSync(t);
+      setKits(k); lsSet(LS.kits,k);
+      setDialins(d); lsSet(LS.dialins,d);
+      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
       flash("✓ Connected & synced");
     } catch(e) { flash(`⚠ Settings saved. Sync failed: ${e.message}`); }
     setSyncing(false);
   };
 
-  const nav = (to, data=null) => {
+  const nav = (to, data=null, from=null) => {
+    setPrev(from || screen);
     if (to==="kit"    && data) setCurKit(data);
     if (to==="dialin" && data) setCurDial(data);
     setScreen(to);
@@ -992,7 +1413,7 @@ function App() {
 
   const saveDialin = async (updated) => {
     const newList = dialins.map(d=>d.id===updated.id?updated:d);
-    setDialins(newList); lsSet(LS.dialins, newList);
+    setDialins(newList); lsSet(LS.dialins,newList);
     setCurDial(updated);
     if (settings.token) {
       try { await ghWrite(settings,"dialins.json",newList); flash("✓ Saved to GitHub"); }
@@ -1003,7 +1424,7 @@ function App() {
 
   const saveKit = async (updated) => {
     const newList = kits.map(k=>k.id===updated.id?updated:k);
-    setKits(newList); lsSet(LS.kits, newList);
+    setKits(newList); lsSet(LS.kits,newList);
     setCurKit(updated);
     if (settings.token) {
       try { await ghWrite(settings,"kits.json",newList); flash("✓ Kit saved to GitHub"); }
@@ -1017,29 +1438,37 @@ function App() {
   if (!ready) return <Splash/>;
 
   const views = {
-    home:       <HomeScreen    kits={kits} dialins={dialins} nav={nav} onSync={syncPull} syncing={syncing} lastSync={lastSync}/>,
-    kit:        <KitScreen     kit={curKit} dialins={dialins} kits={kits} nav={nav} onEditKit={editKit}/>,
-    logbook:    <LogbookScreen kits={kits} dialins={dialins} nav={nav}/>,
-    dialin:     <DialInDetail  d={curDial} kits={kits} nav={nav} onEdit={editDialin}/>,
-    add:        <AddDialIn     kits={kits} onSave={addDialin} nav={nav}/>,
-    import:     <ImportScreen  kits={kits} onImport={importDialins} nav={nav}/>,
-    editdialin: <EditDialIn    d={curDial} kits={kits} onSave={saveDialin} nav={nav}/>,
-    editkit:    <EditKit       kit={curKit} onSave={saveKit} nav={nav}/>,
-    settings:   <SettingsScreen settings={settings} onSave={saveSettings} onSync={syncPull} syncing={syncing}/>,
+    home:       <HomeScreen     kits={kits} dialins={dialins} nav={nav} onSync={syncPull} syncing={syncing} lastSync={lastSync}/>,
+    logbook:    <LogbookScreen  kits={kits} dialins={dialins} nav={nav}/>,
+    dialin:     <DialInDetail   d={curDial} kits={kits} nav={nav} onEdit={editDialin} prevScreen={prevScreen}/>,
+    add:        <AddDialIn      kits={kits} onSave={addDialin} nav={nav}/>,
+    import:     <ImportScreen   kits={kits} onImport={importDialins} nav={nav}/>,
+    editdialin: <EditDialIn     d={curDial} kits={kits} onSave={saveDialin} nav={nav}/>,
+    kit:        <KitScreen      kit={curKit} dialins={dialins} kits={kits} nav={nav} onEditKit={editKit}/>,
+    editkit:    <EditKit        kit={curKit} onSave={saveKit} nav={nav}/>,
+    profile:    <ProfileScreen  dialins={dialins} kits={kits}/>,
+    settings:   <SettingsScreen settings={settings} onSave={saveSettings} kits={kits} nav={nav} syncing={syncing} onSync={syncPull}/>,
   };
+
+  const NAV_ITEMS = [
+    {id:"home",    ico:"☕", lbl:"Coffees"},
+    {id:"logbook", ico:"◉", lbl:"Log"},
+    {id:"add",     ico:"⊕", lbl:"Add"},
+    {id:"profile", ico:"◈", lbl:"Profile"},
+    {id:"settings",ico:"◎", lbl:"Settings"},
+  ];
 
   return (
     <div>
       {views[screen]||views.home}
       {!isDetail && (
         <nav className="bnav">
-          {[{id:"home",ico:"⊞",lbl:"Kits"},{id:"logbook",ico:"◉",lbl:"Log"},{id:"import",ico:"⊕",lbl:"Import"},{id:"settings",ico:"◎",lbl:"Settings"}]
-            .map(item=>(
-              <button key={item.id} className={`nav-btn${screen===item.id?" nav-btn-on":""}`} onClick={()=>setScreen(item.id)}>
-                <span className="nav-ico">{item.ico}</span>
-                <span className="nav-lbl">{item.lbl}</span>
-              </button>
-            ))}
+          {NAV_ITEMS.map(item=>(
+            <button key={item.id} className={`nav-btn${screen===item.id?" nav-btn-on":""}`} onClick={()=>setScreen(item.id)}>
+              <span className="nav-ico">{item.ico}</span>
+              <span className="nav-lbl">{item.lbl}</span>
+            </button>
+          ))}
         </nav>
       )}
       {syncing && !toast && <div className="toast">↻ Syncing…</div>}
