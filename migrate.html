@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dial-In · Migration v2→v3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#0C0501; --surface:#170C06; --elevated:#201208; --input-bg:#1A0D07;
+      --border:rgba(200,118,58,0.16); --bh:rgba(200,118,58,0.38);
+      --accent:#C87840; --accent-d:rgba(200,120,64,0.13); --accent-b:#E09050;
+      --tx1:#EDD8B4; --tx2:#9A7050; --tx3:#5A3A22;
+      --green:#5A8860; --green-d:rgba(90,136,96,0.14);
+      --blue:#5A7098; --blue-d:rgba(90,112,152,0.14);
+      --red:#A05050; --red-d:rgba(160,80,80,0.15);
+    }
+    html, body { min-height:100%; background:var(--bg); color:var(--tx1); font-family:'Jost',sans-serif; -webkit-font-smoothing:antialiased; }
+
+    body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"); opacity:.5; }
+
+    .wrap { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    .hdr { margin-bottom: 36px; }
+    .hdr-eyebrow { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--tx3); margin-bottom:8px; }
+    .hdr-title { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:300; letter-spacing:.04em; color:var(--tx1); line-height:1.2; }
+    .hdr-title em { font-style:italic; color:var(--accent); }
+    .hdr-sub { font-size:13px; color:var(--tx2); margin-top:10px; line-height:1.6; }
+
+    .step { margin-bottom: 28px; }
+    .step-label { font-size:9px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx3); margin-bottom:10px; }
+    .step-title { font-size:14px; font-weight:500; color:var(--tx2); margin-bottom:12px; }
+
+    .field { margin-bottom:12px; }
+    .field label { display:block; font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx2); margin-bottom:5px; }
+    .field input { width:100%; background:var(--input-bg); border:1px solid var(--border); border-radius:8px; color:var(--tx1); font-family:'Jost',sans-serif; font-size:14px; padding:10px 13px; outline:none; transition:border-color .15s; }
+    .field input:focus { border-color:var(--accent); }
+    .field input::placeholder { color:var(--tx3); }
+    .field-hint { font-size:11px; color:var(--tx3); margin-top:5px; line-height:1.5; }
+
+    .btn { border:none; border-radius:9px; padding:12px 20px; font-family:'Jost',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; letter-spacing:.04em; }
+    .btn-p { background:var(--accent); color:#0C0501; }
+    .btn-p:hover { background:var(--accent-b); }
+    .btn-p:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-s { background:var(--elevated); border:1px solid var(--border); color:var(--tx2); }
+    .btn-s:hover { border-color:var(--bh); color:var(--tx1); }
+    .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
+
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:12px; }
+    .card-title { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; color:var(--accent); letter-spacing:.08em; margin-bottom:12px; }
+
+    .diff-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; font-size:11px; }
+    .diff-table th { text-align:left; color:var(--tx3); font-size:9px; letter-spacing:.1em; text-transform:uppercase; padding:0 8px 8px 0; font-family:'Jost',sans-serif; font-weight:600; }
+    .diff-table td { padding:4px 8px 4px 0; vertical-align:top; color:var(--tx2); border-bottom:1px solid rgba(200,118,58,0.07); }
+    .diff-table tr:last-child td { border-bottom:none; }
+    .diff-table .field-name { color:var(--tx3); font-size:10px; }
+    .diff-old { color:var(--red); text-decoration:line-through; opacity:.7; }
+    .diff-new { color:var(--green); }
+    .diff-add { color:var(--blue); }
+    .diff-unchanged { color:var(--tx3); }
+
+    .summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+    .summary-stat { background:var(--elevated); border-radius:8px; padding:12px 14px; }
+    .summary-stat-v { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); }
+    .summary-stat-l { font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); margin-top:3px; }
+
+    .changes-list { list-style:none; }
+    .changes-list li { display:flex; align-items:baseline; gap:10px; padding:6px 0; border-bottom:1px solid rgba(200,118,58,0.07); font-size:12px; color:var(--tx2); line-height:1.5; }
+    .changes-list li:last-child { border-bottom:none; }
+    .change-ico { flex-shrink:0; font-family:'DM Mono',monospace; font-size:10px; width:14px; }
+    .ico-rename { color:var(--accent); }
+    .ico-new    { color:var(--blue); }
+    .ico-del    { color:var(--red); }
+    .ico-map    { color:var(--green); }
+
+    .alert { padding:11px 16px; border-radius:9px; font-size:12px; line-height:1.6; margin-bottom:16px; }
+    .alert-warn { background:rgba(200,120,64,0.07); border:1px solid rgba(200,120,64,0.2); color:var(--tx2); }
+    .alert-ok   { background:var(--green-d); border:1px solid rgba(90,136,96,0.25); color:var(--green); }
+    .alert-err  { background:var(--red-d); border:1px solid rgba(160,80,80,.3); color:var(--red); }
+
+    .spinner { display:inline-block; animation:spin .7s linear infinite; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+    .divider { height:1px; background:var(--border); margin:28px 0; }
+
+    .json-preview { background:var(--elevated); border:1px solid var(--border); border-radius:9px; padding:14px; font-family:'DM Mono',monospace; font-size:10px; color:var(--tx2); line-height:1.7; max-height:280px; overflow:auto; white-space:pre; }
+
+    .tag { display:inline-block; font-family:'DM Mono',monospace; font-size:9px; padding:2px 7px; border-radius:4px; letter-spacing:.06em; font-weight:500; }
+    .tag-renamed { background:rgba(200,120,64,0.12); color:var(--accent); border:1px solid rgba(200,120,64,0.2); }
+    .tag-new     { background:var(--blue-d); color:#7A9AC0; border:1px solid rgba(90,112,152,0.2); }
+    .tag-removed { background:var(--red-d); color:var(--red); border:1px solid rgba(160,80,80,.2); }
+    .tag-mapped  { background:var(--green-d); color:var(--green); border:1px solid rgba(90,136,96,0.2); }
+
+    #step-connect, #step-preview, #step-push { transition: opacity .2s; }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div class="hdr-eyebrow">Dial-In · Coffee</div>
+    <div class="hdr-title">Schema Migration<br/><em>v2 → v3</em></div>
+    <div class="hdr-sub">
+      Migrates your <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">kits.json</code> and
+      <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent)">dialins.json</code> to the new v3 schema.
+      Reads from GitHub, transforms in-browser, shows a full diff, then pushes back. Nothing is written until you confirm.
+    </div>
+  </div>
+
+  <!-- Step 1: Connect -->
+  <div id="step-connect">
+    <div class="step-label">Step 1 of 3</div>
+    <div class="step-title">Connect to your repository</div>
+
+    <div class="alert alert-warn">
+      ⚠ This will overwrite <strong>kits.json</strong> and <strong>dialins.json</strong> in your repo.
+      Make sure you have a backup or can roll back via Git history.
+    </div>
+
+    <div class="field">
+      <label>GitHub Username</label>
+      <input id="owner" placeholder="trynerlu" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>Repository Name</label>
+      <input id="repo" placeholder="coffee-dialins" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>Personal Access Token</label>
+      <input id="token" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off"/>
+      <div class="field-hint">Needs repo read+write scope. Not stored anywhere — only used for this session.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-p" id="btn-load">Load & Preview Migration</button>
+    </div>
+
+    <div id="connect-status" style="margin-top:12px;font-size:12px;color:var(--tx2);"></div>
+  </div>
+
+  <!-- Step 2: Preview -->
+  <div id="step-preview" class="hidden">
+    <div class="divider"></div>
+    <div class="step-label">Step 2 of 3</div>
+    <div class="step-title">Review all changes</div>
+
+    <div class="summary-grid">
+      <div class="summary-stat"><div class="summary-stat-v" id="stat-kits">—</div><div class="summary-stat-l">Kits to migrate</div></div>
+      <div class="summary-stat"><div class="summary-stat-v" id="stat-dialins">—</div><div class="summary-stat-l">Dial-ins to migrate</div></div>
+    </div>
+
+    <!-- Kit changes -->
+    <div class="card">
+      <div class="card-title">kits.json — Changes</div>
+      <ul class="changes-list" id="kit-changes-list"></ul>
+    </div>
+
+    <!-- Dialin field map -->
+    <div class="card">
+      <div class="card-title">dialins.json — Field Transformations</div>
+      <table class="diff-table">
+        <thead><tr><th>Old field</th><th>→</th><th>New field</th><th>Mapping</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">status</td><td>→</td><td class="diff-new">dialStatus</td><td><span class="tag tag-mapped">experimenting→dialing · dialed→dialed</span></td></tr>
+          <tr><td class="field-name">status:experimenting</td><td>→</td><td class="diff-new">experimenting: true</td><td><span class="tag tag-new">new boolean</span></td></tr>
+          <tr><td class="field-name">bagStatus</td><td>→</td><td class="diff-new">beanLocation</td><td><span class="tag tag-mapped">waiting/ready→shelf · open/active→open · finished→empty · freezer→frozen</span></td></tr>
+          <tr><td class="field-name">dialDifficulty</td><td>→</td><td class="diff-new">dialEase</td><td><span class="tag tag-mapped">1–2→easy · 3→medium · 4–5→hard · 0→null</span></td></tr>
+          <tr><td class="field-name">shotStability</td><td>→</td><td class="diff-new">dialStability</td><td><span class="tag tag-mapped">1–2→unstable · 3–5→stable · 0→null</span></td></tr>
+          <tr><td class="field-name">intendedFor</td><td>→</td><td class="diff-new">brewMethods[]</td><td><span class="tag tag-mapped">Espresso→[Espresso] · Filter→[Pour Over] · Both→[Espresso,Pour Over]</span></td></tr>
+          <tr><td class="field-name">roasterUrl</td><td>→</td><td class="diff-new">coffeeUrl (if empty)</td><td><span class="tag tag-del">removed after merge</span></td></tr>
+          <tr><td class="field-name">kitId:pour-over</td><td>→</td><td class="diff-new">kitId:office-pour-over</td><td><span class="tag tag-renamed">id rename</span></td></tr>
+          <tr><td class="field-name">—</td><td>→</td><td class="diff-new">isEarlyEntry: false</td><td><span class="tag tag-new">new field, default false</span></td></tr>
+          <tr><td class="field-name">—</td><td>→</td><td class="diff-new">experimenting: false</td><td><span class="tag tag-new">new field, default false</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Sample diff -->
+    <div class="card">
+      <div class="card-title">dialins.json — Sample Entry Diff</div>
+      <div id="sample-diff"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-p" id="btn-push">Push Migrated Files to GitHub</button>
+      <button class="btn btn-s" id="btn-download">Download as JSON</button>
+      <button class="btn btn-s" id="btn-back">← Back</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Result -->
+  <div id="step-result" class="hidden">
+    <div class="divider"></div>
+    <div class="step-label">Step 3 of 3</div>
+    <div id="result-content"></div>
+  </div>
+
+</div>
+
+<script>
+// ── MIGRATION LOGIC ────────────────────────────────────────────────────────────
+
+function migrateKits(kits) {
+  const locationMap = {
+    "home-espresso":  { location: "home",   brewMethod: "espresso" },
+    "home-pour-over": { location: "home",   brewMethod: "filter"   },
+    "office-espresso":{ location: "office", brewMethod: "espresso" },
+    "pour-over":      { location: "office", brewMethod: "filter"   },
+    "french-press":   { location: "home",   brewMethod: "fpress"   },
+  };
+
+  return kits.map(k => {
+    const meta = locationMap[k.id] || { location: "home", brewMethod: "espresso" };
+    const newKit = { ...k, ...meta };
+    // rename pour-over → office-pour-over
+    if (newKit.id === "pour-over") newKit.id = "office-pour-over";
+    return newKit;
+  });
+}
+
+function migrateDialin(d) {
+  const n = { ...d };
+
+  // dialStatus + experimenting boolean
+  if (n.status === "experimenting") {
+    n.dialStatus = "dialing";
+    n.experimenting = true;
+  } else if (n.status === "dialed") {
+    n.dialStatus = "dialed";
+    n.experimenting = false;
+  } else {
+    n.dialStatus = n.status || "dialed";
+    n.experimenting = false;
+  }
+  delete n.status;
+
+  // beanLocation
+  const bagMap = { waiting:"shelf", ready:"shelf", open:"open", active:"open", finished:"empty", freezer:"frozen" };
+  n.beanLocation = bagMap[n.bagStatus] || "open";
+  delete n.bagStatus;
+
+  // dialEase
+  const dd = n.dialDifficulty || 0;
+  n.dialEase = dd === 0 ? null : dd <= 2 ? "easy" : dd === 3 ? "medium" : "hard";
+  delete n.dialDifficulty;
+
+  // dialStability
+  const ss = n.shotStability || 0;
+  n.dialStability = ss === 0 ? null : ss <= 2 ? "unstable" : "stable";
+  delete n.shotStability;
+
+  // brewMethods
+  const bm = { Espresso:["Espresso"], Filter:["Pour Over"], Both:["Espresso","Pour Over"] };
+  n.brewMethods = bm[n.intendedFor] || (n.intendedFor ? [n.intendedFor] : []);
+  delete n.intendedFor;
+
+  // roasterUrl → coffeeUrl
+  if (n.roasterUrl && !n.coffeeUrl) n.coffeeUrl = n.roasterUrl;
+  delete n.roasterUrl;
+
+  // kit id rename
+  if (n.kitId === "pour-over") n.kitId = "office-pour-over";
+
+  // new fields
+  if (n.isEarlyEntry === undefined) n.isEarlyEntry = false;
+
+  return n;
+}
+
+function buildSampleDiff(old, migrated) {
+  const changed = [
+    ["status", "dialStatus"],
+    ["—", "experimenting"],
+    ["bagStatus", "beanLocation"],
+    ["dialDifficulty", "dialEase"],
+    ["shotStability", "dialStability"],
+    ["intendedFor", "brewMethods"],
+    ["roasterUrl", "coffeeUrl"],
+    ["—", "isEarlyEntry"],
+  ];
+  let html = '<table class="diff-table"><thead><tr><th>Field</th><th>Before</th><th>After</th></tr></thead><tbody>';
+  changed.forEach(([o, n]) => {
+    const oldVal = o === "—" ? "—" : JSON.stringify(old[o] ?? null);
+    const newVal = JSON.stringify(migrated[n] ?? null);
+    const same = oldVal === newVal;
+    html += `<tr>
+      <td class="field-name">${n}</td>
+      <td class="${same ? 'diff-unchanged' : 'diff-old'}">${oldVal}</td>
+      <td class="${same ? 'diff-unchanged' : 'diff-new'}">${newVal}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+// ── GITHUB HELPERS ─────────────────────────────────────────────────────────────
+
+function getCreds() {
+  return {
+    owner: document.getElementById('owner').value.trim(),
+    repo:  document.getElementById('repo').value.trim(),
+    token: document.getElementById('token').value.trim(),
+  };
+}
+
+async function ghRead(creds, file) {
+  const r = await fetch(`https://raw.githubusercontent.com/${creds.owner}/${creds.repo}/main/${file}?_=${Date.now()}`);
+  if (!r.ok) throw new Error(`${file}: HTTP ${r.status}`);
+  return r.json();
+}
+
+async function ghGetSha(creds, file) {
+  const r = await fetch(`https://api.github.com/repos/${creds.owner}/${creds.repo}/contents/${file}?ref=main`,
+    { headers: { Authorization: `Bearer ${creds.token}`, Accept: "application/vnd.github+json" } });
+  if (!r.ok) return null;
+  return (await r.json()).sha || null;
+}
+
+async function ghWrite(creds, file, data) {
+  const api = `https://api.github.com/repos/${creds.owner}/${creds.repo}/contents/${file}`;
+  const headers = { Authorization: `Bearer ${creds.token}`, Accept: "application/vnd.github+json", "Content-Type": "application/json" };
+  const sha = await ghGetSha(creds, file);
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  const res = await fetch(api, { method: "PUT", headers, body: JSON.stringify({
+    message: `Migrate ${file} to v3 schema`, content, branch: "main", ...(sha ? {sha} : {})
+  })});
+  if (!res.ok) { const e = await res.json(); throw new Error(e.message); }
+}
+
+// ── UI STATE ───────────────────────────────────────────────────────────────────
+
+let migratedKits = null;
+let migratedDialins = null;
+let originalKits = null;
+let originalDialins = null;
+
+function setStatus(msg, color) {
+  const el = document.getElementById('connect-status');
+  el.style.color = color || 'var(--tx2)';
+  el.innerHTML = msg;
+}
+
+document.getElementById('btn-load').addEventListener('click', async () => {
+  const creds = getCreds();
+  if (!creds.owner || !creds.repo || !creds.token) {
+    setStatus('⚠ Please fill in all three fields.', 'var(--red)');
+    return;
+  }
+
+  const btn = document.getElementById('btn-load');
+  btn.disabled = true;
+  btn.textContent = '';
+  btn.innerHTML = '<span class="spinner">↻</span> Loading…';
+  setStatus('Fetching files from GitHub…');
+
+  try {
+    const [kits, dialins] = await Promise.all([
+      ghRead(creds, 'kits.json'),
+      ghRead(creds, 'dialins.json'),
+    ]);
+
+    originalKits = kits;
+    originalDialins = dialins;
+    migratedKits = migrateKits(kits);
+    migratedDialins = dialins.map(migrateDialin);
+
+    // populate summary
+    document.getElementById('stat-kits').textContent = kits.length;
+    document.getElementById('stat-dialins').textContent = dialins.length;
+
+    // kit changes list
+    const kitList = document.getElementById('kit-changes-list');
+    kitList.innerHTML = '';
+    kits.forEach((k, i) => {
+      const m = migratedKits[i];
+      const idChanged = k.id !== m.id;
+      kitList.innerHTML += `<li>
+        <span class="change-ico ico-rename">→</span>
+        <span>
+          <strong style="color:var(--tx1)">${k.name}</strong>
+          &nbsp;<span class="tag tag-new">location: ${m.location}</span>
+          &nbsp;<span class="tag tag-new">brewMethod: ${m.brewMethod}</span>
+          ${idChanged ? `<span class="tag tag-renamed">id: ${k.id} → ${m.id}</span>` : ''}
+        </span>
+      </li>`;
+    });
+
+    // sample diff — use first dialin that has the most fields
+    const sample = dialins.find(d => d.bagStatus && d.dialDifficulty) || dialins[0];
+    if (sample) {
+      const sampleMigrated = migrateDialin(sample);
+      document.getElementById('sample-diff').innerHTML =
+        `<div style="font-size:11px;color:var(--tx3);margin-bottom:10px;font-family:'DM Mono',monospace">${sample.coffeeName} · ${sample.date}</div>` +
+        buildSampleDiff(sample, sampleMigrated);
+    }
+
+    document.getElementById('step-preview').classList.remove('hidden');
+    document.getElementById('step-preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setStatus('✓ Loaded successfully.', 'var(--green)');
+
+  } catch(e) {
+    setStatus(`✗ ${e.message}`, 'var(--red)');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Load & Preview Migration';
+});
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  document.getElementById('step-preview').classList.add('hidden');
+  document.getElementById('step-result').classList.add('hidden');
+});
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  if (!migratedKits || !migratedDialins) return;
+  const a = document.createElement('a');
+  const blob = new Blob([JSON.stringify({ kits: migratedKits, dialins: migratedDialins }, null, 2)], { type: 'application/json' });
+  a.href = URL.createObjectURL(blob);
+  a.download = 'migration-v3-preview.json';
+  a.click();
+});
+
+document.getElementById('btn-push').addEventListener('click', async () => {
+  const creds = getCreds();
+  const btn = document.getElementById('btn-push');
+  const resultEl = document.getElementById('result-content');
+  const resultStep = document.getElementById('step-result');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner">↻</span> Pushing…';
+
+  try {
+    await ghWrite(creds, 'kits.json', migratedKits);
+    await ghWrite(creds, 'dialins.json', migratedDialins);
+
+    resultStep.classList.remove('hidden');
+    resultEl.innerHTML = `
+      <div class="alert alert-ok">
+        ✓ Migration complete. Both files pushed to GitHub successfully.
+      </div>
+      <div class="card">
+        <div class="card-title">What was written</div>
+        <ul class="changes-list">
+          <li><span class="change-ico ico-map">✓</span><span>kits.json — ${migratedKits.length} kits with new location + brewMethod fields</span></li>
+          <li><span class="change-ico ico-map">✓</span><span>dialins.json — ${migratedDialins.length} entries migrated to v3 schema</span></li>
+          <li><span class="change-ico ico-rename">→</span><span>Kit id <code style="font-family:'DM Mono',monospace;color:var(--accent)">pour-over</code> renamed to <code style="font-family:'DM Mono',monospace;color:var(--green)">office-pour-over</code></span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Next steps</div>
+        <ul class="changes-list">
+          <li><span class="change-ico ico-new">1</span><span>Deploy the updated <code style="font-family:'DM Mono',monospace;color:var(--accent)">index.html</code> (v3 app code)</span></li>
+          <li><span class="change-ico ico-new">2</span><span>Clear localStorage cache in the app: Settings → sync to pull fresh data</span></li>
+          <li><span class="change-ico ico-new">3</span><span>Manually tag any entries as <code style="font-family:'DM Mono',monospace;color:var(--accent)">isEarlyEntry: true</code> that belong to your learning period</span></li>
+        </ul>
+      </div>
+    `;
+    resultStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) {
+    resultStep.classList.remove('hidden');
+    resultEl.innerHTML = `<div class="alert alert-err">✗ Push failed: ${e.message}<br/>Your original files were not modified.</div>`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Push Migrated Files to GitHub';
+});
+</script>
+</body>
+</html>
