@@ -2,170 +2,101 @@
   {
     "id": "home-espresso",
     "name": "Home Espresso",
-    "subtitle": "Quick Mill Pop-Up",
+    "subtitle": "Quick Mill Pop-Up · Timemore Sculptor 064S",
     "tag": "ESPR",
     "color": "#C87840",
-    "equipment": [
-      {
-        "category": "Machine",
-        "name": "Quick Mill Pop-Up",
-        "notes": "Single boiler, PID + pressure profiling — filtered water only"
-      },
-      {
-        "category": "Shower Screen",
-        "name": "IMS Competition Shower Screen",
-        "notes": "Precision water distribution upgrade"
-      },
-      {
-        "category": "Portafilter",
-        "name": "MHW-3BOMBER Bottomless Portafilter",
-        "notes": "Naked / bottomless — 58mm"
-      },
-      {
-        "category": "Basket",
-        "name": "Pullman Barista Basket",
-        "notes": "Precision 58mm extraction basket"
-      },
-      {
-        "category": "Tamper",
-        "name": "Ikape V6 Calibrated Tamper",
-        "notes": "Constant-pressure click tamper"
-      },
-      {
-        "category": "Puck Prep",
-        "name": "Ikape Blind Basket",
-        "notes": "For backflushing & cleaning"
-      },
-      {
-        "category": "Grinder",
-        "name": "Timemore Sculptor 064S",
-        "notes": "64mm flat burrs, stock — stepless adjustment"
-      },
-      {
-        "category": "Scale",
-        "name": "Timemore Black Mirror Mini",
-        "notes": "With real-time flow rate display"
-      },
-      {
-        "category": "Kettle",
-        "name": "Sencor Clever Gooseneck Kettle",
-        "notes": "600ml max — variable temperature control"
-      }
-    ],
     "location": "home",
-    "brewMethod": "espresso"
+    "brewMethod": "espresso",
+    "equipment": [
+      { "category": "Machine",        "name": "Quick Mill Pop-Up",                   "notes": "Single boiler, PID + pressure profiling" },
+      { "category": "Shower Screen",  "name": "IMS Competition Shower Screen",       "notes": "Precision water distribution upgrade" },
+      { "category": "Portafilter",    "name": "MHW-3BOMBER Bottomless Portafilter",  "notes": "Naked / bottomless — 58mm" },
+      { "category": "Basket",         "name": "Pullman Barista Basket",              "notes": "Precision 58mm — main basket" },
+      { "category": "Basket",         "name": "IKAPE Step-Down Basket",              "notes": "58→33mm tapered — for body & experimentation" },
+      { "category": "Tamper",         "name": "Ikape V6 Calibrated Tamper",          "notes": "Constant-pressure click tamper" },
+      { "category": "Puck Prep",      "name": "Ikape Blind Basket",                  "notes": "For backflushing & cleaning" },
+      { "category": "Grinder",        "name": "Timemore Sculptor 064S",              "notes": "64mm flat burrs, seasoned — stepless adjustment" },
+      { "category": "Scale",          "name": "Timemore Black Mirror Mini",          "notes": "Real-time flow rate display" },
+      { "category": "Kettle",         "name": "Sencor Clever Gooseneck Kettle",      "notes": "600ml max — variable temperature" }
+    ]
+  },
+  {
+    "id": "home-pour-over",
+    "name": "Home Pour-Over",
+    "subtitle": "Hario V60 · Timemore Sculptor 064S",
+    "tag": "POUR",
+    "color": "#7A9870",
+    "location": "home",
+    "brewMethod": "filter",
+    "equipment": [
+      { "category": "Dripper",  "name": "Hario V60 Drip Coffee Dripper 02", "notes": "" },
+      { "category": "Filters",  "name": "Hario V60 02 Paper Filters",       "notes": "" },
+      { "category": "Grinder",  "name": "Timemore Sculptor 064S",           "notes": "Shared with home espresso" },
+      { "category": "Scale",    "name": "Timemore Black Mirror Mini",       "notes": "Shared with home espresso" },
+      { "category": "Kettle",   "name": "Sencor Clever Gooseneck Kettle",   "notes": "Shared with home espresso" }
+    ]
+  },
+  {
+    "id": "home-french-press",
+    "name": "Home French Press",
+    "subtitle": "IKEA UPPHETTA · Timemore Sculptor 064S",
+    "tag": "FRPR",
+    "color": "#8A5A7A",
+    "location": "home",
+    "brewMethod": "fpress",
+    "equipment": [
+      { "category": "Brewer",  "name": "IKEA UPPHETTA French Press", "notes": "Stainless steel & wood — home variant" },
+      { "category": "Grinder", "name": "Timemore Sculptor 064S",     "notes": "Shared with home espresso" },
+      { "category": "Scale",   "name": "Timemore Black Mirror Mini", "notes": "Shared with home espresso" }
+    ]
   },
   {
     "id": "office-espresso",
     "name": "Office Espresso",
-    "subtitle": "Gaggia Classic Evo Pro",
-    "tag": "OFFC",
+    "subtitle": "Gaggia Classic Evo Pro · Eureka Zenith 65E",
+    "tag": "ESPR",
     "color": "#5A886A",
-    "equipment": [
-      {
-        "category": "Machine",
-        "name": "Gaggia Classic Evo Pro",
-        "notes": "Black — bought used, single previous owner"
-      },
-      {
-        "category": "Grinder",
-        "name": "Eureka Zenith 65E",
-        "notes": "65mm flat burrs — used, burrs roughly mid-life"
-      },
-      {
-        "category": "Portafilter",
-        "name": "MHW-3BOMBER Bottomless Portafilter",
-        "notes": "Naked / bottomless — Gaggia-specific 58mm"
-      },
-      {
-        "category": "Basket",
-        "name": "Gaggia 58mm Double / Single / Blind Baskets",
-        "notes": "Stock Gaggia baskets"
-      },
-      {
-        "category": "Tamper",
-        "name": "Ikape V6 Calibrated Tamper",
-        "notes": "Constant-pressure click tamper"
-      },
-      {
-        "category": "Puck Prep",
-        "name": "58mm Puck Screen + IWS WDT Tools",
-        "notes": "Standard puck prep set"
-      },
-      {
-        "category": "Scale",
-        "name": "Generic Digital Scale",
-        "notes": "No Bluetooth — AliExpress, manual read"
-      },
-      {
-        "category": "Water",
-        "name": "Filtered Water",
-        "notes": ""
-      },
-      {
-        "category": "Incoming",
-        "name": "GaggiMate Standard Kit",
-        "notes": "Smart PID + temperature control upgrade — arriving ~2–3 weeks"
-      }
-    ],
     "location": "office",
-    "brewMethod": "espresso"
+    "brewMethod": "espresso",
+    "equipment": [
+      { "category": "Machine",     "name": "Gaggia Classic Evo Pro",                      "notes": "Black — bought used, single previous owner" },
+      { "category": "Incoming",    "name": "GaggiMate Standard Kit",                      "notes": "Smart PID + temperature control upgrade — arriving soon" },
+      { "category": "Grinder",     "name": "Eureka Zenith 65E",                           "notes": "65mm flat burrs — used, burrs roughly mid-life" },
+      { "category": "Portafilter", "name": "MHW-3BOMBER Bottomless Portafilter",          "notes": "Naked / bottomless — Gaggia-specific 58mm" },
+      { "category": "Basket",      "name": "Gaggia 58mm Double / Single / Blind Baskets", "notes": "Stock Gaggia baskets" },
+      { "category": "Tamper",      "name": "Ikape V6 Calibrated Tamper",                  "notes": "Constant-pressure click tamper" },
+      { "category": "Puck Prep",   "name": "58mm Puck Screen + IWS WDT Tools",            "notes": "Standard puck prep set" },
+      { "category": "Scale",       "name": "Generic Digital Scale",                       "notes": "No Bluetooth — AliExpress, manual read" }
+    ]
   },
   {
     "id": "office-pour-over",
-    "name": "Pour Over",
-    "subtitle": "Office Filter",
+    "name": "Office Pour-Over",
+    "subtitle": "Hario V60 · Baratza Encore",
     "tag": "POUR",
     "color": "#5A7098",
-    "equipment": [
-      {
-        "category": "Dripper",
-        "name": "Hario V60 Drip Coffee Dripper 02",
-        "notes": "Moving from home to office"
-      },
-      {
-        "category": "Filters",
-        "name": "Hario V60 02 Paper Filters",
-        "notes": ""
-      },
-      {
-        "category": "Grinder",
-        "name": "Baratza Encore ESP",
-        "notes": "Bought used via Aukro — condition TBD, burr upgrade planned"
-      },
-      {
-        "category": "Scale",
-        "name": "Generic Digital Scale",
-        "notes": "Shared with espresso kit — Bluetooth + flow rate scale TBD"
-      },
-      {
-        "category": "Kettle",
-        "name": "Timemore Fish Smart Electric Kettle",
-        "notes": "TBD — shortlisted for gooseneck"
-      }
-    ],
     "location": "office",
-    "brewMethod": "filter"
+    "brewMethod": "filter",
+    "equipment": [
+      { "category": "Dripper",  "name": "Hario V60 Drip Coffee Dripper 02", "notes": "" },
+      { "category": "Filters",  "name": "Hario V60 02 Paper Filters",       "notes": "" },
+      { "category": "Grinder",  "name": "Baratza Encore",                   "notes": "Bought used via Aukro — burr upgrade planned. Filter & french press grinder." },
+      { "category": "Scale",    "name": "Generic Digital Scale",            "notes": "Shared with office espresso" },
+      { "category": "Kettle",   "name": "Sencor Clever Gooseneck Kettle",   "notes": "Shared from home setup" }
+    ]
   },
   {
-    "id": "french-press",
-    "name": "French Press",
-    "subtitle": "Home Immersion",
+    "id": "office-french-press",
+    "name": "Office French Press",
+    "subtitle": "IKEA UPPHETTA · Baratza Encore",
     "tag": "FRPR",
-    "color": "#8A5A7A",
+    "color": "#7A5A8A",
+    "location": "office",
+    "brewMethod": "fpress",
     "equipment": [
-      {
-        "category": "Brewer",
-        "name": "IKEA UPPHETTA French Press",
-        "notes": "Stainless steel & glass — premium model with wooden accents"
-      },
-      {
-        "category": "Grinder",
-        "name": "Timemore Sculptor 064S",
-        "notes": "Shared home grinder — espresso, pour over & French press"
-      }
-    ],
-    "location": "home",
-    "brewMethod": "fpress"
+      { "category": "Brewer",  "name": "IKEA UPPHETTA French Press", "notes": "Stainless steel & plastic — office variant" },
+      { "category": "Grinder", "name": "Baratza Encore",             "notes": "Shared with office pour-over" },
+      { "category": "Scale",   "name": "Generic Digital Scale",      "notes": "Shared with office espresso" }
+    ]
   }
 ]
