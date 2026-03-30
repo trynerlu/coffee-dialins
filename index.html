@@ -37,7 +37,7 @@
     .hdr { position:sticky; top:0; z-index:100; background:rgba(12,5,1,.95); backdrop-filter:blur(18px); border-bottom:1px solid var(--border); padding:14px 18px; display:flex; align-items:center; gap:10px; }
     .hdr-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; letter-spacing:.02em; flex:1; }
     .hdr-sub { font-size:10px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--tx2); margin-top:1px; }
-    .icon-btn { width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--tx2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:15px; flex-shrink:0; }
+    .icon-btn { width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--tx2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:20px; flex-shrink:0; }
     .icon-btn:hover { border-color:var(--bh); color:var(--tx1); }
     .sort-sel { background:var(--surface); border:1px solid var(--border); border-radius:7px; color:var(--tx2); font-family:'Jost',sans-serif; font-size:11px; padding:5px 8px; outline:none; cursor:pointer; flex-shrink:0; }
     .sort-sel option { background:var(--elevated); }
@@ -446,7 +446,6 @@ function DialInCard({ d, kits, onClick }) {
   const norm     = normalizeDiaLin(d);
   const freshness= getFreshness(norm.roastDate, norm.beanLocation, d.roastLevel, norm.brewMethods);
   const hasParams= d.temperature>0||d.yieldOut>0||d.timeSeconds>0;
-  const provenance = [d.origin, d.region].filter(Boolean).join(" · ");
   const r        = d.doseIn&&d.yieldOut ? ratio(d.doseIn,d.yieldOut) : null;
 
   return (
@@ -455,7 +454,6 @@ function DialInCard({ d, kits, onClick }) {
         <div style={{flex:1,minWidth:0}}>
           {d.roaster && <div className="dc-roaster-name">{d.roaster}</div>}
           <div className="dc-name">{d.coffeeName}</div>
-          {provenance && <div className="dc-origin">{provenance}</div>}
         </div>
         {d.grindSetting && (
           <div style={{textAlign:"right",flexShrink:0,paddingLeft:"8px"}}>
@@ -560,6 +558,7 @@ function LogbookScreen({ kits, dialins, nav }) {
   const [q,       setQ]       = useState("");
   const [brewF,   setBrewF]   = useState([]);
   const [locF,    setLocF]    = useState([]);
+  const [roastF,  setRoastF]  = useState([]);
   const [statusF, setStatusF] = useState("all");
   const [beansF,  setBeansF]  = useState("all");
   const [sort,    setSort]    = useState("recent");
@@ -571,13 +570,21 @@ function LogbookScreen({ kits, dialins, nav }) {
       const norm = normalizeDiaLin(d);
       const kit  = kits.find(k=>k.id===d.kitId);
       const sm   = !q||[d.coffeeName,d.roaster,d.origin,d.process,d.grindSetting,d.flavorNotes].join(" ").toLowerCase().includes(q.toLowerCase());
-      const bm   = brewF.length===0
-        || (brewF.includes("espr") && norm.brewMethods.includes("Espresso"))
-        || (brewF.includes("pour") && norm.brewMethods.includes("Pour Over"))
-        || (brewF.includes("frpr") && norm.brewMethods.includes("French Press"));
-      const lm   = locF.length===0
-        || (locF.includes("home") && kit?.location==="home")
-        || (locF.includes("offc") && kit?.location==="office");
+      // AND logic: entry must match ALL selected brew methods
+      const bm   = brewF.length===0 || (
+        (!brewF.includes("espr") || norm.brewMethods.includes("Espresso")) &&
+        (!brewF.includes("pour") || norm.brewMethods.includes("Pour Over")) &&
+        (!brewF.includes("frpr") || norm.brewMethods.includes("French Press"))
+      );
+      // AND logic: entry must match ALL selected locations (in practice max 1 since a kit has one location, but consistent)
+      const lm   = locF.length===0 || (
+        (!locF.includes("home") || kit?.location==="home") &&
+        (!locF.includes("offc") || kit?.location==="office")
+      );
+      // AND logic: entry must match ALL selected roast levels
+      const rm   = roastF.length===0 || roastF.includes(
+        d.roastLevel==="Light"?"light":d.roastLevel==="Medium-Light"?"ml":d.roastLevel==="Medium"?"med":d.roastLevel==="Medium-Dark"?"md":"dark"
+      );
       const stm  = statusF==="all"
         ||(statusF==="waiting"      && norm.dialStatus==="waiting")
         ||(statusF==="dialing"      && norm.dialStatus==="dialing")
@@ -589,16 +596,16 @@ function LogbookScreen({ kits, dialins, nav }) {
         ||(beansF==="open"   && norm.beanLocation==="open")
         ||(beansF==="frozen" && norm.beanLocation==="frozen")
         ||(beansF==="empty"  && norm.beanLocation==="empty");
-      return sm&&bm&&lm&&stm&&blm;
+      return sm&&bm&&lm&&rm&&stm&&blm;
     }).sort((a,b)=>{
       if (sort==="rating") return (b.rating||0)-(a.rating||0);
       if (sort==="name")   return (a.coffeeName||"").localeCompare(b.coffeeName||"");
       if (sort==="roast")  return (b.roastDate||b.date||"").localeCompare(a.roastDate||a.date||"");
       return (b.date||"").localeCompare(a.date||"");
     });
-  },[dialins,kits,q,brewF,locF,statusF,beansF,sort]);
+  },[dialins,kits,q,brewF,locF,roastF,statusF,beansF,sort]);
 
-  // Multi-select row (toggle each chip independently, empty = all)
+  // Multi-select row — empty selection = show all; AND logic between selected values
   const MultiRow = ({label, opts, val, set}) => (
     <div className="filter-block">
       <div className="filter-label">{label}</div>
@@ -639,10 +646,11 @@ function LogbookScreen({ kits, dialins, nav }) {
         <input className="search-input" placeholder="Search coffee, origin, grind, flavour…" value={q} onChange={e=>setQ(e.target.value)}/>
       </div>
       <div style={{padding:"6px 0 8px"}}>
-        <MultiRow  label="Brew"   opts={[["espr","ESPR"],["pour","POUR"],["frpr","FRPR"]]} val={brewF} set={setBrewF}/>
-        <MultiRow  label="Kit"    opts={[["home","HOME"],["offc","OFFC"]]}                  val={locF}  set={setLocF}/>
+        <MultiRow  label="Brew"   opts={[["espr","ESPR"],["pour","POUR"],["frpr","FRPR"]]}                                     val={brewF}  set={setBrewF}/>
+        <MultiRow  label="Kit"    opts={[["home","HOME"],["offc","OFFC"]]}                                                      val={locF}   set={setLocF}/>
+        <MultiRow  label="Roast"  opts={[["light","LIGHT"],["ml","MED-LIGHT"],["med","MEDIUM"],["md","MED-DARK"],["dark","DARK"]]} val={roastF} set={setRoastF}/>
         <SingleRow label="Status" opts={[["all","ALL"],["waiting","WAITING"],["dialing","DIALING"],["dialed","DIALED"],["abandoned","ABANDONED"],["experimenting","EXP"]]} val={statusF} set={setStatusF}/>
-        <SingleRow label="Beans"  opts={[["all","ALL"],["shelf","SHELF"],["open","OPEN"],["frozen","FROZEN"],["empty","DONE"]]} val={beansF} set={setBeansF}/>
+        <SingleRow label="Beans"  opts={[["all","ALL"],["shelf","SHELF"],["open","OPEN"],["frozen","FROZEN"],["empty","DONE"]]}  val={beansF} set={setBeansF}/>
       </div>
       {filtered.length===0
         ? <div className="empty"><div className="empty-ico">◉</div><div className="empty-t">No results</div><div className="empty-s">{q?"Try a different search":"No entries match these filters"}</div></div>
@@ -682,8 +690,8 @@ function DialInDetail({ d, kits, nav, onEdit, prevScreen }) {
           <DialStatusBadge dialStatus={norm.dialStatus} experimenting={norm.experimenting}/>
           <KitLocBadge kit={kit}/>
           <BrewBadges brewMethods={norm.brewMethods}/>
-          {d.process    && <span className="badge b-process">{d.process}</span>}
-          {d.roastLevel && <span className="badge b-roast">{d.roastLevel}</span>}
+          {d.process    && <span className="badge b-process">{d.process.toUpperCase()}</span>}
+          {d.roastLevel && <span className="badge b-roast">{d.roastLevel.toUpperCase()}</span>}
           {freshness    && <span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
           <BeanLocationBadge beanLocation={norm.beanLocation}/>
           {norm.wouldBuy    && <span className="badge b-would-buy">🛒 WOULD BUY</span>}
