@@ -418,18 +418,19 @@ function BrewBadges({ brewMethods }) {
 
 function BeanLocationBadge({ beanLocation }) {
   if (!beanLocation||beanLocation==="open") return null;
-  if (beanLocation==="shelf")  return <span className="badge b-bean-shelf">Shelf</span>;
-  if (beanLocation==="frozen") return <span className="badge b-bean-frozen">❄ Frozen</span>;
-  if (beanLocation==="empty")  return <span className="badge b-bean-empty">Done</span>;
+  if (beanLocation==="shelf")  return <span className="badge b-bean-shelf">SHELF</span>;
+  if (beanLocation==="frozen") return <span className="badge b-bean-frozen">❄ FROZEN</span>;
+  if (beanLocation==="empty")  return <span className="badge b-bean-empty">DONE</span>;
   return null;
 }
 
 function DialStatusBadge({ dialStatus, experimenting }) {
-  const labels = { waiting:"Waiting", dialing:"Dialing", dialed:"Dialed", abandoned:"Abandoned" };
   return <>
-    {dialStatus && dialStatus!=="dialed" && <span className={`badge b-dial-${dialStatus}`}>{labels[dialStatus]||dialStatus}</span>}
-    {dialStatus==="dialed"               && <span className="badge b-dial-dialed">Dialed</span>}
-    {experimenting                       && <span className="badge b-experimenting">Experimenting</span>}
+    {dialStatus==="waiting"   && <span className="badge b-dial-waiting">WAITING</span>}
+    {dialStatus==="dialing"   && <span className="badge b-dial-dialing">DIALING</span>}
+    {dialStatus==="dialed"    && <span className="badge b-dial-dialed">DIALED</span>}
+    {dialStatus==="abandoned" && <span className="badge b-dial-abandoned">ABANDONED</span>}
+    {experimenting            && <span className="badge b-experimenting">EXPERIMENTING</span>}
   </>;
 }
 
@@ -445,7 +446,7 @@ function DialInCard({ d, kits, onClick }) {
   const norm     = normalizeDiaLin(d);
   const freshness= getFreshness(norm.roastDate, norm.beanLocation, d.roastLevel, norm.brewMethods);
   const hasParams= d.temperature>0||d.yieldOut>0||d.timeSeconds>0;
-  const origin   = [d.origin,d.region,d.process].filter(Boolean).join(" · ");
+  const provenance = [d.origin, d.region].filter(Boolean).join(" · ");
   const r        = d.doseIn&&d.yieldOut ? ratio(d.doseIn,d.yieldOut) : null;
 
   return (
@@ -454,7 +455,7 @@ function DialInCard({ d, kits, onClick }) {
         <div style={{flex:1,minWidth:0}}>
           {d.roaster && <div className="dc-roaster-name">{d.roaster}</div>}
           <div className="dc-name">{d.coffeeName}</div>
-          {origin && <div className="dc-origin">{origin}</div>}
+          {provenance && <div className="dc-origin">{provenance}</div>}
         </div>
         {d.grindSetting && (
           <div style={{textAlign:"right",flexShrink:0,paddingLeft:"8px"}}>
@@ -466,13 +467,14 @@ function DialInCard({ d, kits, onClick }) {
       <div className="dc-meta">
         <KitLocBadge kit={kit}/>
         <BrewBadges brewMethods={norm.brewMethods}/>
+        {d.process && <span className="badge b-process">{d.process.toUpperCase()}</span>}
         {freshness && <span className="badge" style={{background:freshness.bg,color:freshness.color,fontSize:"9px"}}>{freshness.label}</span>}
         <BeanLocationBadge beanLocation={norm.beanLocation}/>
         <DialStatusBadge dialStatus={norm.dialStatus} experimenting={norm.experimenting}/>
         {d.rating>0 && <Stars n={d.rating}/>}
-        {norm.wouldBuy  && <span className="badge b-would-buy">🛒</span>}
-        {norm.isChoice  && <span className="badge b-choice">★ Pick</span>}
-        {norm.isEarlyEntry && <span className="badge b-early">Early Entry</span>}
+        {norm.wouldBuy  && <span className="badge b-would-buy">🛒 BUY</span>}
+        {norm.isChoice  && <span className="badge b-choice">★ PICK</span>}
+        {norm.isEarlyEntry && <span className="badge b-early">EARLY</span>}
       </div>
       {hasParams && (
         <div className="dc-params">
@@ -515,11 +517,11 @@ function HomeScreen({ kits, dialins, nav, onSync, syncing, lastSync }) {
     <div className="screen fade-in">
       <div className="hdr">
         <div style={{flex:1}}>
-          <div className="hdr-title">My Coffees</div>
+          <div className="hdr-title">Active Coffees</div>
           <div className="hdr-sub">{lastSync?`Synced ${lastSync}`:`${active.length} active · ${dialins.length} logged`}</div>
         </div>
         <button className="icon-btn" onClick={onSync} title="Sync from GitHub">
-          <span className={syncing?"spin":""}>{syncing?"↻":"↓"}</span>
+          <span className={syncing?"spin":""}>{syncing?"↻":"⟳"}</span>
         </button>
       </div>
       <div className="controls-row">
@@ -556,24 +558,26 @@ function HomeScreen({ kits, dialins, nav, onSync, syncing, lastSync }) {
 // ── LOGBOOK ───────────────────────────────────────────────────────────────────
 function LogbookScreen({ kits, dialins, nav }) {
   const [q,       setQ]       = useState("");
-  const [brewF,   setBrewF]   = useState("all");
-  const [locF,    setLocF]    = useState("all");
+  const [brewF,   setBrewF]   = useState([]);
+  const [locF,    setLocF]    = useState([]);
   const [statusF, setStatusF] = useState("all");
   const [beansF,  setBeansF]  = useState("all");
   const [sort,    setSort]    = useState("recent");
+
+  const toggleArr = (arr, set, val) => set(arr.includes(val) ? arr.filter(x=>x!==val) : [...arr, val]);
 
   const filtered = useMemo(()=>{
     return dialins.filter(d=>{
       const norm = normalizeDiaLin(d);
       const kit  = kits.find(k=>k.id===d.kitId);
       const sm   = !q||[d.coffeeName,d.roaster,d.origin,d.process,d.grindSetting,d.flavorNotes].join(" ").toLowerCase().includes(q.toLowerCase());
-      const bm   = brewF==="all"
-        ||(brewF==="espr" && norm.brewMethods.includes("Espresso"))
-        ||(brewF==="pour" && norm.brewMethods.includes("Pour Over"))
-        ||(brewF==="frpr" && norm.brewMethods.includes("French Press"));
-      const lm   = locF==="all"
-        ||(locF==="home" && kit?.location==="home")
-        ||(locF==="offc" && kit?.location==="office");
+      const bm   = brewF.length===0
+        || (brewF.includes("espr") && norm.brewMethods.includes("Espresso"))
+        || (brewF.includes("pour") && norm.brewMethods.includes("Pour Over"))
+        || (brewF.includes("frpr") && norm.brewMethods.includes("French Press"));
+      const lm   = locF.length===0
+        || (locF.includes("home") && kit?.location==="home")
+        || (locF.includes("offc") && kit?.location==="office");
       const stm  = statusF==="all"
         ||(statusF==="waiting"      && norm.dialStatus==="waiting")
         ||(statusF==="dialing"      && norm.dialStatus==="dialing")
@@ -594,7 +598,20 @@ function LogbookScreen({ kits, dialins, nav }) {
     });
   },[dialins,kits,q,brewF,locF,statusF,beansF,sort]);
 
-  const Row = ({label,opts,val,set})=>(
+  // Multi-select row (toggle each chip independently, empty = all)
+  const MultiRow = ({label, opts, val, set}) => (
+    <div className="filter-block">
+      <div className="filter-label">{label}</div>
+      <div className="chips">
+        {opts.map(([v,l])=>(
+          <div key={v} className={`chip${val.includes(v)?" chip-on":""}`} onClick={()=>toggleArr(val,set,v)}>{l}</div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // Single-select row
+  const SingleRow = ({label, opts, val, set}) => (
     <div className="filter-block">
       <div className="filter-label">{label}</div>
       <div className="chips">
@@ -622,10 +639,10 @@ function LogbookScreen({ kits, dialins, nav }) {
         <input className="search-input" placeholder="Search coffee, origin, grind, flavour…" value={q} onChange={e=>setQ(e.target.value)}/>
       </div>
       <div style={{padding:"6px 0 8px"}}>
-        <Row label="Brew"   opts={[["all","All"],["espr","ESPR"],["pour","POUR"],["frpr","FRPR"]]} val={brewF}   set={setBrewF}/>
-        <Row label="Kit"    opts={[["all","All"],["home","HOME"],["offc","OFFC"]]}                  val={locF}    set={setLocF}/>
-        <Row label="Status" opts={[["all","All"],["waiting","Waiting"],["dialing","Dialing"],["dialed","Dialed"],["abandoned","Abandoned"],["experimenting","Experimenting"]]} val={statusF} set={setStatusF}/>
-        <Row label="Beans"  opts={[["all","All"],["shelf","Shelf"],["open","Open"],["frozen","Frozen"],["empty","Empty"]]} val={beansF} set={setBeansF}/>
+        <MultiRow  label="Brew"   opts={[["espr","ESPR"],["pour","POUR"],["frpr","FRPR"]]} val={brewF} set={setBrewF}/>
+        <MultiRow  label="Kit"    opts={[["home","HOME"],["offc","OFFC"]]}                  val={locF}  set={setLocF}/>
+        <SingleRow label="Status" opts={[["all","ALL"],["waiting","WAITING"],["dialing","DIALING"],["dialed","DIALED"],["abandoned","ABANDONED"],["experimenting","EXP"]]} val={statusF} set={setStatusF}/>
+        <SingleRow label="Beans"  opts={[["all","ALL"],["shelf","SHELF"],["open","OPEN"],["frozen","FROZEN"],["empty","DONE"]]} val={beansF} set={setBeansF}/>
       </div>
       {filtered.length===0
         ? <div className="empty"><div className="empty-ico">◉</div><div className="empty-t">No results</div><div className="empty-s">{q?"Try a different search":"No entries match these filters"}</div></div>
@@ -664,15 +681,14 @@ function DialInDetail({ d, kits, nav, onEdit, prevScreen }) {
         <div style={{display:"flex",gap:"6px",flexWrap:"wrap",marginTop:"8px"}}>
           <DialStatusBadge dialStatus={norm.dialStatus} experimenting={norm.experimenting}/>
           <KitLocBadge kit={kit}/>
-          {kit && <span className="badge b-kit">{kit.name}</span>}
           <BrewBadges brewMethods={norm.brewMethods}/>
           {d.process    && <span className="badge b-process">{d.process}</span>}
           {d.roastLevel && <span className="badge b-roast">{d.roastLevel}</span>}
           {freshness    && <span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
           <BeanLocationBadge beanLocation={norm.beanLocation}/>
-          {norm.wouldBuy    && <span className="badge b-would-buy">🛒 Would buy</span>}
-          {norm.isChoice    && <span className="badge b-choice">★ My Pick</span>}
-          {norm.isEarlyEntry&& <span className="badge b-early">Early Entry</span>}
+          {norm.wouldBuy    && <span className="badge b-would-buy">🛒 WOULD BUY</span>}
+          {norm.isChoice    && <span className="badge b-choice">★ MY PICK</span>}
+          {norm.isEarlyEntry&& <span className="badge b-early">EARLY ENTRY</span>}
         </div>
         {norm.tags&&norm.tags.length>0 && (
           <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginTop:"8px"}}>
@@ -727,8 +743,8 @@ function DialInDetail({ d, kits, nav, onEdit, prevScreen }) {
         <div className="div"/>
         <div className="sec">Dial Quality</div>
         <div style={{padding:"0 18px 16px",display:"flex",gap:"7px",flexWrap:"wrap"}}>
-          {norm.dialEase    && <span className={`badge b-ease-${norm.dialEase}`}>{norm.dialEase.charAt(0).toUpperCase()+norm.dialEase.slice(1)}</span>}
-          {norm.dialStability&&<span className={`badge b-stab-${norm.dialStability}`}>{norm.dialStability.charAt(0).toUpperCase()+norm.dialStability.slice(1)}</span>}
+          {norm.dialEase    && <span className={`badge b-ease-${norm.dialEase}`}>{norm.dialEase.toUpperCase()}</span>}
+          {norm.dialStability&&<span className={`badge b-stab-${norm.dialStability}`}>{norm.dialStability.toUpperCase()}</span>}
         </div>
       </>}
 
@@ -1345,7 +1361,7 @@ function SettingsScreen({ settings, onSave, kits, nav, syncing, onSync, dialins 
       <div className="hdr">
         <div style={{flex:1}}><div className="hdr-title">Settings</div><div className="hdr-sub">GitHub sync & kits</div></div>
         <button className="icon-btn" onClick={onSync} title="Sync now">
-          <span className={syncing?"spin":""}>{syncing?"↻":"↓"}</span>
+          <span className={syncing?"spin":""}>{syncing?"↻":"⟳"}</span>
         </button>
       </div>
 
@@ -1686,7 +1702,7 @@ function App() {
   };
 
   const NAV_ITEMS=[
-    {id:"home",    ico:"☕", lbl:"Coffees"},
+    {id:"home",    ico:"☕", lbl:"Active"},
     {id:"logbook", ico:"◉", lbl:"Log"},
     {id:"add",     ico:"⊕", lbl:"Add"},
     {id:"profile", ico:"◈", lbl:"Profile"},
