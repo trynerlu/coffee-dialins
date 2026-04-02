@@ -733,9 +733,9 @@ function CoffeeGroupCard({ group, onExpand, onNavigate, expanded, showRating, se
           <KitLocBadges entries={entries}/>
           <BrewBadges brewMethods={allBrewMethods}/>
           {readiness && <span className={`badge ${readiness.cls}`}>{readiness.label}</span>}
-          {freshness && <span className="badge" style={{background:freshness.bg,color:freshness.color,fontSize:"9px"}}>{freshness.label}</span>}
         </div>
         <div className="cgc-badges-right">
+          {freshness && <span className="badge" style={{background:freshness.bg,color:freshness.color,fontSize:"9px"}}>{freshness.label}</span>}
           <BeanLocationBadge beanLocation={domLoc}/>
           <DialStatusBadge dialStatus={domStatus} experimenting={entries.some(e=>e.experimenting)}/>
           {showRating && entries.some(e=>e.rating>0) && <Stars n={Math.max(...entries.map(e=>e.rating||0))}/>}
@@ -1021,7 +1021,7 @@ function CoffeeHubScreen({ group, kits, nav, settings }) {
 }
 
 // ── DIAL-IN DETAIL ────────────────────────────────────────────────────────────
-function DialInDetail({ d, kits, dialins, nav, onEdit, prevScreen, settings }) {
+function DialInDetail({ d, kits, dialins, nav, onEdit, listScreen, settings, onQuickStatus }) {
   if (!d) return null;
   const kit      = kits.find(k=>k.id===d.kitId);
   const norm     = normalizeDiaLin(d);
@@ -1049,7 +1049,7 @@ function DialInDetail({ d, kits, dialins, nav, onEdit, prevScreen, settings }) {
   return (
     <div className="screen fade-in">
       <div className="hdr">
-        <button className="icon-btn" onClick={()=>nav(prevScreen||"active")}>←</button>
+        <button className="icon-btn" onClick={()=>nav(listScreen||"active")}>←</button>
         <div style={{flex:1}}><div className="hdr-title">Dial-In</div></div>
         {d.rating>0&&<Stars n={d.rating}/>}
         <button className="icon-btn" onClick={()=>onEdit(d)}>✎</button>
@@ -1065,20 +1065,20 @@ function DialInDetail({ d, kits, dialins, nav, onEdit, prevScreen, settings }) {
         </div>
         <div className="det-title">{d.coffeeName}</div>
 
-        {/* Badge row 1: kit + brew + freshness + bean + status */}
+        {/* Badge row 1 */}
         <div className="det-badge-row" style={{marginTop:"10px"}}>
           <div className="det-badge-left">
-            <span className="badge b-kit">{locLabel}</span>
+            <span className="badge b-kit">{kit?.location==="office"?"OFFC":"HOME"}</span>
             <BrewBadges brewMethods={norm.brewMethods}/>
-            {freshness&&<span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
           </div>
           <div className="det-badge-right">
+            {freshness&&<span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
             <BeanLocationBadge beanLocation={norm.beanLocation}/>
             <DialStatusBadge dialStatus={norm.dialStatus} experimenting={norm.experimenting}/>
           </div>
         </div>
 
-        {/* Badge row 2: static info left, personal right */}
+        {/* Badge row 2 */}
         <div className="det-badge-row" style={{marginTop:"5px"}}>
           <div className="det-badge-left">
             {d.process    && <span className="badge b-process">{d.process.toUpperCase()}</span>}
@@ -1093,13 +1093,30 @@ function DialInDetail({ d, kits, dialins, nav, onEdit, prevScreen, settings }) {
           </div>
         </div>
 
-        {/* Tags */}
         {norm.tags&&norm.tags.length>0&&(
           <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginTop:"7px"}}>
             {norm.tags.map(t=><span key={t} style={{fontSize:"10px",padding:"2px 8px",background:"var(--elevated)",borderRadius:"4px",color:"var(--tx3)"}}>{t}</span>)}
           </div>
         )}
       </div>
+
+      {/* Quick status actions */}
+      {norm.beanLocation!=="empty" && (
+        <div style={{display:"flex",gap:"8px",padding:"12px 18px",borderBottom:"1px solid var(--border)"}}>
+          <button onClick={()=>onQuickStatus(d.id,{beanLocation:"empty"})}
+            style={{flex:1,background:"var(--elevated)",border:"1px solid var(--border)",borderRadius:"8px",color:"var(--tx2)",fontFamily:"'Jost',sans-serif",fontSize:"12px",fontWeight:500,padding:"9px 12px",cursor:"pointer",transition:"all .15s"}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--bh)";e.currentTarget.style.color="var(--tx1)"}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--tx2)"}}>
+            ✓ Mark Empty
+          </button>
+          {norm.dialStatus!=="abandoned" && (
+            <button onClick={()=>onQuickStatus(d.id,{dialStatus:"abandoned",beanLocation:"empty"})}
+              style={{flex:1,background:"var(--red-d)",border:"1px solid rgba(160,80,80,.3)",borderRadius:"8px",color:"var(--red)",fontFamily:"'Jost',sans-serif",fontSize:"12px",fontWeight:500,padding:"9px 12px",cursor:"pointer",transition:"all .15s"}}>
+              ✕ Abandon
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Grind strip */}
       <div className="sec">Grind</div>
@@ -2119,7 +2136,7 @@ function App() {
   const [curGroup,    setCurGroup]  = useState(null);
   const [kits,        setKits]      = useState(DEF_KITS);
   const [dialins,     setDialins]   = useState(DEF_DIALINS);
-  const [syncing,     setSyncing]   = useState(false);
+  const [listScreen, setListScreen] = useState("active"); // never overwritten by detail↔edit
   const [toast,       setToast]     = useState(null);
   const [lastSync,    setLastSync]  = useState(null);
   const [settings,    setSettings]  = useState(()=>lsGet(LS.settings)||{});
@@ -2205,6 +2222,8 @@ function App() {
 
   const nav=(to,data=null,from=null)=>{
     setPrev(from||screen);
+    // Track the last list screen so detail can always get back to it
+    if(from==="active"||from==="logbook") setListScreen(from);
     if(to==="kit"       &&data) setCurKit(data);
     if(to==="dialin"    &&data) setCurDial(data);
     if(to==="editdialin"&&data) setCurDial(data);
@@ -2213,6 +2232,14 @@ function App() {
   };
 
   const editDialin=(d)=>{ setCurDial(d); setScreen("editdialin"); };
+
+  const quickStatus=async(id, patch)=>{
+    const updated=dialins.map(d=>d.id===id?{...d,...patch}:d);
+    setDialins(updated); lsSet(LS.dialins,updated);
+    if(curDial?.id===id) setCurDial(p=>({...p,...patch}));
+    if(settings.token){ try{ await ghWrite(settings,"dialins.json",updated); flash("✓ Updated"); }catch(e){ flash(`⚠ Saved locally. GitHub: ${e.message}`); } }
+    else flash("✓ Saved locally");
+  };
   const editKit   =(k)=>{ setCurKit(k);  setScreen("editkit"); };
 
   const saveDialin=async(updated)=>{
@@ -2257,7 +2284,7 @@ function App() {
     "settings-controls":<SettingsControls settings={settings} onSave={saveSettings} kits={kits} nav={nav}/>,
     "settings-data":  <SettingsData      dialins={dialins} onRemove={removeDialin} nav={nav}/>,
     coffeehub:        <CoffeeHubScreen   group={curGroup} kits={kits} nav={nav} settings={settings}/>,
-    dialin:           <DialInDetail      d={curDial} kits={kits} dialins={dialins} nav={nav} onEdit={editDialin} prevScreen={prevScreen} settings={settings}/>,
+    dialin:           <DialInDetail      d={curDial} kits={kits} dialins={dialins} nav={nav} onEdit={editDialin} listScreen={listScreen} settings={settings} onQuickStatus={quickStatus}/>,
     editdialin:       <EditDialIn        d={curDial} kits={kits} onSave={saveDialin} nav={nav} settings={settings}/>,
     kit:              <KitScreen         kit={curKit} dialins={dialins} kits={kits} nav={nav} onEditKit={editKit}/>,
     editkit:          <EditKit           kit={curKit} onSave={saveKit} nav={nav}/>,
