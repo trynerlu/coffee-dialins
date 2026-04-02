@@ -326,7 +326,7 @@ const mssToSec  = t => { if (!t) return 0; const p=String(t).split(":"); return 
 const tempDisp  = (t,unit) => t>0 ? `${unit==="F"?Math.round(t*9/5+32):t}°${unit||"C"}` : null;
 
 function getFreshness(roastDate, beanLocation, roastLevel, brewMethods, settings) {
-  if (beanLocation==="frozen") return {label:"❄ FROZEN", color:"#7A9AC0", bg:"rgba(90,112,152,0.14)"};
+  if (beanLocation==="frozen"||beanLocation==="empty") return null;
   if (!roastDate) return null;
   const days = Math.floor((Date.now()-new Date(roastDate))/86400000);
   if (days < 0) return null;
