@@ -2130,7 +2130,19 @@ function App() {
     if(cd) setDialins(cd);
     setReady(true);
     const s=lsGet(LS.settings)||{};
+
+    // Initial sync on load
     if(s.owner&&s.repo&&navigator.onLine) autoSync(s,ck,cd);
+
+    // Sync when tab becomes visible again (e.g. returning from push.html)
+    const onVisible=()=>{
+      if(document.visibilityState==="visible"){
+        const sv=lsGet(LS.settings)||{};
+        if(sv.owner&&sv.repo&&navigator.onLine) autoSync(sv,lsGet(LS.kits),lsGet(LS.dialins));
+      }
+    };
+    document.addEventListener("visibilitychange",onVisible);
+    return ()=>document.removeEventListener("visibilitychange",onVisible);
   },[]);
 
   const autoSync=async(s,lk,ld)=>{
