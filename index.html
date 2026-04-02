@@ -2136,7 +2136,8 @@ function App() {
   const [curGroup,    setCurGroup]  = useState(null);
   const [kits,        setKits]      = useState(DEF_KITS);
   const [dialins,     setDialins]   = useState(DEF_DIALINS);
-  const [listScreen, setListScreen] = useState("active"); // never overwritten by detail↔edit
+  const [syncing,     setSyncing]   = useState(false);
+  const [listScreen,  setListScreen]= useState("active");
   const [toast,       setToast]     = useState(null);
   const [lastSync,    setLastSync]  = useState(null);
   const [settings,    setSettings]  = useState(()=>lsGet(LS.settings)||{});
