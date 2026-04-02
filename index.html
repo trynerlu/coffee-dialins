@@ -63,13 +63,13 @@
 
     /* Grind grid */
     .gg-wrap { flex-shrink:0; }
-    .gg { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:8px; overflow:hidden; width:88px; height:64px; }
-    .gg-cell { display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--accent); position:relative; background:var(--elevated); }
+    .gg { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:7px; overflow:hidden; width:64px; height:42px; }
+    .gg-cell { display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--accent); position:relative; background:var(--elevated); }
     .gg-cell:nth-child(1) { border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
     .gg-cell:nth-child(2) { border-bottom:1px solid var(--border); }
     .gg-cell:nth-child(3) { border-right:1px solid var(--border); }
-    .gg-cell-empty { color:var(--tx3); font-size:10px; opacity:.4; }
-    .gg-label { position:absolute; top:2px; left:3px; font-size:7px; letter-spacing:.05em; color:var(--tx3); font-family:'Jost',sans-serif; font-weight:600; }
+    .gg-cell-empty { color:var(--tx3); font-size:9px; opacity:.35; }
+    .gg-label { position:absolute; top:1px; left:2px; font-size:5px; letter-spacing:.04em; color:var(--tx3); font-family:'Jost',sans-serif; font-weight:600; line-height:1; opacity:.7; }
 
     /* Grind strip (detail page 1×4) */
     .gs { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:0 18px 4px; }
@@ -752,12 +752,17 @@ function CoffeeGroupCard({ group, onExpand, onNavigate, expanded, showRating, se
       {/* Expand control for Log */}
       {onExpand && (
         <div className="group-expand" onClick={e=>{e.stopPropagation();onExpand();}}>
-          <span>{entries.length} entr{entries.length===1?"y":"ies"}</span>
-          <span style={{fontSize:"14px",transition:"transform .2s",display:"inline-block",transform:expanded?"rotate(90deg)":"rotate(0deg)"}}>›</span>
+          <span style={{fontSize:"14px",transition:"transform .2s",display:"inline-block",transform:expanded?"rotate(90deg)":"rotate(0deg)",marginLeft:"auto"}}>›</span>
         </div>
       )}
     </div>
   );
+}
+
+// Best entry for a group — dialed first, then by recency
+function bestGroupEntry(entries) {
+  const priority = d => d.dialStatus==="dialed"?3:d.dialStatus==="dialing"?2:d.dialStatus==="waiting"?1:0;
+  return [...entries].sort((a,b)=>priority(b)-priority(a)||(b.date||"").localeCompare(a.date||""))[0]||entries[0];
 }
 
 // ── ACTIVE SCREEN ─────────────────────────────────────────────────────────────
@@ -813,7 +818,7 @@ function ActiveScreen({ kits, dialins, nav, onSync, syncing, lastSync, settings 
               key={`${g.coffeeName}⌀${g.roaster}`}
               group={g}
               settings={settings}
-              onNavigate={()=>nav("coffeehub",g,"active")}
+              onNavigate={()=>nav("dialin",bestGroupEntry(g.entries),"active")}
             />
           ))
         }
@@ -914,7 +919,7 @@ function LogbookScreen({ kits, dialins, nav, settings }) {
                   group={g}
                   settings={settings}
                   showRating={true}
-                  onNavigate={()=>nav("coffeehub",g,"logbook")}
+                  onNavigate={()=>nav("dialin",bestGroupEntry(g.entries),"logbook")}
                   onExpand={()=>setExpanded(p=>({...p,[key]:!p[key]}))}
                   expanded={isExp}
                 />
