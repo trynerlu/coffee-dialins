@@ -2166,8 +2166,12 @@ function App() {
   const autoSync=async(s,lk,ld)=>{
     try {
       const [rk,rd]=await Promise.all([ghRead(s,"kits.json").catch(()=>null),ghRead(s,"dialins.json").catch(()=>null)]);
-      if(rk&&JSON.stringify(rk)!==JSON.stringify(lk)){ setKits(rk); lsSet(LS.kits,rk); }
-      if(rd&&JSON.stringify(rd)!==JSON.stringify(ld)){ setDialins(rd); lsSet(LS.dialins,rd); }
+      // Only overwrite local if remote differs AND local hasn't been modified more recently
+      const localMod = lsGet("ca_lastModified")||0;
+      const now = Date.now();
+      const safeToOverwrite = (now - localMod) > 90000; // 90s grace period after any local write
+      if(rk&&JSON.stringify(rk)!==JSON.stringify(lk)&&safeToOverwrite){ setKits(rk); lsSet(LS.kits,rk); }
+      if(rd&&JSON.stringify(rd)!==JSON.stringify(ld)&&safeToOverwrite){ setDialins(rd); lsSet(LS.dialins,rd); }
       setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
     }catch(e){}
   };
@@ -2189,7 +2193,7 @@ function App() {
 
   const addDialins=async(entries)=>{
     const updated=[...entries,...dialins];
-    setDialins(updated); lsSet(LS.dialins,updated);
+    setDialins(updated); lsSet(LS.dialins,updated); lsSet("ca_lastModified",Date.now());
     if(settings.token){ try{ await ghWrite(settings,"dialins.json",updated); flash(`✓ ${entries.length>1?entries.length+" entries":"Dial-in"} saved`); }catch(e){ flash(`⚠ Saved locally. GitHub: ${e.message}`); } }
     else flash("✓ Saved locally");
     setScreen("active");
@@ -2236,7 +2240,7 @@ function App() {
 
   const quickStatus=async(id, patch)=>{
     const updated=dialins.map(d=>d.id===id?{...d,...patch}:d);
-    setDialins(updated); lsSet(LS.dialins,updated);
+    setDialins(updated); lsSet(LS.dialins,updated); lsSet("ca_lastModified",Date.now());
     if(curDial?.id===id) setCurDial(p=>({...p,...patch}));
     if(settings.token){ try{ await ghWrite(settings,"dialins.json",updated); flash("✓ Updated"); }catch(e){ flash(`⚠ Saved locally. GitHub: ${e.message}`); } }
     else flash("✓ Saved locally");
@@ -2245,7 +2249,7 @@ function App() {
 
   const saveDialin=async(updated)=>{
     const newList=dialins.map(d=>d.id===updated.id?updated:d);
-    setDialins(newList); lsSet(LS.dialins,newList);
+    setDialins(newList); lsSet(LS.dialins,newList); lsSet("ca_lastModified",Date.now());
     setCurDial(updated);
     if(settings.token){ try{ await ghWrite(settings,"dialins.json",newList); flash("✓ Saved"); }catch(e){ flash(`⚠ Saved locally. GitHub: ${e.message}`); } }
     else flash("✓ Saved locally");
