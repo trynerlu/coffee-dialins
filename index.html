@@ -80,8 +80,10 @@
     .gs-grinder { font-size:9px; color:var(--tx3); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
     /* Params split */
-    .params-split { display:grid; grid-template-columns:1fr 1fr; gap:1px; margin-top:9px; padding-top:8px; border-top:1px solid var(--border); }
-    .params-half { display:flex; flex-wrap:wrap; gap:8px; }
+    .params-split { display:grid; gap:1px; margin-top:7px; padding-top:7px; border-top:1px solid var(--border); }
+    .params-split-dual { grid-template-columns:1fr 1fr; }
+    .params-split-single { grid-template-columns:1fr; }
+    .params-half { display:flex; flex-wrap:wrap; gap:6px; }
     .params-half + .params-half { padding-left:10px; border-left:1px solid var(--border); }
     .param-item { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx2); }
     .param-label { font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); display:block; margin-bottom:1px; }
@@ -499,14 +501,14 @@ const DEF_DIALINS = [
     doseIn:20, yieldOut:300, timeSeconds:215, temperature:91, rating:4,
     coffeeUrl:"https://www.kmencoffee.cz",
     coffeeDescription:"Kmen Coffee Roasters — roasted in České Budějovice. Ethiopia Chelbesa washed. Jasmine, white grapes, bergamot. 250g filter. Roasted 22.01.2026.",
-    notes:"V60 office. 3 brews to dial. 20g/300g, 91°C. Best at grind 20, 3:35 total.",
+    notes:"V60 office. 3 brews to dial. 20g/300g, 91°C. Bloom 40g/45s, 3 pours. Target total 3:00–3:30.",
     dialStatus:"dialed", experimenting:false, beanLocation:"open",
     dialEase:"easy", dialStability:"stable", brewMethods:["Pour Over"], isEarlyEntry:false,
     filterPours:[
-      {phase:1,targetGrams:40,startSeconds:0},
-      {phase:2,targetGrams:140,startSeconds:50},
-      {phase:3,targetGrams:220,startSeconds:90},
-      {phase:4,targetGrams:300,startSeconds:130},
+      {phase:1,targetGrams:40,  startSeconds:0},
+      {phase:2,targetGrams:140, startSeconds:45},
+      {phase:3,targetGrams:225, startSeconds:90},
+      {phase:4,targetGrams:300, startSeconds:130},
     ],
   },
   { id:"d-1738900000000-ch02", date:"2026-02-12", kitId:"office-espresso",
@@ -651,7 +653,7 @@ function GrindStrip({ entries }) {
 
 // ── PARAMS HALF ───────────────────────────────────────────────────────────────
 function ParamsHalf({ entry, type, settings }) {
-  if (!entry) return <div className="params-half" style={{opacity:.25,fontSize:"10px",color:"var(--tx3)"}}>No {type==="espr"?"espresso":"pour over"} dialed</div>;
+  if (!entry) return null;
   const r = entry.doseIn&&entry.yieldOut ? ratio(entry.doseIn,entry.yieldOut) : null;
   const isEspr = type==="espr";
   const timeStr = isEspr ? (entry.timeSeconds>0?`${entry.timeSeconds}s`:null) : (entry.timeSeconds>0?secToMSS(entry.timeSeconds):null);
@@ -743,7 +745,7 @@ function CoffeeGroupCard({ group, onExpand, onNavigate, expanded, showRating, se
 
       {/* Params split */}
       {hasParams && (
-        <div className="params-split" onClick={onNavigate}>
+        <div className={`params-split ${esprE&&pourE?"params-split-dual":"params-split-single"}`} onClick={onNavigate}>
           <ParamsHalf entry={esprE} type="espr" settings={settings}/>
           <ParamsHalf entry={pourE} type="pour" settings={settings}/>
         </div>
