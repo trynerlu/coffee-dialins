@@ -11,24 +11,53 @@
     "roastLevel": "Light",
     "flavorNotes": "Jasmine, white grapes, bergamot, hidden sweet-bitterness",
     "grindSetting": "20",
-    "grinder": "Baratza Encore ESP",
+    "grinder": "Baratza Encore",
     "doseIn": 20,
     "yieldOut": 300,
     "timeSeconds": 215,
     "temperature": 91,
-    "rating": 4,
+    "rating": 3,
     "coffeeUrl": "https://www.kmencoffee.cz",
     "coffeeDescription": "Kmen Coffee Roasters — Kmenova spolecnost, roasted in Ceske Budejovice. Ethiopia Chelbesa — washed process. Flavor: green jasmine tea, white grapes, bergamot. 250g filter. Roasted 22.01.2026.",
     "notes": "V60, office filter setup (Baratza Encore ESP). Dialed in 3 brews. Grind 20 on Encore, 20g/300ml, 91C, bloom 40g/45-50s, four pours targeting 3:30-3:40. Best of both worlds — stronger body with jasmine mainly upfront, fruit notes more hidden and integrated, hidden sweet-bitterness underneath. Clean, balanced, no aftertaste. Started at grind 21 (3:15, cleaner but thinner), found sweet spot at 20 (3:35, better body and edge).",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "easy",
     "dialStability": "stable",
     "brewMethods": [
       "Pour Over"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "roastDate": "2026-01-22",
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 140,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 130
+      }
+    ],
+    "tags": [
+      "interesting",
+      "easy dial"
+    ],
+    "wouldBuy": false,
+    "isChoice": false
   },
   {
     "id": "d-1737590400000-km01-exp",
@@ -41,25 +70,54 @@
     "process": "Washed",
     "roastLevel": "Light",
     "flavorNotes": "Green jasmine tea, white grapes, bergamot",
-    "grindSetting": "",
+    "grindSetting": "16",
     "grinder": "Timemore Sculptor 064S",
     "doseIn": 20,
     "yieldOut": 300,
-    "timeSeconds": 0,
+    "timeSeconds": 215,
     "temperature": 91,
-    "rating": 0,
+    "rating": 3,
     "coffeeUrl": "https://www.kmencoffee.cz",
     "coffeeDescription": "Kmen Coffee Roasters — Kmenova spolecnost, roasted in Ceske Budejovice. Ethiopia Chelbesa — washed process. Flavor: green jasmine tea with bergamot, white grapes. 250g filter. Roasted 22.01.2026.",
     "notes": "Not yet opened at this point. Very aligned with palate — jasmine/bergamot/tea profile similar to what worked well with Costa Rica DOT and Sumatra. Later dialed at office (see d-1742860800000-km01).",
-    "dialStatus": "dialing",
-    "experimenting": true,
-    "beanLocation": "open",
-    "dialEase": null,
-    "dialStability": null,
+    "dialStatus": "dialed",
+    "experimenting": false,
+    "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
     "brewMethods": [
       "Pour Over"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "roastDate": "2026-01-22",
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 140,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 130
+      }
+    ],
+    "tags": [
+      "interesting",
+      "easy dial"
+    ],
+    "wouldBuy": false,
+    "isChoice": false
   },
   {
     "id": "d-1738900000000-ch02",
@@ -90,14 +148,23 @@
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "roastDate": "2026-01-26",
+    "tags": [
+      "easy dial",
+      "good value",
+      "crowd-pleaser",
+      "good for milk"
+    ],
+    "wouldBuy": true,
+    "isChoice": false
   },
   {
     "id": "d-1739000000000-ke01",
     "date": "2026-02-10",
     "kitId": "home-pour-over",
     "coffeeName": "Kenya Kainamui AA",
-    "roaster": "Filtr",
+    "roaster": "Pikolo",
     "origin": "Kenya",
     "region": "Kainamui",
     "process": "Washed",
@@ -106,22 +173,46 @@
     "grindSetting": "10.0",
     "grinder": "Timemore Sculptor 064S",
     "doseIn": 18,
-    "yieldOut": 300,
+    "yieldOut": 320,
     "timeSeconds": 195,
     "temperature": 90,
-    "rating": 4,
-    "coffeeUrl": "https://www.filtrcoffee.cz",
-    "coffeeDescription": "Filtr is a Czech specialty coffee roastery. Kenya Kainamui AA — washed process, grade AA. Flavor: rhubarb, blackcurrant. Roasted 5.1.2026, best before 5.7.2026.",
+    "rating": 3,
+    "coffeeUrl": "https://kafepikola.cz",
+    "coffeeDescription": "Pikolo — specialty roastery from Šumperk, Jeseniky mountains. Kenya Kainamui AA — washed process, grade AA, Kirinyaga region. Varietal: SL28, SL34. Flavor: rhubarb, blackcurrant. Roasted 5.1.2026.",
     "notes": "V60 filter, home setup (Timemore Sculptor 064S). 18g/300ml (1:16.7), 90C, bloom 45g/40-45s. Best at 90C vs 92C — 92C compressed acidity into blunt rhubarb, 90C gave sharper cleaner red currant forward. High clarity, bright structured acidity, very responsive to temperature changes.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "easy",
     "dialStability": "stable",
     "brewMethods": [
       "Pour Over"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "roastDate": "2026-01-05",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "interesting",
+      "easy dial"
+    ],
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 50,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 180,
+        "startSeconds": 50
+      },
+      {
+        "phase": 3,
+        "targetGrams": 320,
+        "startSeconds": 120
+      }
+    ]
   },
   {
     "id": "d-1738200000000-em01",
@@ -131,7 +222,7 @@
     "roaster": "Unknown",
     "origin": "Blend",
     "region": "",
-    "process": "Other",
+    "process": "Blend",
     "roastLevel": "Medium-Dark",
     "flavorNotes": "",
     "grindSetting": "",
@@ -144,9 +235,9 @@
     "coffeeUrl": "",
     "coffeeDescription": "Gift bag from Emirates Airlines and Praha Letiste (Prague Airport) — Christmas 2025 promotional coffee. Unknown roastery and origin. Commercial blend, not specialty.",
     "notes": "Airport gift. Likely similar decoration-tier to Idee Kaffee. May try as French press filler eventually.",
-    "dialStatus": "dialing",
+    "dialStatus": "abandoned",
     "experimenting": true,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": null,
     "dialStability": null,
     "brewMethods": [
@@ -168,22 +259,53 @@
     "grindSetting": "10.0",
     "grinder": "Timemore Sculptor 064S",
     "doseIn": 20,
-    "yieldOut": 310,
+    "yieldOut": 320,
     "timeSeconds": 180,
-    "temperature": 93,
-    "rating": 4,
+    "temperature": 88,
+    "rating": 5,
     "coffeeUrl": "https://www.dotcoffee.cz",
     "coffeeDescription": "DOT Coffee — Czech specialty roastery. Costa Rica San Ramon de Altura — farm San Ramon Cafe de Altura, Tarrazú, 1400m, Caturra and Catuai. Flavor: floral perfume, figs, honey, white tea. 250g. Roasted 21.01.2026.",
     "notes": "V60, home filter. Classic elegant Costa Rican filter — Earl Grey / white tea character, silky body, low-medium sweetness, tea-like acidity, short clean finish. Also tried Honey Mode at 94-95C for more sweetness and fig notes. Second Costa Rica that really impressed.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "easy",
     "dialStability": "stable",
     "brewMethods": [
       "Pour Over"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "roastDate": "2026-01-21",
+    "wouldBuy": true,
+    "isChoice": true,
+    "tags": [
+      "interesting",
+      "complex",
+      "easy dial",
+      "funky"
+    ],
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 50,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 50
+      },
+      {
+        "phase": 3,
+        "targetGrams": 240,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 320,
+        "startSeconds": 130
+      }
+    ]
   },
   {
     "id": "d-1730800000000-mv01",
@@ -193,7 +315,7 @@
     "roaster": "Master Vietnam",
     "origin": "Blend",
     "region": "Vietnam / Brazil",
-    "process": "Other",
+    "process": "Blend",
     "roastLevel": "Dark",
     "flavorNotes": "Caramel, chocolate, nuts",
     "grindSetting": "",
@@ -202,19 +324,19 @@
     "yieldOut": 36,
     "timeSeconds": 0,
     "temperature": 90,
-    "rating": 2,
+    "rating": 0,
     "coffeeUrl": "",
     "coffeeDescription": "Master Vietnam Espresso — Vietnamese/Brazilian blend, roasted in Czech Republic. 70% Arabica / 30% Robusta. Dark roast. Flavor: caramel, chocolate, nuts. 250g. Second bag in freezer.",
     "notes": "Early period — unseasoned grinder, dial-in parameters not reliably recorded. Second bag in freezer — worth retrying with seasoned setup for comparison.",
     "dialStatus": "dialing",
     "experimenting": true,
-    "beanLocation": "open",
+    "beanLocation": "frozen",
     "dialEase": null,
     "dialStability": null,
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": true
   },
   {
     "id": "d-1731800000000-cs01",
@@ -237,15 +359,15 @@
     "coffeeUrl": "https://www.coffeespot.cz",
     "coffeeDescription": "Coffeespot — Moravian specialty roastery, Babice, Czech Republic. 12th annual limited Christmas blend — Brazil Diamond Santos + Honduras San Andres SHG. 100% Arabica, 250g. Roasted 13.11.2025.",
     "notes": "",
-    "dialStatus": "dialing",
+    "dialStatus": "abandoned",
     "experimenting": true,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": null,
     "dialStability": null,
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": true
   },
   {
     "id": "d-1731500000000-ta01",
@@ -264,26 +386,32 @@
     "yieldOut": 36,
     "timeSeconds": 27,
     "temperature": 90,
-    "rating": 4,
+    "rating": 2,
     "coffeeUrl": "https://www.tarbon.cz",
     "coffeeDescription": "Tarbon — Czech specialty roastery, Dvur Kralove nad Labem. A.I — selected Vietnamese arabica, experimental anaerobic/fermented processing. Christmas limited edition. Notes of ripe banana, blueberry, strawberry. 100% Arabica, 227g.",
-    "notes": "Benchmark favourite. Took many shots to reach a pleasant extraction. Once dialed, not very stable shot-to-shot. Distinct banana at start of shot, tropical fruit throughout, pleasant fluid mouthfeel. Worth the effort but demands patience.",
+    "notes": "Benchmark first impression — first bag (4★ experience): first espresso that truly wowed. Took many shots to dial in, once there: distinct banana at start of shot, tropical fruit throughout, fluid mouthfeel. Worth the effort. Second bag: entirely different roast — undialable, unstable, not comparable. First bag 4★, second bag 1★ at best. Overall 2★ averaged.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "hard",
     "dialStability": "unstable",
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "tags": [
+      "interesting",
+      "funky"
+    ],
+    "wouldBuy": false,
+    "isChoice": false
   },
   {
     "id": "d-1733500000000-ch01",
     "date": "2025-12-08",
     "kitId": "home-espresso",
     "coffeeName": "Colombia Huitaca",
-    "roaster": "Unknown",
+    "roaster": "Upraženo",
     "origin": "Colombia",
     "region": "Huitaca",
     "process": "Washed",
@@ -295,26 +423,31 @@
     "yieldOut": 33,
     "timeSeconds": 27,
     "temperature": 88,
-    "rating": 3,
-    "coffeeUrl": "",
+    "rating": 2,
+    "coffeeUrl": "https://www.uprazeno.cz",
     "coffeeDescription": "",
     "notes": "Occasional / exploratory. Interesting but not a daily driver. Floral, elegant acidity, light body. Lower temp (88C) and tighter ratio (1:1.78). Sweetness arrives late.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "medium",
     "dialStability": "stable",
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": true,
+    "tags": [
+      "easy dial"
+    ],
+    "wouldBuy": false,
+    "isChoice": false
   },
   {
     "id": "d-1729500000000-bsm01",
     "date": "2025-10-20",
     "kitId": "home-espresso",
     "coffeeName": "Brazil Sul de Minas",
-    "roaster": "Unknown",
+    "roaster": "Drukarnia",
     "origin": "Brazil",
     "region": "Sul de Minas",
     "process": "Honey",
@@ -327,18 +460,23 @@
     "timeSeconds": 28,
     "temperature": 90,
     "rating": 2,
-    "coffeeUrl": "",
+    "coffeeUrl": "https://www.instagram.com/drukarniacafe/",
     "coffeeDescription": "",
     "notes": "Support / milk coffee role. Low acidity, calm, mild chocolate — loses character when pushed. Better suited for milk drinks only.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "easy",
     "dialStability": "stable",
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": true,
+    "tags": [
+      "good for milk"
+    ],
+    "wouldBuy": false,
+    "isChoice": false
   },
   {
     "id": "d-1740000000000-mia-cr01",
@@ -363,13 +501,20 @@
     "notes": "Office espresso, Eureka Zenith 65E. Grind 2.0, 18g/36g, 28s, 92C. Caramel, panela, sweet stone fruit. Very stable extraction.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
-    "dialEase": null,
-    "dialStability": null,
+    "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "wouldBuy": true,
+    "isChoice": false,
+    "tags": [
+      "interesting",
+      "complex",
+      "easy dial"
+    ]
   },
   {
     "id": "d-1738000000000-mw01",
@@ -379,7 +524,7 @@
     "roaster": "Playground Coffee",
     "origin": "Blend",
     "region": "Brazil (Cerrado Mineiro) + Guatemala (Huehuetenango)",
-    "process": "Natural + Washed",
+    "process": "Blend",
     "roastLevel": "Medium",
     "flavorNotes": "Acidic, chocolatey — difficult to dial, better in milk",
     "grindSetting": "6-7",
@@ -392,15 +537,19 @@
     "coffeeUrl": "https://en.playground-coffee.com/products/moonwalker-espresso",
     "coffeeDescription": "Playground Coffee — Hamburg, St. Pauli. Moonwalker Espresso — bestselling all-rounder. Brazil (Cerrado Mineiro: Mundo Novo, Red Catuai, Bourbon, Icatu, Catucai) + Guatemala (Huehuetenango: Caturra, Typica). Natural + Washed. 100% Arabica. Roasted January 2026.",
     "notes": "Acidic, difficult to dial. Better in milk drinks. Balanced crowd-pleaser style conflicts with preference for expressive fruit-forward profiles. Espresso only intended use.",
-    "dialStatus": "dialing",
+    "dialStatus": "abandoned",
     "experimenting": true,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "hard",
     "dialStability": "unstable",
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "wouldBuy": false,
+    "tags": [
+      "good for milk"
+    ]
   },
   {
     "id": "d-1740500000000-mia-sum01",
@@ -410,7 +559,7 @@
     "roaster": "Mia Coffee",
     "origin": "Sumatra",
     "region": "",
-    "process": "Unknown",
+    "process": "Washed",
     "roastLevel": "Light",
     "flavorNotes": "Jasmine tea, complex, adjustable",
     "grindSetting": "10.2",
@@ -425,12 +574,37 @@
     "notes": "V60, home filter setup (Timemore Sculptor 064S). Grind 10.2, 20g/320ml, 91C, 4-phase pour, 3:25. Jasmine tea character, complex and adjustable. Excellent.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
-    "dialEase": null,
-    "dialStability": null,
+    "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
     "brewMethods": [
       "Pour Over"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "wouldBuy": true,
+    "isChoice": false,
+    "tags": [
+      "interesting",
+      "complex",
+      "easy dial",
+      "good value"
+    ],
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 50,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 180,
+        "startSeconds": 50
+      },
+      {
+        "phase": 3,
+        "targetGrams": 320,
+        "startSeconds": 120
+      }
+    ]
   }
 ]
