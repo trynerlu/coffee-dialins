@@ -262,11 +262,15 @@ window.executePushDialin = async function() {
       id: window._pendingEntry.id || `d-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
       date: window._pendingEntry.date || new Date().toISOString().split('T')[0]
     };
-    const updated = [entry, ...current];
+    const existingIdx = current.findIndex(e => e.id === entry.id);
+    const updated = existingIdx >= 0
+      ? current.map((e, i) => i === existingIdx ? entry : e)
+      : [entry, ...current];
     await ghWrite(window._pendingToken, 'dialins.json', JSON.stringify(updated, null, 2));
     // Update local cache too
     try { localStorage.setItem('ca_dialins', JSON.stringify(updated)); } catch(e) {}
-    renderSuccess('Saved!', `${entry.coffeeName} added to your logbook. Open the app and it will sync automatically.`);
+    const action = existingIdx >= 0 ? 'updated in' : 'added to';
+    renderSuccess('Saved!', `${entry.coffeeName} ${action} your logbook. Open the app and it will sync automatically.`);
   } catch(e) {
     renderError('Push failed', e.message);
   }
