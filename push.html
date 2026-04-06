@@ -309,6 +309,45 @@ window.executePushApp = async function() {
   }
 };
 
+// ── JSON PASTE (for large files that exceed URL limits) ──────────────────────
+function renderJsonPastePreview(meta, token) {
+  const { file, description } = meta;
+  root.innerHTML = `
+    <div class="preview" style="text-align:center">
+      <div class="preview-label">File update · <span class="badge b-appupdate">${file}</span></div>
+      <div class="preview-name" style="margin-bottom:8px">${description||'JSON file update'}</div>
+      <div class="card-sub" style="margin-bottom:16px">Paste the full JSON content below, then push.</div>
+    </div>
+    <div class="token-section">
+      <label class="f-lbl">Paste ${file} content</label>
+      <textarea id="jsonPasteContent" style="width:100%;background:var(--elevated);border:1px solid var(--border);border-radius:8px;color:var(--tx1);font-family:'DM Mono',monospace;font-size:11px;padding:10px 12px;outline:none;resize:vertical;min-height:120px;line-height:1.5" placeholder="Paste the full JSON array here…" oninput="document.getElementById('jsonPastePushBtn').disabled=!this.value.trim()"></textarea>
+    </div>
+    <button class="btn btn-p" id="jsonPastePushBtn" disabled onclick="executePushJsonPaste()">Push ${file} to GitHub →</button>
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+  window._pendingJsonPaste = { file };
+  window._pendingToken = token;
+}
+
+window.executePushJsonPaste = async function() {
+  const btn = document.getElementById('jsonPastePushBtn');
+  const content = document.getElementById('jsonPasteContent').value.trim();
+  if (!content) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Pushing…';
+  const { file } = window._pendingJsonPaste;
+  try {
+    JSON.parse(content);
+    await ghWrite(window._pendingToken, file, content);
+    try {
+      if (file === 'dialins.json') localStorage.setItem('ca_dialins', content);
+      if (file === 'kits.json')    localStorage.setItem('ca_kits', content);
+    } catch(e) {}
+    renderSuccess(`${file} updated!`, `Pushed to GitHub. Open the app and it will sync automatically.`);
+  } catch(e) {
+    renderError('Push failed', e.message);
+  }
+};
+
 // ── JSON FILE REPLACE ────────────────────────────────────────────────────────
 function renderJsonPreview(payload, token) {
   const { file, data, description, itemCount } = payload;
@@ -380,6 +419,7 @@ function main() {
   if (type === 'dialin') renderDialinPreview(parsed, token);
   else if (type === 'app')  renderAppUpdatePreview(parsed, token);
   else if (type === 'json') renderJsonPreview(parsed, token);
+  else if (type === 'json-paste') renderJsonPastePreview(parsed, token);
   else renderError('Unknown type', `push type "${type}" not recognised`);
 }
 
