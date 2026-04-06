@@ -2,7 +2,6 @@
   {
     "id": "d-1743595200000-km-il01",
     "date": "2026-04-04",
-    "roastDate": "2025-12-10",
     "kitId": "home-espresso",
     "coffeeName": "Ethiopia Iron Lion",
     "roaster": "Kmen Coffee Roasters",
@@ -10,7 +9,6 @@
     "region": "",
     "process": "Natural",
     "roastLevel": "Light",
-    "intendedFor": "Espresso",
     "flavorNotes": "Plums, lemon sorbet, green tea",
     "grindSetting": "5.9",
     "grinder": "Timemore Sculptor 064S",
@@ -20,9 +18,16 @@
     "temperature": 92,
     "rating": 4,
     "dialStatus": "dialed",
-    "beanLocation": "open",
+    "experimenting": false,
+    "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "brewMethods": [
+      "Espresso"
+    ],
     "wouldBuy": false,
     "isChoice": true,
+    "isEarlyEntry": false,
     "tags": [
       "interesting",
       "complex",
@@ -30,20 +35,15 @@
       "easy dial",
       "good for milk"
     ],
-    "dialDifficulty": 3,
-    "shotStability": 4,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
     "filterPours": [],
-    "roasterUrl": "https://kmen.coffee",
+    "roastDate": "2025-12-10",
     "coffeeUrl": "https://kmen.coffee/kava/espresso/",
-    "coffeeDescription": "Kmen Coffee Roasters — Ethiopia Iron Lion. Named after the Bob Marley song Iron Lion Zion. Natural process, espresso roast. Flavor: plums, lemon sorbet, green tea. 250g. Roasted in Ceske Budejovice. Roasted 10.12.2025.",
-    "notes": "Home espresso, Sculptor 064S. Dialed over 2 days. Started at 4.0 (choked), worked up to 6.5 (too fast), bracketed between 5.8 (bitter) and 5.9/40g (sweet spot). Final: grind 5.9, 18g/40g (1:2.22), 28s, 92C. Flavor: tea and citrus opening, plum body, clean finish — no bitterness. 40g yield key — 36g too bitter, 41.6g too flat. Works well with milk. My Pick."
+    "coffeeDescription": "Kmen Coffee Roasters — Ethiopia Iron Lion. Named after the Bob Marley song Iron Lion Zion. Natural process, espresso roast. Flavor: plums, lemon sorbet, green tea. 250g. Roasted 10.12.2025.",
+    "notes": "Home espresso, Sculptor 064S. Dialed over 2 days. Started at 4.0 (choked), worked up to 6.5 (too fast), sweet spot at 5.9/40g. Final: grind 5.9, 18g/40g (1:2.22), 28s, 92°C. Tea and citrus opening, plum body, clean finish. 40g yield key — 36g too bitter, 41.6g too flat. My Pick."
   },
   {
     "id": "d-1743120000000-km01-home",
     "date": "2026-03-27",
-    "roastDate": "2026-01-22",
     "kitId": "home-pour-over",
     "coffeeName": "Ethiopia Chelbesa",
     "roaster": "Kmen Coffee Roasters",
@@ -51,7 +51,6 @@
     "region": "Chelbesa",
     "process": "Washed",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Jasmine, bergamot, hint of sweetness — clean, analytical, layered",
     "grindSetting": "15",
     "grinder": "Timemore Sculptor 064S",
@@ -61,21 +60,45 @@
     "temperature": 91,
     "rating": 3,
     "dialStatus": "dialed",
+    "experimenting": false,
     "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "brewMethods": [
+      "Pour Over"
+    ],
     "wouldBuy": false,
     "isChoice": false,
+    "isEarlyEntry": false,
     "tags": [
       "easy dial"
     ],
-    "dialDifficulty": 2,
-    "shotStability": 4,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
-    "filterPours": [],
-    "roasterUrl": "https://www.kmencoffee.cz",
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 140,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 130
+      }
+    ],
+    "roastDate": "2026-01-22",
     "coffeeUrl": "https://www.kmencoffee.cz",
     "coffeeDescription": "Kmen Coffee Roasters — Ethiopia Chelbesa, washed filter. 250g. Roasted 22.01.2026. Second bag, home dial-in.",
-    "notes": "V60, home filter (Sculptor 064S). Second bag. Grind 15 — significantly coarser than previous zone of 10-11, consistent with grinder maturation shift. 20g/300ml, 91C, ~3:30. Jasmine and bergamot start to finish. Cleaner and more analytical than office Encore version but less expressive. One-dimensional once dialed. Would not repurchase."
+    "notes": "V60, home filter (Sculptor 064S). Second bag. Grind 15 — significantly coarser than previous zone, consistent with grinder maturation shift. 20g/300ml, 91°C, ~3:30. Jasmine and bergamot, clean and analytical. Less expressive than office Encore version. One-dimensional once dialed. Would not repurchase."
   },
   {
     "id": "d-1742860800000-km01",
@@ -136,43 +159,6 @@
     ],
     "wouldBuy": false,
     "isChoice": false
-  },
-  {
-    "id": "d-1742860800000-hc01",
-    "date": "2026-03-15",
-    "roastDate": "2026-02-25",
-    "kitId": "home-espresso",
-    "coffeeName": "Catimor Vietnam",
-    "roaster": "Hippo Café",
-    "origin": "Vietnam",
-    "region": "Cầu Đất – Đà Lạt",
-    "process": "Natural",
-    "roastLevel": "Medium-Dark",
-    "intendedFor": "Espresso",
-    "flavorNotes": "Cherry, berries — heavy body, bitter, no sweetness or acidity",
-    "grindSetting": "3.8",
-    "grinder": "Timemore Sculptor 064S",
-    "doseIn": 18,
-    "yieldOut": 36,
-    "timeSeconds": 34,
-    "temperature": 90,
-    "rating": 2,
-    "dialStatus": "dialed",
-    "beanLocation": "empty",
-    "wouldBuy": false,
-    "isChoice": false,
-    "tags": [
-      "good for milk"
-    ],
-    "dialDifficulty": 2,
-    "shotStability": 3,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
-    "filterPours": [],
-    "roasterUrl": "",
-    "coffeeUrl": "",
-    "coffeeDescription": "Hippo Café (DKJ Tran Company s.r.o., Praha) — Family Café Roaster. Catimor Vietnam — Cầu Đất, Đà Lạt. Variety: Catimor. Natural. Intensive body. Flavor: cherry, berries. 250g. Roasted 25.02.2026.",
-    "notes": "Home espresso, Sculptor 064S. Grind 3.8, 18g/36g, 28-40s, 90C. Heavy, bitter, no sweetness or acidity. Acceptable in milk only. Traditional Vietnamese dark roast style — not suited for modern specialty espresso. Grind 3.8 may reflect grinder calibration shift. Archived."
   },
   {
     "id": "d-1740500000000-mia-sum01",
@@ -291,7 +277,7 @@
     "notes": "Office anchor coffee. Weird good — normal chocolate-forward, easy to dial, very stable and forgiving. Flat but pleasant, nothing wild. Perfect daily driver for office — colleagues enjoy it, no drama. Grind 1.75 on Eureka, 20-24s shots.",
     "dialStatus": "dialed",
     "experimenting": false,
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "dialEase": "easy",
     "dialStability": "stable",
     "brewMethods": [
@@ -393,66 +379,6 @@
       "Espresso"
     ],
     "isEarlyEntry": false
-  },
-  {
-    "id": "d-1737590400000-km01-exp",
-    "date": "2026-01-23",
-    "kitId": "home-pour-over",
-    "coffeeName": "Ethiopia Chelbesa",
-    "roaster": "Kmen Coffee Roasters",
-    "origin": "Ethiopia",
-    "region": "Chelbesa",
-    "process": "Washed",
-    "roastLevel": "Light",
-    "flavorNotes": "Green jasmine tea, white grapes, bergamot",
-    "grindSetting": "16",
-    "grinder": "Timemore Sculptor 064S",
-    "doseIn": 20,
-    "yieldOut": 300,
-    "timeSeconds": 215,
-    "temperature": 91,
-    "rating": 3,
-    "coffeeUrl": "https://www.kmencoffee.cz",
-    "coffeeDescription": "Kmen Coffee Roasters — Kmenova spolecnost, roasted in Ceske Budejovice. Ethiopia Chelbesa — washed process. Flavor: green jasmine tea with bergamot, white grapes. 250g filter. Roasted 22.01.2026.",
-    "notes": "Not yet opened at this point. Very aligned with palate — jasmine/bergamot/tea profile similar to what worked well with Costa Rica DOT and Sumatra. Later dialed at office (see d-1742860800000-km01).",
-    "dialStatus": "dialed",
-    "experimenting": false,
-    "beanLocation": "empty",
-    "dialEase": "easy",
-    "dialStability": "stable",
-    "brewMethods": [
-      "Pour Over"
-    ],
-    "isEarlyEntry": false,
-    "roastDate": "2026-01-22",
-    "filterPours": [
-      {
-        "phase": 1,
-        "targetGrams": 40,
-        "startSeconds": 0
-      },
-      {
-        "phase": 2,
-        "targetGrams": 140,
-        "startSeconds": 45
-      },
-      {
-        "phase": 3,
-        "targetGrams": 225,
-        "startSeconds": 90
-      },
-      {
-        "phase": 4,
-        "targetGrams": 300,
-        "startSeconds": 130
-      }
-    ],
-    "tags": [
-      "interesting",
-      "easy dial"
-    ],
-    "wouldBuy": false,
-    "isChoice": false
   },
   {
     "id": "d-1737500000000-do01",
