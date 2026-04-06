@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#0C0501"/>
+  
+  <!-- Outer dial ring -->
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#C87840" stroke-width="8" opacity="0.3"/>
+  
+  <!-- Tick marks around dial -->
+  <g stroke="#C87840" stroke-width="5" stroke-linecap="round" opacity="0.5">
+    <!-- 12 tick marks -->
+    <line x1="256" y1="96" x2="256" y2="116"/>
+    <line x1="340" y1="118" x2="329" y2="135"/>
+    <line x1="396" y1="172" x2="379" y2="183"/>
+    <line x1="416" y1="256" x2="396" y2="256"/>
+    <line x1="396" y1="340" x2="379" y2="329"/>
+    <line x1="340" y1="396" x2="329" y2="379"/>
+    <line x1="256" y1="416" x2="256" y2="396"/>
+    <line x1="172" y1="396" x2="183" y2="379"/>
+    <line x1="116" y1="340" x2="135" y2="329"/>
+    <line x1="96" y1="256" x2="116" y2="256"/>
+    <line x1="116" y1="172" x2="135" y2="183"/>
+    <line x1="172" y1="118" x2="183" y2="135"/>
+  </g>
+
+  <!-- Inner dial face -->
+  <circle cx="256" cy="256" r="120" fill="#170C06"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#C87840" stroke-width="2" opacity="0.4"/>
+
+  <!-- Dial needle pointing to ~2 o'clock (dialed-in position) -->
+  <line x1="256" y1="256" x2="316" y2="168" stroke="#C87840" stroke-width="6" stroke-linecap="round"/>
+  
+  <!-- Small accent arc showing the dialed range -->
+  <path d="M 180 180 A 108 108 0 0 1 340 158" fill="none" stroke="#C87840" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="10" fill="#C87840"/>
+  <circle cx="256" cy="256" r="5" fill="#0C0501"/>
+
+  <!-- Coffee bean subtle shape at bottom -->
+  <ellipse cx="256" cy="360" rx="28" ry="18" fill="#C87840" opacity="0.15"/>
+  <path d="M 256 342 Q 264 360 256 378 Q 248 360 256 342" fill="#C87840" opacity="0.25"/>
+</svg>
