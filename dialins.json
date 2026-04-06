@@ -161,6 +161,44 @@
     "isChoice": false
   },
   {
+    "id": "d-1742860800000-hc01",
+    "date": "2026-03-15",
+    "roastDate": "2026-02-25",
+    "kitId": "home-espresso",
+    "coffeeName": "Catimor Vietnam",
+    "roaster": "Hippo Café",
+    "origin": "Vietnam",
+    "region": "Cầu Đất – Đà Lạt",
+    "process": "Natural",
+    "roastLevel": "Medium-Dark",
+    "brewMethods": [
+      "Espresso"
+    ],
+    "flavorNotes": "Cherry, berries — heavy body, bitter, no sweetness or acidity",
+    "grindSetting": "3.8",
+    "grinder": "Timemore Sculptor 064S",
+    "doseIn": 18,
+    "yieldOut": 36,
+    "timeSeconds": 34,
+    "temperature": 90,
+    "rating": 2,
+    "dialStatus": "dialed",
+    "experimenting": false,
+    "beanLocation": "empty",
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "wouldBuy": false,
+    "isChoice": false,
+    "isEarlyEntry": false,
+    "tags": [
+      "good for milk"
+    ],
+    "filterPours": [],
+    "coffeeUrl": "",
+    "coffeeDescription": "Hippo Café (DKJ Tran Company s.r.o., Praha) — Family Café Roaster. Catimor Vietnam — Cầu Đất, Đà Lạt. Variety: Catimor. Natural. Flavor: cherry, berries. 250g. Roasted 25.02.2026.",
+    "notes": "Home espresso, Sculptor 064S. Grind 3.8, 18g/36g, 34s, 90°C. Heavy, bitter, no sweetness or acidity. Acceptable in milk only. Traditional Vietnamese dark roast style — not suited for modern specialty espresso. Archived."
+  },
+  {
     "id": "d-1740500000000-mia-sum01",
     "date": "2026-02-25",
     "kitId": "home-pour-over",
