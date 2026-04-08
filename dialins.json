@@ -1,5 +1,66 @@
 [
   {
+    "id": "d-1744142400000-cj-eth01",
+    "date": "2026-04-07",
+    "roastDate": "2026-03-11",
+    "kitId": "office-pour-over",
+    "coffeeName": "Etiopie Suke Quto",
+    "roaster": "Café Jordán",
+    "origin": "Ethiopia",
+    "region": "Suke Quto",
+    "process": "Natural",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Citrus, mulberry, plums, ripe nectarines — mild, elegant, fruity tea character",
+    "grindSetting": "20",
+    "grinder": "Baratza Encore ESP",
+    "doseIn": 20,
+    "yieldOut": 300,
+    "timeSeconds": 210,
+    "temperature": 90,
+    "rating": 4,
+    "dialStatus": "dialed",
+    "beanLocation": "open",
+    "wouldBuy": true,
+    "isChoice": true,
+    "tags": [
+      "interesting",
+      "easy dial",
+      "good value",
+      "crowd-pleaser"
+    ],
+    "dialDifficulty": 1,
+    "shotStability": 5,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.cafejordan.cz",
+    "coffeeUrl": "https://www.cafejordan.cz",
+    "coffeeDescription": "Café Jordán — Etiopie Suke Quto. Natural process, light roast. Flavor: citrus, mulberry, plums, ripe nectarines. 86pts. Roasted 11.03.2026. Frozen 15.03.2026, thawed 07.04.2026.",
+    "notes": "Office pour-over, Baratza Encore ESP. Grind 20, 20g/300ml, 90C, bloom 40g/45s, 4-phase, ~3:30. Mild, elegant natural Ethiopian — fruity tea character throughout, light body, no aftertaste. Not a wow coffee but the fruity tea note appears consistently every cup including cold, which elevates it. Pleasant daily work coffee. Frozen 15.3.2026 (only 4 days after roast), thawed 7.4.2026 — effectively very fresh."
+  },
+  {
     "id": "d-1743600000000-kili01",
     "date": "2026-04-06",
     "roastDate": "2025-11-19",
