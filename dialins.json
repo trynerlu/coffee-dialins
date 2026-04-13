@@ -1,5 +1,66 @@
 [
   {
+    "id": "d-1744228800000-cof-col01",
+    "date": "2026-04-08",
+    "roastDate": "2026-02-24",
+    "kitId": "home-pour-over",
+    "coffeeName": "Colombia Las Flores",
+    "roaster": "Coffeein",
+    "origin": "Colombia",
+    "region": "Las Flores",
+    "process": "Washed Anaerobic",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Tropical fruit, mint, floral, caramel — wild, persistent mint throughout",
+    "grindSetting": "14.5 (Sculptor)",
+    "grinder": "Timemore Sculptor 064S",
+    "doseIn": 20,
+    "yieldOut": 300,
+    "timeSeconds": 220,
+    "temperature": 91,
+    "rating": 5,
+    "dialStatus": "dialed",
+    "beanLocation": "open",
+    "wouldBuy": true,
+    "isChoice": true,
+    "tags": [
+      "interesting",
+      "complex",
+      "funky",
+      "easy dial"
+    ],
+    "dialDifficulty": 2,
+    "shotStability": 4,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.coffeein.sk",
+    "coffeeUrl": "https://www.coffeein.sk",
+    "coffeeDescription": "Coffeein (Slovakia) — Colombia Las Flores. Washed anaerobic, Chiroso variety. SCA 88pts. Flavor: tropical fruit, caramel, floral, mint. Roasted 24.02.2026. Frozen 15.03.2026, thawed 07.04.2026.",
+    "notes": "Home pour-over, Sculptor 064S. Grind 14.5, 20g/300ml, 91C, bloom 40g/45s, 4-phase ~3:40. KEY: phases 2 and 3 at 3-4g/s (slower than usual) — critical for bringing out persistent mint character. Grind 14 = mint dominant throughout but unbalanced. Grind 16 = more balanced but mint fades after first sip. Grind 14.5 + slow middle pours = sweet spot: tropical fruit opening, caramel body, strong persistent mint throughout entire cup and in aftertaste. Wildest and most expressive pour-over yet — each sip tells a story. Extraction time stays ~4 min regardless of grind (14–16) due to coffee density — controlled by pour rate instead. Frozen 15.3.2026 (19 days after roast), thawed 7.4.2026."
+  },
+  {
     "id": "d-1744142400000-cj-eth01",
     "date": "2026-04-07",
     "roastDate": "2026-03-11",
