@@ -1,5 +1,66 @@
 [
   {
+    "id": "d-1744315200000-mb-col01",
+    "date": "2026-04-09",
+    "roastDate": "2026-03-25",
+    "kitId": "home-pour-over",
+    "coffeeName": "Kolumbie Huila, Finca Nogales",
+    "roaster": "Merrybeans Pražírna",
+    "origin": "Colombia",
+    "region": "Huila, Finca Nogales",
+    "process": "Washed",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Jasmine, chamomile, cherries — candy-like body, long persistent chamomile aftertaste",
+    "grindSetting": "14.5 (Sculptor)",
+    "grinder": "Timemore Sculptor 064S",
+    "doseIn": 20,
+    "yieldOut": 300,
+    "timeSeconds": 210,
+    "temperature": 91,
+    "rating": 3,
+    "dialStatus": "dialed",
+    "beanLocation": "empty",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "interesting",
+      "complex",
+      "funky",
+      "crowd-pleaser"
+    ],
+    "dialDifficulty": 4,
+    "shotStability": 2,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.merrybeans.cz",
+    "coffeeUrl": "https://www.merrybeans.cz",
+    "coffeeDescription": "Merrybeans Pražírna — Kolumbie Huila, Finca Nogales. Washed, dried on raised beds. Bourbon Aji variety. 1750g. Flavor: jasmine, chamomile, cherries. 150g. Roasted 25.03.2026.",
+    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 14.5, 20g/300ml, 91C, bloom 40g/45s, phases 2+3 at 3-4g/s slow, phase 4 at 6g/s fast, ~3:30. KEY: brew within first 3-4 days of opening — chamomile compound is extremely volatile. At its best: jasmine opening, candy-like body, strong building chamomile aftertaste intensifying with each sip. Extraction time stays ~3:10 regardless of pour speed variation — coffee density controls drainage more than grind in 14-15 range. Extensive technique experimentation: ultra-slow (1.5-2g/s) = full body but no chamomile; fast phase 2 + slow phase 3 = unbalanced. Sweet spot is consistent 3-4g/s on phases 2+3. Degraded noticeably after day 4-5 of opening on a 150g bag. Rated 4 stars at peak, 2 stars at end — averaged to 3. Small 150g bag a limitation for full dialing."
+  },
+  {
     "id": "d-1744142400000-km-hond01",
     "date": "2026-04-07",
     "roastDate": "2026-02-25",
