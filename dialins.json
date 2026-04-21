@@ -1,5 +1,63 @@
 [
   {
+    "id": "d-1744401600000-101-eth01",
+    "date": "2026-04-17",
+    "roastDate": "2026-03-27",
+    "kitId": "home-pour-over",
+    "coffeeName": "Ethiopie Chelbesa",
+    "roaster": "101 Roastery",
+    "origin": "Ethiopia",
+    "region": "Chelbesa",
+    "process": "Washed",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Generic bitter fruitiness — bag describes black tea, flowers, lemon but none present in cup",
+    "grindSetting": "14 (Sculptor)",
+    "grinder": "Timemore Sculptor 064S",
+    "doseIn": 20,
+    "yieldOut": 300,
+    "timeSeconds": 230,
+    "temperature": 90,
+    "rating": 2,
+    "dialStatus": "dialed",
+    "beanLocation": "empty",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "crowd-pleaser"
+    ],
+    "dialDifficulty": 3,
+    "shotStability": 3,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.101roastery.cz",
+    "coffeeUrl": "https://www.101roastery.cz",
+    "coffeeDescription": "101 Roastery (Y-Coffee Group s.r.o.) — Ethiopie Chelbesa. Washed, Heirloom variety. Flavor described as: black tea, flowers, lemon. Filter. 200g. Roasted 27.03.2026.",
+    "notes": "Home pour-over, Sculptor 064S. Dialing: grind 15 (4:10-4:20, flat/mild/under-extracted), grind 13 (5:00+, tart/bitter/harsh), grind 14 sweet spot mechanically (3:50, fuller but still bitter fruity). Slow phases 2+3 throughout. Main issue: flavor profile on bag (black tea, flowers, lemon) completely absent — cup delivers generic bitter fruitiness with no clarity, layering or defined notes. Tastes like standard batch brew found anywhere. Girlfriend colleagues found it pleasant (crowd pleaser). Compared to Kmen Chelbesa (★★★) which at least delivered jasmine/bergamot — this delivers nothing interesting. Lowest rated filter coffee so far. Misleading bag description is the main complaint."
+  },
+  {
     "id": "d-1744315200000-mb-col01",
     "date": "2026-04-09",
     "roastDate": "2026-03-25",
