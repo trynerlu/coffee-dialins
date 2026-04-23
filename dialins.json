@@ -1,5 +1,64 @@
 [
   {
+    "id": "d-1744488000000-mc-nic01",
+    "date": "2026-04-23",
+    "roastDate": "2026-03-09",
+    "kitId": "office-pour-over",
+    "coffeeName": "Nicaragua El Progreso",
+    "roaster": "Mamacoffee",
+    "origin": "Nicaragua",
+    "region": "El Progreso",
+    "process": "Anaerobic Natural",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Rum, nougat, fermented pear — rum-forward, not for everyone",
+    "grindSetting": "20 (Encore)",
+    "grinder": "Baratza Encore ESP",
+    "doseIn": 20,
+    "yieldOut": 300,
+    "timeSeconds": 190,
+    "temperature": 92,
+    "rating": 1,
+    "dialStatus": "dialed",
+    "beanLocation": "open",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "funky",
+      "interesting"
+    ],
+    "dialDifficulty": 1,
+    "shotStability": 5,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 150,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 225,
+        "startSeconds": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 300,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.mamacoffee.cz",
+    "coffeeUrl": "https://www.mamacoffee.cz",
+    "coffeeDescription": "Mamacoffee — Nicaragua El Progreso. Anaerobic natural. Producers: Norlan a Uriel Chavarría. Flavor: rum, nougat, fermented pear. Acidity: sweet, medium. 250g. Roasted 09.03.2026. Mamacoffee Direct project.",
+    "notes": "Office pour-over, Baratza Encore ESP. Grind 20, 20g/300ml, 92C, bloom 40g/45s, phases 2+3 slow, phase 4 fast, 3:10. Clean extraction, dialed correctly on first shot. Coffee delivers exactly what bag describes — strongly rum-forward, hint of pear sweetness at start, rum dominates throughout, no aftertaste. Technically well executed but completely outside personal palate. Colleague coffee. Would not drink again."
+  },
+  {
     "id": "d-1744401600000-101-eth01",
     "date": "2026-04-17",
     "roastDate": "2026-03-27",
