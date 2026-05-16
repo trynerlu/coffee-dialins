@@ -1,5 +1,64 @@
 [
   {
+    "id": "d-1746921600000-cg-eth01",
+    "date": "2026-05-09",
+    "roastDate": "2026-01-05",
+    "kitId": "home-pour-over",
+    "coffeeName": "Ethiopia Negele Gorbitu",
+    "roaster": "Café Gape",
+    "origin": "Ethiopia",
+    "region": "Negele Gorbitu",
+    "process": "Washed",
+    "roastLevel": "Light",
+    "intendedFor": "Filter",
+    "flavorNotes": "Lychee, flowers, juicy acidity — mild, one-dimensional, crowd-pleaser",
+    "grindSetting": "15 (Sculptor) / 21 (Encore)",
+    "grinder": "Timemore Sculptor 064S / Baratza Encore ESP",
+    "doseIn": 20,
+    "yieldOut": 320,
+    "timeSeconds": 215,
+    "temperature": 90,
+    "rating": 3,
+    "dialStatus": "dialed",
+    "beanLocation": "open",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "crowd-pleaser",
+      "easy dial"
+    ],
+    "dialDifficulty": 1,
+    "shotStability": 5,
+    "filterBloomGrams": 40,
+    "filterBloomSeconds": 45,
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      },
+      {
+        "phase": 2,
+        "targetGrams": 170,
+        "startSeconds": 45
+      },
+      {
+        "phase": 3,
+        "targetGrams": 260,
+        "startSecondl": 90
+      },
+      {
+        "phase": 4,
+        "targetGrams": 320,
+        "startSeconds": 135
+      }
+    ],
+    "roasterUrl": "https://www.cafegape.cz",
+    "coffeeUrl": "https://www.cafegape.cz",
+    "coffeeDescription": "Café Gape — Ethiopia Negele Gorbitu. Washed. Flavor: sweet lychee, flowers, juicy acidity. Roasted 05.01.2026. Frozen 15.03.2026, thawed May 2026.",
+    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 15, 20g/320ml, 90C, bloom 40g/45s, phases 40→170→260→320, slow phases 2+3 (3-4g/s), fast phase 4. Extended phases to 320ml brought florals and washed character more to foreground. Dialed on first shot essentially — very easy. Delivers exactly what bag describes (lychee/floral) but lacks complexity, depth or wow factor. Coffee gets better when cold. Not one-dimensional in a bad way — just complete and simple. Perfect crowd-pleaser for colleagues. Office: Encore 21, same recipe."
+  },
+  {
     "id": "d-1746835200000-mb-esp01",
     "date": "2026-05-08",
     "roastDate": "2026-04-01",
