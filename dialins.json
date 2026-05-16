@@ -453,7 +453,7 @@
     "temperature": 90,
     "rating": 4,
     "dialStatus": "dialed",
-    "beanLocation": "open",
+    "beanLocation": "empty",
     "wouldBuy": true,
     "isChoice": true,
     "tags": [
