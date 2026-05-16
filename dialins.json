@@ -10,7 +10,6 @@
     "region": "Negele Gorbitu",
     "process": "Washed",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Lychee, flowers, juicy acidity — mild, one-dimensional, crowd-pleaser",
     "grindSetting": "15 (Sculptor) / 21 (Encore)",
     "grinder": "Timemore Sculptor 064S / Baratza Encore ESP",
@@ -24,13 +23,8 @@
     "wouldBuy": false,
     "isChoice": false,
     "tags": [
-      "crowd-pleaser",
-      "easy dial"
+      "crowd-pleaser"
     ],
-    "dialDifficulty": 1,
-    "shotStability": 5,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -53,10 +47,18 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.cafegape.cz",
     "coffeeUrl": "https://www.cafegape.cz",
     "coffeeDescription": "Café Gape — Ethiopia Negele Gorbitu. Washed. Flavor: sweet lychee, flowers, juicy acidity. Roasted 05.01.2026. Frozen 15.03.2026, thawed May 2026.",
-    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 15, 20g/320ml, 90C, bloom 40g/45s, phases 40→170→260→320, slow phases 2+3 (3-4g/s), fast phase 4. Extended phases to 320ml brought florals and washed character more to foreground. Dialed on first shot essentially — very easy. Delivers exactly what bag describes (lychee/floral) but lacks complexity, depth or wow factor. Coffee gets better when cold. Not one-dimensional in a bad way — just complete and simple. Perfect crowd-pleaser for colleagues. Office: Encore 21, same recipe."
+    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 15, 20g/320ml, 90C, bloom 40g/45s, phases 40→170→260→320, slow phases 2+3 (3-4g/s), fast phase 4. Extended phases to 320ml brought florals and washed character more to foreground. Dialed on first shot essentially — very easy. Delivers exactly what bag describes (lychee/floral) but lacks complexity, depth or wow factor. Coffee gets better when cold. Not one-dimensional in a bad way — just complete and simple. Perfect crowd-pleaser for colleagues. Office: Encore 21, same recipe.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1746835200000-mb-esp01",
@@ -69,7 +71,6 @@
     "region": "Brazil (1100m) + Guatemala (1400-2000m)",
     "process": "Natural + Washed",
     "roastLevel": "Medium",
-    "intendedFor": "Espresso",
     "flavorNotes": "Chocolate, hazelnuts, honey — none present in black espresso",
     "grindSetting": "6.3",
     "grinder": "Timemore Sculptor 064S",
@@ -85,15 +86,19 @@
     "tags": [
       "good for milk"
     ],
-    "dialDifficulty": 4,
-    "shotStability": 2,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
     "filterPours": [],
-    "roasterUrl": "https://www.merrybeans.cz",
     "coffeeUrl": "https://www.merrybeans.cz",
     "coffeeDescription": "Merrybeans Pražírna — Brazil + Guatemala espresso blend. Natural + Washed. Mixed varieties. Brazil 1100m, Guatemala 1400-2000m. Flavor: chocolate, hazelnuts, honey. 250g. Roasted 01.04.2026.",
-    "notes": "Home espresso, Sculptor 064S. Extensive dialing: 5.0 (choked), 6.0 (40s/bitter but hints of nuts underneath), 6.3 (24s/bitter/flat), 6.15 (40s/over-extracted), 6.3+42g (32s/bad/no flavour). Never found sweet spot — blend density inconsistency makes precise extraction very difficult on flat burr grinder. Nutty flavour experienced in-store was almost certainly from the milk in flat white, not the coffee itself. Black espresso delivers only bitter flatness regardless of parameters. Milk drink only."
+    "notes": "Home espresso, Sculptor 064S. Extensive dialing: 5.0 (choked), 6.0 (40s/bitter but hints of nuts underneath), 6.3 (24s/bitter/flat), 6.15 (40s/over-extracted), 6.3+42g (32s/bad/no flavour). Never found sweet spot — blend density inconsistency makes precise extraction very difficult on flat burr grinder. Nutty flavour experienced in-store was almost certainly from the milk in flat white, not the coffee itself. Black espresso delivers only bitter flatness regardless of parameters. Milk drink only.",
+    "brewMethods": [
+      "Espresso"
+    ],
+    "dialEase": "hard",
+    "dialStability": "unstable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1746748800000-bb-uga01",
@@ -106,7 +111,6 @@
     "region": "Imbalu, Mount Elgon",
     "process": "Anaerobic Natural",
     "roastLevel": "Light",
-    "intendedFor": "Espresso",
     "flavorNotes": "Dried cranberries, almonds, banana in chocolate — acidic opening, sweet finish",
     "grindSetting": "4.9",
     "grinder": "Timemore Sculptor 064S",
@@ -123,18 +127,21 @@
       "interesting",
       "complex",
       "funky",
-      "easy dial",
       "crowd-pleaser"
     ],
-    "dialDifficulty": 1,
-    "shotStability": 5,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
     "filterPours": [],
-    "roasterUrl": "https://www.beberry.cz",
     "coffeeUrl": "https://www.beberry.cz",
     "coffeeDescription": "Be Berry — Uganda Norman Mukuru. Farmer: Norman Mukuru. Farm: Imbalu, Mount Elgon. Anaerobic natural. Varieties: SL14, SL28, Nyasaland. Altitude: 1800-2200m. Harvest: Autumn 2025. Flavor: dried cranberries, almonds, banana in chocolate. SCA 85.5pts. 1000g. Roasted 28.04.2026.",
-    "notes": "Home espresso setup but used on trip with Gaggia Classic Evo Pro + GaggiaMate upgrade (PID + brew by weight). Sculptor 064S + full puck prep. Dialed: 5.5 (23s, too fast/sour), 5.0 (27s, better), settled at 4.9 (27-32s, avg ~29s). Very stable back-to-back — ran 20-30 consecutive double espressos per session over 2.5 days, 1kg total consumed. Cranberry acidity at start, transitions clearly to almond/banana in chocolate sweetness — analytical and well-divided despite being only 10 days post-roast. Expect ★★★★★ at 3-4 weeks rest when fully open. Gaggia Classic + GaggiaMate proved exceptionally stable for high-volume sessions — impressed. Would not have expected it to outperform Quick Mill Pop-Up for back-to-back stability."
+    "notes": "Home espresso setup but used on trip with Gaggia Classic Evo Pro + GaggiaMate upgrade (PID + brew by weight). Sculptor 064S + full puck prep. Dialed: 5.5 (23s, too fast/sour), 5.0 (27s, better), settled at 4.9 (27-32s, avg ~29s). Very stable back-to-back — ran 20-30 consecutive double espressos per session over 2.5 days, 1kg total consumed. Cranberry acidity at start, transitions clearly to almond/banana in chocolate sweetness — analytical and well-divided despite being only 10 days post-roast. Expect ★★★★★ at 3-4 weeks rest when fully open. Gaggia Classic + GaggiaMate proved exceptionally stable for high-volume sessions — impressed. Would not have expected it to outperform Quick Mill Pop-Up for back-to-back stability.",
+    "brewMethods": [
+      "Espresso"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1744488000000-mc-nic01",
@@ -147,7 +154,6 @@
     "region": "El Progreso",
     "process": "Anaerobic Natural",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Rum, nougat, fermented pear — rum-forward, not for everyone",
     "grindSetting": "20 (Encore)",
     "grinder": "Baratza Encore ESP",
@@ -164,10 +170,6 @@
       "funky",
       "interesting"
     ],
-    "dialDifficulty": 1,
-    "shotStability": 5,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -190,10 +192,18 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.mamacoffee.cz",
     "coffeeUrl": "https://www.mamacoffee.cz",
     "coffeeDescription": "Mamacoffee — Nicaragua El Progreso. Anaerobic natural. Producers: Norlan a Uriel Chavarría. Flavor: rum, nougat, fermented pear. Acidity: sweet, medium. 250g. Roasted 09.03.2026. Mamacoffee Direct project.",
-    "notes": "Office pour-over, Baratza Encore ESP. Grind 20, 20g/300ml, 92C, bloom 40g/45s, phases 2+3 slow, phase 4 fast, 3:10. Clean extraction, dialed correctly on first shot. Coffee delivers exactly what bag describes — strongly rum-forward, hint of pear sweetness at start, rum dominates throughout, no aftertaste. Technically well executed but completely outside personal palate. Colleague coffee. Would not drink again."
+    "notes": "Office pour-over, Baratza Encore ESP. Grind 20, 20g/300ml, 92C, bloom 40g/45s, phases 2+3 slow, phase 4 fast, 3:10. Clean extraction, dialed correctly on first shot. Coffee delivers exactly what bag describes — strongly rum-forward, hint of pear sweetness at start, rum dominates throughout, no aftertaste. Technically well executed but completely outside personal palate. Colleague coffee. Would not drink again.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1744401600000-101-eth01",
@@ -206,7 +216,6 @@
     "region": "Chelbesa",
     "process": "Washed",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Generic bitter fruitiness — bag describes black tea, flowers, lemon but none present in cup",
     "grindSetting": "14 (Sculptor)",
     "grinder": "Timemore Sculptor 064S",
@@ -222,10 +231,6 @@
     "tags": [
       "crowd-pleaser"
     ],
-    "dialDifficulty": 3,
-    "shotStability": 3,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -248,10 +253,18 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.101roastery.cz",
     "coffeeUrl": "https://www.101roastery.cz",
     "coffeeDescription": "101 Roastery (Y-Coffee Group s.r.o.) — Ethiopie Chelbesa. Washed, Heirloom variety. Flavor described as: black tea, flowers, lemon. Filter. 200g. Roasted 27.03.2026.",
-    "notes": "Home pour-over, Sculptor 064S. Dialing: grind 15 (4:10-4:20, flat/mild/under-extracted), grind 13 (5:00+, tart/bitter/harsh), grind 14 sweet spot mechanically (3:50, fuller but still bitter fruity). Slow phases 2+3 throughout. Main issue: flavor profile on bag (black tea, flowers, lemon) completely absent — cup delivers generic bitter fruitiness with no clarity, layering or defined notes. Tastes like standard batch brew found anywhere. Girlfriend colleagues found it pleasant (crowd pleaser). Compared to Kmen Chelbesa (★★★) which at least delivered jasmine/bergamot — this delivers nothing interesting. Lowest rated filter coffee so far. Misleading bag description is the main complaint."
+    "notes": "Home pour-over, Sculptor 064S. Dialing: grind 15 (4:10-4:20, flat/mild/under-extracted), grind 13 (5:00+, tart/bitter/harsh), grind 14 sweet spot mechanically (3:50, fuller but still bitter fruity). Slow phases 2+3 throughout. Main issue: flavor profile on bag (black tea, flowers, lemon) completely absent — cup delivers generic bitter fruitiness with no clarity, layering or defined notes. Tastes like standard batch brew found anywhere. Girlfriend colleagues found it pleasant (crowd pleaser). Compared to Kmen Chelbesa (★★★) which at least delivered jasmine/bergamot — this delivers nothing interesting. Lowest rated filter coffee so far. Misleading bag description is the main complaint.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "medium",
+    "dialStability": "unstable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1744315200000-mb-col01",
@@ -264,7 +277,6 @@
     "region": "Huila, Finca Nogales",
     "process": "Washed",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Jasmine, chamomile, cherries — candy-like body, long persistent chamomile aftertaste",
     "grindSetting": "14.5 (Sculptor)",
     "grinder": "Timemore Sculptor 064S",
@@ -283,10 +295,6 @@
       "funky",
       "crowd-pleaser"
     ],
-    "dialDifficulty": 4,
-    "shotStability": 2,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -309,48 +317,18 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.merrybeans.cz",
     "coffeeUrl": "https://www.merrybeans.cz",
     "coffeeDescription": "Merrybeans Pražírna — Kolumbie Huila, Finca Nogales. Washed, dried on raised beds. Bourbon Aji variety. 1750g. Flavor: jasmine, chamomile, cherries. 150g. Roasted 25.03.2026.",
-    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 14.5, 20g/300ml, 91C, bloom 40g/45s, phases 2+3 at 3-4g/s slow, phase 4 at 6g/s fast, ~3:30. KEY: brew within first 3-4 days of opening — chamomile compound is extremely volatile. At its best: jasmine opening, candy-like body, strong building chamomile aftertaste intensifying with each sip. Extraction time stays ~3:10 regardless of pour speed variation — coffee density controls drainage more than grind in 14-15 range. Extensive technique experimentation: ultra-slow (1.5-2g/s) = full body but no chamomile; fast phase 2 + slow phase 3 = unbalanced. Sweet spot is consistent 3-4g/s on phases 2+3. Degraded noticeably after day 4-5 of opening on a 150g bag. Rated 4 stars at peak, 2 stars at end — averaged to 3. Small 150g bag a limitation for full dialing."
-  },
-  {
-    "id": "d-1744142400000-km-hond01",
-    "date": "2026-04-07",
-    "roastDate": "2026-02-25",
-    "kitId": "home-espresso",
-    "coffeeName": "Honduras La Valentina",
-    "roaster": "Kmen Coffee Roasters",
-    "origin": "Honduras",
-    "region": "La Valentina",
-    "process": "Natural",
-    "roastLevel": "Light",
-    "intendedFor": "Espresso",
-    "flavorNotes": "Dark cherries, chocolate bitterness, red wine acidity — flat, one-directional",
-    "grindSetting": "4.9",
-    "grinder": "Timemore Sculptor 064S",
-    "doseIn": 18,
-    "yieldOut": 40,
-    "timeSeconds": 27,
-    "temperature": 92,
-    "rating": 2,
-    "dialStatus": "dialed",
-    "beanLocation": "open",
-    "wouldBuy": false,
-    "isChoice": false,
-    "tags": [
-      "good for milk",
-      "easy dial"
+    "notes": "Home pour-over, Sculptor 064S. Best recipe: grind 14.5, 20g/300ml, 91C, bloom 40g/45s, phases 2+3 at 3-4g/s slow, phase 4 at 6g/s fast, ~3:30. KEY: brew within first 3-4 days of opening — chamomile compound is extremely volatile. At its best: jasmine opening, candy-like body, strong building chamomile aftertaste intensifying with each sip. Extraction time stays ~3:10 regardless of pour speed variation — coffee density controls drainage more than grind in 14-15 range. Extensive technique experimentation: ultra-slow (1.5-2g/s) = full body but no chamomile; fast phase 2 + slow phase 3 = unbalanced. Sweet spot is consistent 3-4g/s on phases 2+3. Degraded noticeably after day 4-5 of opening on a 150g bag. Rated 4 stars at peak, 2 stars at end — averaged to 3. Small 150g bag a limitation for full dialing.",
+    "brewMethods": [
+      "Pour Over"
     ],
-    "dialDifficulty": 2,
-    "shotStability": 4,
-    "filterBloomGrams": 0,
-    "filterBloomSeconds": 0,
-    "filterPours": [],
-    "roasterUrl": "https://kmen.coffee",
-    "coffeeUrl": "https://kmen.coffee/kava/espresso/",
-    "coffeeDescription": "Kmen Coffee Roasters — Honduras La Valentina. Natural process, espresso roast. Flavor: dark cherries, Mozart balls (chocolate/marzipan), red wine. 250g. Roasted 25.02.2026.",
-    "notes": "Home espresso, Sculptor 064S. Dialing: 5.9 (16s, too fast), 5.4 (22s), 5.1 (21-22s, grinder residue), 4.8 (25s/36g — bitter front, fruity middle), sweet spot 4.9/18g/40g ~27s. Note: 4.8 runs slow day-after (32-33s), 5.0 too fast (~22s), 4.9 is consistent starting point. Taste: dark chocolate bitterness opening (not harsh but not sweet), red wine/dark cherry acidity in middle — more pronounced at 40g vs 36g, long aftertaste. Profile is one-directional — chocolate bitterness without real sweetness, acidity without interesting character. Not aligned with palate. Better in milk."
+    "dialEase": "hard",
+    "dialStability": "unstable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1744228800000-cof-col01",
@@ -363,7 +341,6 @@
     "region": "Las Flores",
     "process": "Washed Anaerobic",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Tropical fruit, mint, floral, caramel — wild, persistent mint throughout",
     "grindSetting": "14.5 (Sculptor)",
     "grinder": "Timemore Sculptor 064S",
@@ -379,13 +356,8 @@
     "tags": [
       "interesting",
       "complex",
-      "funky",
-      "easy dial"
+      "funky"
     ],
-    "dialDifficulty": 2,
-    "shotStability": 4,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -408,10 +380,58 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.coffeein.sk",
     "coffeeUrl": "https://www.coffeein.sk",
     "coffeeDescription": "Coffeein (Slovakia) — Colombia Las Flores. Washed anaerobic, Chiroso variety. SCA 88pts. Flavor: tropical fruit, caramel, floral, mint. Roasted 24.02.2026. Frozen 15.03.2026, thawed 07.04.2026.",
-    "notes": "Home pour-over, Sculptor 064S. Grind 14.5, 20g/300ml, 91C, bloom 40g/45s, 4-phase ~3:40. KEY: phases 2 and 3 at 3-4g/s (slower than usual) — critical for bringing out persistent mint character. Grind 14 = mint dominant throughout but unbalanced. Grind 16 = more balanced but mint fades after first sip. Grind 14.5 + slow middle pours = sweet spot: tropical fruit opening, caramel body, strong persistent mint throughout entire cup and in aftertaste. Wildest and most expressive pour-over yet — each sip tells a story. Extraction time stays ~4 min regardless of grind (14–16) due to coffee density — controlled by pour rate instead. Frozen 15.3.2026 (19 days after roast), thawed 7.4.2026."
+    "notes": "Home pour-over, Sculptor 064S. Grind 14.5, 20g/300ml, 91C, bloom 40g/45s, 4-phase ~3:40. KEY: phases 2 and 3 at 3-4g/s (slower than usual) — critical for bringing out persistent mint character. Grind 14 = mint dominant throughout but unbalanced. Grind 16 = more balanced but mint fades after first sip. Grind 14.5 + slow middle pours = sweet spot: tropical fruit opening, caramel body, strong persistent mint throughout entire cup and in aftertaste. Wildest and most expressive pour-over yet — each sip tells a story. Extraction time stays ~4 min regardless of grind (14–16) due to coffee density — controlled by pour rate instead. Frozen 15.3.2026 (19 days after roast), thawed 7.4.2026.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
+  },
+  {
+    "id": "d-1744142400000-km-hond01",
+    "date": "2026-04-07",
+    "roastDate": "2026-02-25",
+    "kitId": "home-espresso",
+    "coffeeName": "Honduras La Valentina",
+    "roaster": "Kmen Coffee Roasters",
+    "origin": "Honduras",
+    "region": "La Valentina",
+    "process": "Natural",
+    "roastLevel": "Light",
+    "flavorNotes": "Dark cherries, chocolate bitterness, red wine acidity — flat, one-directional",
+    "grindSetting": "4.9",
+    "grinder": "Timemore Sculptor 064S",
+    "doseIn": 18,
+    "yieldOut": 40,
+    "timeSeconds": 27,
+    "temperature": 92,
+    "rating": 2,
+    "dialStatus": "dialed",
+    "beanLocation": "open",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [
+      "good for milk"
+    ],
+    "filterPours": [],
+    "coffeeUrl": "https://kmen.coffee/kava/espresso/",
+    "coffeeDescription": "Kmen Coffee Roasters — Honduras La Valentina. Natural process, espresso roast. Flavor: dark cherries, Mozart balls (chocolate/marzipan), red wine. 250g. Roasted 25.02.2026.",
+    "notes": "Home espresso, Sculptor 064S. Dialing: 5.9 (16s, too fast), 5.4 (22s), 5.1 (21-22s, grinder residue), 4.8 (25s/36g — bitter front, fruity middle), sweet spot 4.9/18g/40g ~27s. Note: 4.8 runs slow day-after (32-33s), 5.0 too fast (~22s), 4.9 is consistent starting point. Taste: dark chocolate bitterness opening (not harsh but not sweet), red wine/dark cherry acidity in middle — more pronounced at 40g vs 36g, long aftertaste. Profile is one-directional — chocolate bitterness without real sweetness, acidity without interesting character. Not aligned with palate. Better in milk.",
+    "brewMethods": [
+      "Espresso"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1744142400000-cj-eth01",
@@ -424,7 +444,6 @@
     "region": "Suke Quto",
     "process": "Natural",
     "roastLevel": "Light",
-    "intendedFor": "Filter",
     "flavorNotes": "Citrus, mulberry, plums, ripe nectarines — mild, elegant, fruity tea character",
     "grindSetting": "20 (Encore) / 15 (Sculptor)",
     "grinder": "Baratza Encore ESP / Timemore Sculptor 064S",
@@ -439,14 +458,9 @@
     "isChoice": true,
     "tags": [
       "interesting",
-      "easy dial",
       "good value",
       "crowd-pleaser"
     ],
-    "dialDifficulty": 1,
-    "shotStability": 5,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
     "filterPours": [
       {
         "phase": 1,
@@ -469,10 +483,18 @@
         "startSeconds": 135
       }
     ],
-    "roasterUrl": "https://www.cafejordan.cz",
     "coffeeUrl": "https://www.cafejordan.cz",
     "coffeeDescription": "Café Jordán — Etiopie Suke Quto. Natural process, light roast. Flavor: citrus, mulberry, plums, ripe nectarines. 86pts. Roasted 11.03.2026. Frozen 15.03.2026, thawed 07.04.2026.",
-    "notes": "Dialed on two kits. OFFICE (Baratza Encore ESP): grind 20, 20g/300ml, 90C, bloom 40g/45s, 4-phase, ~3:30. HOME (Sculptor 064S): grind 15, same recipe, ~3:20. Sculptor 15 confirms filter zone for light Ethiopian naturals — consistent with Chelbesa. Mild, elegant natural Ethiopian — fruity tea character throughout, light body, no aftertaste, no bitterness. Not a wow coffee but the fruity tea note appears consistently every cup including cold, which elevates it. Pleasant daily work coffee. Frozen 15.3.2026 (only 4 days after roast), thawed 7.4.2026 — effectively very fresh."
+    "notes": "Dialed on two kits. OFFICE (Baratza Encore ESP): grind 20, 20g/300ml, 90C, bloom 40g/45s, 4-phase, ~3:30. HOME (Sculptor 064S): grind 15, same recipe, ~3:20. Sculptor 15 confirms filter zone for light Ethiopian naturals — consistent with Chelbesa. Mild, elegant natural Ethiopian — fruity tea character throughout, light body, no aftertaste, no bitterness. Not a wow coffee but the fruity tea note appears consistently every cup including cold, which elevates it. Pleasant daily work coffee. Frozen 15.3.2026 (only 4 days after roast), thawed 7.4.2026 — effectively very fresh.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "easy",
+    "dialStability": "stable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1743600000000-kili01",
@@ -485,7 +507,6 @@
     "region": "Kilimanjaro",
     "process": "Washed",
     "roastLevel": "Medium",
-    "intendedFor": "Filter",
     "flavorNotes": "Flat, generic, dark roast americano character — nothing interesting",
     "grindSetting": "Pre-ground (medium)",
     "grinder": "Pre-ground",
@@ -499,15 +520,25 @@
     "wouldBuy": false,
     "isChoice": false,
     "tags": [],
-    "dialDifficulty": 0,
-    "shotStability": 0,
-    "filterBloomGrams": 40,
-    "filterBloomSeconds": 45,
-    "filterPours": [],
-    "roasterUrl": "https://www.kilikafee.co.tz",
+    "filterPours": [
+      {
+        "phase": 1,
+        "targetGrams": 40,
+        "startSeconds": 0
+      }
+    ],
     "coffeeUrl": "https://www.kilikafee.co.tz",
     "coffeeDescription": "Kilikafee Exports · Roastery · Shop — Kilimanjaro Royal Coffee. 100% Arabica AA/AB/PB grade, grown 1,200–2,200m on slopes of Mount Kilimanjaro. Medium roast, medium grind. Pre-ground. Processed & distributed by D&J Distributors Co. Ltd, Moshi, Tanzania. Roasted 19.11.2025.",
-    "notes": "V60, home pour-over. Pre-ground medium — cannot adjust grind. 20g/300ml, 94C, bloom 40g/45s, single main pour, done 2:45. Completely flat, burned, generic dark roast character — no origin flavors, no complexity. Souvenir coffee from Tanzania, mass-market product. Undrinkable. Remainder used as plant fertilizer. Abandoned after one brew."
+    "notes": "V60, home pour-over. Pre-ground medium — cannot adjust grind. 20g/300ml, 94C, bloom 40g/45s, single main pour, done 2:45. Completely flat, burned, generic dark roast character — no origin flavors, no complexity. Souvenir coffee from Tanzania, mass-market product. Undrinkable. Remainder used as plant fertilizer. Abandoned after one brew.",
+    "brewMethods": [
+      "Pour Over"
+    ],
+    "dialEase": "easy",
+    "dialStability": "unstable",
+    "frozenDate": "",
+    "thawDate": "",
+    "experimenting": false,
+    "isEarlyEntry": false
   },
   {
     "id": "d-1743595200000-km-il01",
@@ -542,14 +573,15 @@
       "interesting",
       "complex",
       "funky",
-      "easy dial",
       "good for milk"
     ],
     "filterPours": [],
     "roastDate": "2025-12-10",
     "coffeeUrl": "https://kmen.coffee/kava/espresso/",
     "coffeeDescription": "Kmen Coffee Roasters — Ethiopia Iron Lion. Named after the Bob Marley song Iron Lion Zion. Natural process, espresso roast. Flavor: plums, lemon sorbet, green tea. 250g. Roasted 10.12.2025.",
-    "notes": "Home espresso, Sculptor 064S. Dialed over 2 days. Started at 4.0 (choked), worked up to 6.5 (too fast), sweet spot at 5.9/40g. Final: grind 5.9, 18g/40g (1:2.22), 28s, 92°C. Tea and citrus opening, plum body, clean finish. 40g yield key — 36g too bitter, 41.6g too flat. My Pick."
+    "notes": "Home espresso, Sculptor 064S. Dialed over 2 days. Started at 4.0 (choked), worked up to 6.5 (too fast), sweet spot at 5.9/40g. Final: grind 5.9, 18g/40g (1:2.22), 28s, 92°C. Tea and citrus opening, plum body, clean finish. 40g yield key — 36g too bitter, 41.6g too flat. My Pick.",
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1743120000000-km01-home",
@@ -580,9 +612,7 @@
     "wouldBuy": false,
     "isChoice": false,
     "isEarlyEntry": false,
-    "tags": [
-      "easy dial"
-    ],
+    "tags": [],
     "filterPours": [
       {
         "phase": 1,
@@ -608,7 +638,9 @@
     "roastDate": "2026-01-22",
     "coffeeUrl": "https://www.kmencoffee.cz",
     "coffeeDescription": "Kmen Coffee Roasters — Ethiopia Chelbesa, washed filter. 250g. Roasted 22.01.2026. Second bag, home dial-in.",
-    "notes": "V60, home filter (Sculptor 064S). Second bag. Grind 15 — significantly coarser than previous zone, consistent with grinder maturation shift. 20g/300ml, 91°C, ~3:30. Jasmine and bergamot, clean and analytical. Less expressive than office Encore version. One-dimensional once dialed. Would not repurchase."
+    "notes": "V60, home filter (Sculptor 064S). Second bag. Grind 15 — significantly coarser than previous zone, consistent with grinder maturation shift. 20g/300ml, 91°C, ~3:30. Jasmine and bergamot, clean and analytical. Less expressive than office Encore version. One-dimensional once dialed. Would not repurchase.",
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1742860800000-km01",
@@ -664,11 +696,12 @@
       }
     ],
     "tags": [
-      "interesting",
-      "easy dial"
+      "interesting"
     ],
     "wouldBuy": false,
-    "isChoice": false
+    "isChoice": false,
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1742860800000-hc01",
@@ -706,7 +739,9 @@
     "filterPours": [],
     "coffeeUrl": "",
     "coffeeDescription": "Hippo Café (DKJ Tran Company s.r.o., Praha) — Family Café Roaster. Catimor Vietnam — Cầu Đất, Đà Lạt. Variety: Catimor. Natural. Flavor: cherry, berries. 250g. Roasted 25.02.2026.",
-    "notes": "Home espresso, Sculptor 064S. Grind 3.8, 18g/36g, 34s, 90°C. Heavy, bitter, no sweetness or acidity. Acceptable in milk only. Traditional Vietnamese dark roast style — not suited for modern specialty espresso. Archived."
+    "notes": "Home espresso, Sculptor 064S. Grind 3.8, 18g/36g, 34s, 90°C. Heavy, bitter, no sweetness or acidity. Acceptable in milk only. Traditional Vietnamese dark roast style — not suited for modern specialty espresso. Archived.",
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1740500000000-mia-sum01",
@@ -743,7 +778,6 @@
     "tags": [
       "interesting",
       "complex",
-      "easy dial",
       "good value"
     ],
     "filterPours": [
@@ -762,7 +796,10 @@
         "targetGrams": 320,
         "startSeconds": 120
       }
-    ]
+    ],
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": ""
   },
   {
     "id": "d-1740000000000-mia-cr01",
@@ -798,9 +835,12 @@
     "isChoice": false,
     "tags": [
       "interesting",
-      "complex",
-      "easy dial"
-    ]
+      "complex"
+    ],
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "filterPours": []
   },
   {
     "id": "d-1738900000000-ch02",
@@ -834,13 +874,15 @@
     "isEarlyEntry": false,
     "roastDate": "2026-01-26",
     "tags": [
-      "easy dial",
       "good value",
       "crowd-pleaser",
       "good for milk"
     ],
     "wouldBuy": true,
-    "isChoice": false
+    "isChoice": false,
+    "frozenDate": "",
+    "thawDate": "",
+    "filterPours": []
   },
   {
     "id": "d-1739000000000-ke01",
@@ -876,8 +918,7 @@
     "wouldBuy": false,
     "isChoice": false,
     "tags": [
-      "interesting",
-      "easy dial"
+      "interesting"
     ],
     "filterPours": [
       {
@@ -895,7 +936,9 @@
         "targetGrams": 320,
         "startSeconds": 120
       }
-    ]
+    ],
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1738200000000-em01",
@@ -926,7 +969,14 @@
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": false
+    "isEarlyEntry": false,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [],
+    "filterPours": []
   },
   {
     "id": "d-1737500000000-do01",
@@ -964,7 +1014,6 @@
     "tags": [
       "interesting",
       "complex",
-      "easy dial",
       "funky"
     ],
     "filterPours": [
@@ -988,7 +1037,9 @@
         "targetGrams": 320,
         "startSeconds": 130
       }
-    ]
+    ],
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1738000000000-mw01",
@@ -1023,7 +1074,12 @@
     "wouldBuy": false,
     "tags": [
       "good for milk"
-    ]
+    ],
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "isChoice": false,
+    "filterPours": []
   },
   {
     "id": "d-1733500000000-ch01",
@@ -1055,11 +1111,13 @@
       "Espresso"
     ],
     "isEarlyEntry": true,
-    "tags": [
-      "easy dial"
-    ],
+    "tags": [],
     "wouldBuy": false,
-    "isChoice": false
+    "isChoice": false,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "filterPours": []
   },
   {
     "id": "d-1731500000000-ta01",
@@ -1096,7 +1154,11 @@
       "funky"
     ],
     "wouldBuy": false,
-    "isChoice": false
+    "isChoice": false,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "filterPours": []
   },
   {
     "id": "d-1731800000000-cs01",
@@ -1127,7 +1189,14 @@
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": true
+    "isEarlyEntry": true,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [],
+    "filterPours": []
   },
   {
     "id": "d-1731600000000-up02",
@@ -1164,14 +1233,15 @@
     "tags": [
       "interesting",
       "complex",
-      "easy dial",
       "good value",
       "crowd-pleaser",
       "good for milk",
       "affogato"
     ],
     "filterPours": [],
-    "roastDate": ""
+    "roastDate": "",
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1729500000000-bsm01",
@@ -1207,7 +1277,11 @@
       "good for milk"
     ],
     "wouldBuy": false,
-    "isChoice": false
+    "isChoice": false,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "filterPours": []
   },
   {
     "id": "d-1730000000000-bz01",
@@ -1246,7 +1320,9 @@
       "funky"
     ],
     "filterPours": [],
-    "roastDate": ""
+    "roastDate": "",
+    "frozenDate": "",
+    "thawDate": ""
   },
   {
     "id": "d-1730800000000-mv01",
@@ -1277,6 +1353,13 @@
     "brewMethods": [
       "Espresso"
     ],
-    "isEarlyEntry": true
+    "isEarlyEntry": true,
+    "frozenDate": "",
+    "thawDate": "",
+    "roastDate": "",
+    "wouldBuy": false,
+    "isChoice": false,
+    "tags": [],
+    "filterPours": []
   }
 ]

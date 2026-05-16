@@ -1,0 +1,74 @@
+{
+  "_comment": "Dial-In App v3.1 — Schema reference for push link generation",
+  "_version": "3.1.0",
+  "_updated": "2026-05",
+
+  "kitIds": [
+    "home-espresso",
+    "home-pour-over",
+    "home-french-press",
+    "office-espresso",
+    "office-pour-over",
+    "office-french-press"
+  ],
+
+  "enums": {
+    "process":      ["Washed","Natural","Honey","Anaerobic","Wet-Hulled","Blend"],
+    "roastLevel":   ["Light","Medium-Light","Medium","Medium-Dark","Dark"],
+    "brewMethods":  ["Espresso","Pour Over","French Press"],
+    "dialStatus":   ["waiting","dialing","dialed","abandoned"],
+    "beanLocation": ["shelf","open","frozen","empty"],
+    "dialEase":     ["easy","medium","hard"],
+    "dialStability":["stable","unstable"],
+    "tags": [
+      "interesting","complex","funky","versatile","well responding",
+      "good value","good for milk","crowd-pleaser","affogato","my choice",
+      "flat","boring","not well responding"
+    ]
+  },
+
+  "fields": {
+    "id":               { "type":"string",  "required":true,  "note":"Format: d-{timestamp}-{slug}, e.g. d-1746921600000-cg-eth01" },
+    "date":             { "type":"date",    "required":true,  "note":"ISO date YYYY-MM-DD — dial-in date" },
+    "kitId":            { "type":"enum",    "required":true,  "note":"See kitIds above" },
+    "coffeeName":       { "type":"string",  "required":true  },
+    "roaster":          { "type":"string",  "required":false },
+    "origin":           { "type":"string",  "required":false },
+    "region":           { "type":"string",  "required":false },
+    "process":          { "type":"enum",    "required":false },
+    "roastLevel":       { "type":"enum",    "required":false },
+    "roastDate":        { "type":"date",    "required":false, "note":"ISO date YYYY-MM-DD. Empty string if unknown." },
+    "brewMethods":      { "type":"array",   "required":true,  "note":"Array of strings from enums.brewMethods" },
+    "flavorNotes":      { "type":"string",  "required":false, "note":"Comma-separated keywords e.g. 'Jasmine, lemon, honey'" },
+    "grindSetting":     { "type":"string",  "required":false, "note":"String to allow values like '15 (Sculptor) / 21 (Encore)'" },
+    "grinder":          { "type":"string",  "required":false },
+    "doseIn":           { "type":"number",  "required":false, "note":"Grams" },
+    "yieldOut":         { "type":"number",  "required":false, "note":"Grams (espresso) or grams (pour over — NOT ml)" },
+    "timeSeconds":      { "type":"number",  "required":false, "note":"Total time in seconds" },
+    "temperature":      { "type":"number",  "required":false, "note":"Celsius" },
+    "rating":           { "type":"number",  "required":false, "note":"0–5, 0 = unrated" },
+    "dialStatus":       { "type":"enum",    "required":true  },
+    "experimenting":    { "type":"boolean", "required":false, "default":false },
+    "beanLocation":     { "type":"enum",    "required":true  },
+    "frozenDate":       { "type":"date",    "required":false, "note":"ISO date. Set when beanLocation becomes 'frozen'. Empty string if not frozen." },
+    "thawDate":         { "type":"date",    "required":false, "note":"ISO date. Set automatically when moving out of frozen. Empty string otherwise." },
+    "dialEase":         { "type":"enum",    "required":false },
+    "dialStability":    { "type":"enum",    "required":false },
+    "wouldBuy":         { "type":"boolean", "required":false, "default":false },
+    "isChoice":         { "type":"boolean", "required":false, "default":false },
+    "isEarlyEntry":     { "type":"boolean", "required":false, "default":false },
+    "tags":             { "type":"array",   "required":false, "note":"Array of strings from enums.tags. Empty array if none." },
+    "filterPours":      { "type":"array",   "required":false, "note":"Array of {phase:number, targetGrams:number, startSeconds:number}. Cumulative grams. Phase 1 = bloom. Empty array for espresso." },
+    "coffeeUrl":        { "type":"string",  "required":false, "note":"Product page URL" },
+    "coffeeDescription":{ "type":"string",  "required":false },
+    "notes":            { "type":"string",  "required":false }
+  },
+
+  "deprecated_do_not_use": [
+    "intendedFor", "dialDifficulty", "shotStability", "roasterUrl",
+    "filterBloomGrams", "filterBloomSeconds", "bagStatus", "status"
+  ],
+
+  "push_link_format": "https://trynerlu.github.io/coffee-dialins/push.html?type=dialin&d=BASE64",
+  "base64_python": "base64.urlsafe_b64encode(json.dumps(obj).encode()).decode().rstrip('=')"
+}

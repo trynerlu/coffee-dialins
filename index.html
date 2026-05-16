@@ -297,7 +297,13 @@ const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
 const BREW_METHODS  = ["Espresso","Pour Over","French Press"];
 const DIAL_STATUSES = ["waiting","dialing","dialed","abandoned"];
 const BEAN_LOCS     = ["shelf","open","frozen","empty"];
-const DIAL_TAGS     = ["good for milk","interesting","easy dial","good value","affogato","funky","complex","crowd-pleaser"];
+const DIAL_TAGS     = [
+  // Positive
+  "interesting","complex","funky","versatile","well responding",
+  "good value","good for milk","crowd-pleaser","affogato","my choice",
+  // Negative
+  "flat","boring","not well responding",
+];
 
 // Kit → grid position mapping
 const KIT_GRID = {
@@ -329,11 +335,26 @@ const secToMSS  = s => { const n=+s||0; return `${Math.floor(n/60)}:${String(n%6
 const mssToSec  = t => { if (!t) return 0; const p=String(t).split(":"); return p.length===2 ? +p[0]*60+(+p[1]||0) : +t||0; };
 const tempDisp  = (t,unit) => t>0 ? `${unit==="F"?Math.round(t*9/5+32):t}°${unit||"C"}` : null;
 
-function getFreshness(roastDate, beanLocation, roastLevel, brewMethods, settings) {
+// ── EFFECTIVE AGE (freezing slows aging to 5%) ────────────────────────────────
+function getEffectiveAgeDays(roastDate, frozenDate, thawDate) {
+  if (!roastDate) return null;
+  const roast  = new Date(roastDate);
+  const now    = new Date();
+  const frozen = frozenDate ? new Date(frozenDate) : null;
+  const thawed = thawDate   ? new Date(thawDate)   : null;
+  if (!frozen) return (now - roast) / 86400000;
+  const shelfBefore = (frozen - roast) / 86400000;
+  const frozenEnd   = thawed || now;
+  const frozenDays  = (frozenEnd - frozen) / 86400000;
+  const shelfAfter  = thawed ? (now - thawed) / 86400000 : 0;
+  return shelfBefore + (frozenDays * 0.05) + shelfAfter;
+}
+
+function getFreshness(roastDate, beanLocation, roastLevel, brewMethods, settings, frozenDate, thawDate) {
   if (beanLocation==="frozen"||beanLocation==="empty") return null;
   if (!roastDate) return null;
-  const days = Math.floor((Date.now()-new Date(roastDate))/86400000);
-  if (days < 0) return null;
+  const days = getEffectiveAgeDays(roastDate, frozenDate, thawDate);
+  if (days === null || days < 0) return null;
   const methods = brewMethods||[];
   const brewKey = methods.includes("Espresso") ? "espresso" : "filter";
   const level   = roastLevel||"Medium";
@@ -346,15 +367,16 @@ function getFreshness(roastDate, beanLocation, roastLevel, brewMethods, settings
   return              {label:"⚠ PAST PEAK",  color:"var(--red)", bg:"var(--red-d)"};
 }
 
-function getReadiness(roastDate, beanLocation, roastLevel, brewMethods, settings) {
+function getReadiness(roastDate, beanLocation, roastLevel, brewMethods, settings, frozenDate, thawDate) {
   if (!roastDate || beanLocation==="frozen") return null;
   if (beanLocation==="empty") return null;
-  const days = Math.floor((Date.now()-new Date(roastDate))/86400000);
+  const days = getEffectiveAgeDays(roastDate, frozenDate, thawDate);
+  if (days === null) return null;
   const brewKey = (brewMethods||[]).includes("Espresso") ? "espresso" : "filter";
   const level   = roastLevel||"Medium";
   const matrix  = FRESH_MATRIX[level]||FRESH_MATRIX["Medium"];
   const [tf,pe] = (settings?.freshnessOverrides?.[level]?.[brewKey]) || matrix[brewKey];
-  if (days < tf-2) return null; // too early to care
+  if (days < tf-2) return null;
   if (days < tf)   return {label:"DIAL SOON", cls:"b-readiness-soon"};
   if (days <= pe)  return {label:"READY", cls:"b-readiness-ready"};
   return null;
@@ -362,7 +384,8 @@ function getReadiness(roastDate, beanLocation, roastLevel, brewMethods, settings
 
 function normalizeDiaLin(d) {
   const base = {
-    roastDate:"", beanLocation:"open", dialStatus:"dialed",
+    roastDate:"", frozenDate:"", thawDate:"",
+    beanLocation:"open", dialStatus:"dialed",
     experimenting:false, isEarlyEntry:false,
     wouldBuy:false, isChoice:false, tags:[], brewMethods:[],
     dialEase:null, dialStability:null,
@@ -370,7 +393,22 @@ function normalizeDiaLin(d) {
     coffeeUrl:"", coffeeDescription:"", notes:"",
     ...d
   };
-  // Backward compat: old filterPours was a number count
+  // v2 compat: intendedFor → brewMethods
+  if ((!base.brewMethods||!base.brewMethods.length) && base.intendedFor) {
+    const iv = String(base.intendedFor).toLowerCase();
+    if (iv.includes("espresso")) base.brewMethods = ["Espresso"];
+    else if (iv.includes("filter")||iv.includes("pour")) base.brewMethods = ["Pour Over"];
+    else if (iv.includes("french")) base.brewMethods = ["French Press"];
+  }
+  // v2 compat: dialDifficulty → dialEase
+  if (!base.dialEase && base.dialDifficulty != null) {
+    base.dialEase = base.dialDifficulty <= 2 ? "easy" : base.dialDifficulty <= 3 ? "medium" : "hard";
+  }
+  // v2 compat: shotStability → dialStability
+  if (!base.dialStability && base.shotStability != null) {
+    base.dialStability = base.shotStability >= 4 ? "stable" : "unstable";
+  }
+  // v2 compat: filterPours as number → array
   if (typeof base.filterPours === "number" || !Array.isArray(base.filterPours)) {
     const phases = [];
     if (d.filterBloomGrams > 0) phases.push({phase:1, targetGrams:d.filterBloomGrams||0, startSeconds:0});
@@ -712,11 +750,11 @@ function CoffeeGroupCard({ group, onExpand, onNavigate, expanded, showRating, se
 
   // Readiness signal
   const rep = entries.find(e=>e.roastDate)||entries[0];
-  const readiness = getReadiness(rep?.roastDate, domLoc, rep?.roastLevel, rep?.brewMethods, settings);
+  const readiness = getReadiness(rep?.roastDate, domLoc, rep?.roastLevel, rep?.brewMethods, settings, rep?.frozenDate, rep?.thawDate);
 
   // Freshness from most recent roast date entry
   const freshEntry = [...entries].filter(e=>e.roastDate).sort((a,b)=>b.roastDate.localeCompare(a.roastDate))[0];
-  const freshness  = freshEntry ? getFreshness(freshEntry.roastDate, domLoc, freshEntry.roastLevel, freshEntry.brewMethods, settings) : null;
+  const freshness  = freshEntry ? getFreshness(freshEntry.roastDate, domLoc, freshEntry.roastLevel, freshEntry.brewMethods, settings, freshEntry.frozenDate, freshEntry.thawDate) : null;
 
   const hasParams  = (esprE&&esprE.doseIn>0)||(pourE&&pourE.doseIn>0);
 
@@ -991,7 +1029,7 @@ function CoffeeHubScreen({ group, kits, nav, settings }) {
         return s(b)-s(a)||(b.date||"").localeCompare(a.date||"");
       }).map(d=>{
         const kit=kits.find(k=>k.id===d.kitId);
-        const freshness=getFreshness(d.roastDate,d.beanLocation,d.roastLevel,d.brewMethods,settings);
+        const freshness=getFreshness(d.roastDate,d.beanLocation,d.roastLevel,d.brewMethods,settings,d.frozenDate,d.thawDate);
         return (
           <div key={d.id}
             onClick={()=>nav("dialin",d,"coffeehub")}
@@ -1029,7 +1067,7 @@ function DialInDetail({ d, kits, dialins, nav, onEdit, listScreen, settings, onQ
   if (!d) return null;
   const kit      = kits.find(k=>k.id===d.kitId);
   const norm     = normalizeDiaLin(d);
-  const freshness= getFreshness(norm.roastDate, norm.beanLocation, d.roastLevel, norm.brewMethods, settings);
+  const freshness= getFreshness(norm.roastDate, norm.beanLocation, d.roastLevel, norm.brewMethods, settings, norm.frozenDate, norm.thawDate);
   const r        = d.doseIn&&d.yieldOut ? ratio(d.doseIn,d.yieldOut) : null;
   const isFilter = kit?.brewMethod==="filter"||kit?.brewMethod==="fpress";
   const temp     = tempDisp(d.temperature, settings?.tempUnit);
@@ -1330,6 +1368,11 @@ function AddDialIn({ kits, dialins, onSave, nav, settings }) {
           </select>
         </div>
       </div>
+      {f.beanLocation==="frozen"&&(
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Frozen Date</label><input className="f-in" type="date" value={f.frozenDate||""} onChange={e=>s("frozenDate",e.target.value)}/></div>
+        </div>
+      )}
       <div className="f-grp"><label className="f-lbl">Flavour Notes</label>
         <input className="f-in" placeholder="Blueberry, dark chocolate, citrus" value={f.flavorNotes} onChange={e=>s("flavorNotes",e.target.value)}/>
       </div>
@@ -1496,6 +1539,12 @@ function EditDialIn({ d, kits, onSave, nav, settings }) {
           </select>
         </div>
       </div>
+      {f.beanLocation==="frozen"&&(
+        <div className="f-row">
+          <div className="f-grp"><label className="f-lbl">Frozen Date</label><input className="f-in" type="date" value={f.frozenDate||""} onChange={e=>s("frozenDate",e.target.value)}/></div>
+          {f.thawDate&&<div className="f-grp"><label className="f-lbl">Thaw Date</label><input className="f-in" type="date" value={f.thawDate||""} onChange={e=>s("thawDate",e.target.value)}/></div>}
+        </div>
+      )}
       <div className="f-grp"><label className="f-lbl">Flavour Notes</label><input className="f-in" value={f.flavorNotes||""} onChange={e=>s("flavorNotes",e.target.value)}/></div>
 
       <div className="sec">Coffee Page</div>
@@ -2251,6 +2300,11 @@ function App() {
   const editDialin=(d)=>{ setCurDial(d); setScreen("editdialin"); };
 
   const quickStatus=async(id, patch)=>{
+    const current = dialins.find(d=>d.id===id);
+    if (current?.beanLocation==="frozen" && patch.beanLocation && patch.beanLocation!=="frozen") {
+      patch.thawDate = new Date().toISOString().split("T")[0];
+      flash("❄ Thawed — wait 12–24h before opening (condensation risk)", 5000);
+    }
     const updated=dialins.map(d=>d.id===id?{...d,...patch}:d);
     setDialins(updated); lsSet(LS.dialins,updated); lsSet("ca_lastModified",Date.now());
     if(curDial?.id===id) setCurDial(p=>({...p,...patch}));
