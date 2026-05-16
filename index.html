@@ -571,7 +571,12 @@ const DEF_DIALINS = [
 async function ghRead(s, file) {
   const r = await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/${file}?_=${Date.now()}`);
   if (!r.ok) throw new Error(`${file}: HTTP ${r.status}`);
-  return r.json();
+  const parsed = await r.json();
+  // Handle new wrapped format {_appWrittenAt, entries} or legacy plain array
+  if (file==="dialins.json" && parsed && !Array.isArray(parsed)) {
+    return { data: parsed.entries||[], ts: parsed._appWrittenAt||0 };
+  }
+  return { data: parsed, ts: 0 };
 }
 async function ghGetSha(s, file) {
   if (!s.token) return null;
@@ -585,7 +590,11 @@ async function ghWrite(s, file, data) {
   const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}`;
   const hdr = { Authorization:`Bearer ${s.token}`, Accept:"application/vnd.github+json", "Content-Type":"application/json" };
   const sha = await ghGetSha(s,file);
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2))));
+  // Embed write timestamp so autoSync can compare versions after page reload
+  const payload = file==="dialins.json"
+    ? {_appWrittenAt: Date.now(), entries: data}
+    : data;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
   const res = await fetch(api,{ method:"PUT", headers:hdr, body:JSON.stringify({
     message:`Update ${file} via Dial-In App v3.1`, content, branch:"main", ...(sha?{sha}:{})
   })});
@@ -2234,12 +2243,10 @@ function App() {
   const autoSync=async(s,lk,ld)=>{
     try {
       const [rk,rd]=await Promise.all([ghRead(s,"kits.json").catch(()=>null),ghRead(s,"dialins.json").catch(()=>null)]);
-      // Only overwrite local if remote differs AND local hasn't been modified more recently
       const localMod = lsGet("ca_lastModified")||0;
-      const now = Date.now();
-      const safeToOverwrite = (now - localMod) > 90000; // 90s grace period after any local write
-      if(rk&&JSON.stringify(rk)!==JSON.stringify(lk)&&safeToOverwrite){ setKits(rk); lsSet(LS.kits,rk); }
-      if(rd&&JSON.stringify(rd)!==JSON.stringify(ld)&&safeToOverwrite){ setDialins(rd); lsSet(LS.dialins,rd); }
+      // Only overwrite if remote timestamp is newer than our last local write
+      if(rk&&rk.data&&JSON.stringify(rk.data)!==JSON.stringify(lk)&&rk.ts>=localMod){ setKits(rk.data); lsSet(LS.kits,rk.data); }
+      if(rd&&rd.data&&rd.ts>localMod){ setDialins(rd.data); lsSet(LS.dialins,rd.data); }
       setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
     }catch(e){}
   };
@@ -2251,8 +2258,10 @@ function App() {
     setSyncing(true);
     try {
       const [k,d]=await Promise.all([ghRead(settings,"kits.json"),ghRead(settings,"dialins.json")]);
-      setKits(k); lsSet(LS.kits,k);
-      setDialins(d); lsSet(LS.dialins,d);
+      setKits(k.data); lsSet(LS.kits,k.data);
+      setDialins(d.data); lsSet(LS.dialins,d.data);
+      // Manual pull: trust remote, update our local mod time to remote's write time
+      if(d.ts) lsSet("ca_lastModified", d.ts);
       setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
       flash("✓ Synced from GitHub");
     }catch(e){ flash(`✗ ${e.message}`); }
@@ -2280,8 +2289,9 @@ function App() {
     setSyncing(true);
     try {
       const [k,d]=await Promise.all([ghRead(s,"kits.json"),ghRead(s,"dialins.json")]);
-      setKits(k); lsSet(LS.kits,k);
-      setDialins(d); lsSet(LS.dialins,d);
+      setKits(k.data); lsSet(LS.kits,k.data);
+      setDialins(d.data); lsSet(LS.dialins,d.data);
+      if(d.ts) lsSet("ca_lastModified", d.ts);
       setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
       flash("✓ Connected & synced");
     }catch(e){ flash(`⚠ Settings saved. Sync failed: ${e.message}`); }
