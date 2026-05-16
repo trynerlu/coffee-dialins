@@ -642,6 +642,13 @@ function KitLocBadges({ entries }) {
 }
 
 // ── GRIND GRID (2×2 for cards) ───────────────────────────────────────────────
+// Extract numeric grind value for compact display (e.g. "15 (Sculptor) / 21 (Encore)" → "15")
+function shortGrind(val) {
+  if (!val) return null;
+  const m = String(val).match(/^[\d.]+/);
+  return m ? m[0] : String(val).slice(0,5);
+}
+
 function GrindGrid({ grid }) {
   const cells = [
     {key:"he",pos:"top-left",    label:"H·E"},
@@ -655,7 +662,7 @@ function GrindGrid({ grid }) {
         {cells.map(({key,label})=>(
           <div key={key} className={`gg-cell${!grid[key]?" gg-cell-empty":""}`}>
             <span className="gg-label">{label}</span>
-            {grid[key]||"·"}
+            {grid[key] ? shortGrind(grid[key]) : "·"}
           </div>
         ))}
       </div>
@@ -681,7 +688,7 @@ function GrindStrip({ entries }) {
           <div className="gs-label">{label}</div>
           {grid[key]
             ? <>
-                <div className="gs-num">{grid[key]}</div>
+                <div className="gs-num">{shortGrind(grid[key])}</div>
                 <div className="gs-grinder">{getGrinderName(entries,key)}</div>
               </>
             : <div style={{fontSize:"18px",color:"var(--tx3)",opacity:.3,lineHeight:1.6}}>—</div>
