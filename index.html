@@ -61,11 +61,12 @@
     .acc-status { font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:5px; }
     .acc-r3 { display:grid; grid-template-columns:1fr 1px 1fr; gap:0; padding-top:10px; border-top:1px solid var(--border); }
     .acc-divider { background:var(--border); }
-    .acc-grinds { display:flex; align-items:baseline; gap:10px; }
-    .acc-grind-num { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); line-height:1; }
-    .acc-grind-sep { color:var(--tx3); font-size:14px; }
-    .acc-params { padding-left:14px; display:flex; flex-direction:column; gap:2px; }
+    .acc-grinds { display:flex; align-items:baseline; gap:0; }
+    .acc-grind-num { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); line-height:1; min-width:52px; display:inline-block; }
+    .acc-grind-sep { color:var(--tx3); font-size:16px; padding:0 6px; }
+    .acc-params { padding-left:14px; display:flex; flex-wrap:wrap; gap:0 6px; align-items:baseline; }
     .acc-param { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx2); }
+    .acc-param + .acc-param::before { content:'·'; margin-right:6px; color:var(--tx3); }
 
     /* ── Frozen row ── */
     .frozen-row { margin:0 18px 6px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:border-color .15s; }
@@ -777,19 +778,42 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
 
   // Journey stats
   const norm = useMemo(()=>dialins.map(normalizeDiaLin),[dialins]);
+
+  // Best-rated origin (avg rating, min 2 entries)
+  const bestRatedOrigin = useMemo(()=>{
+    const originRatings={};
+    norm.forEach(d=>{
+      if(!d.origin||d.origin==="Blend"||!d.rating) return;
+      if(!originRatings[d.origin]) originRatings[d.origin]={sum:0,count:0};
+      originRatings[d.origin].sum+=d.rating;
+      originRatings[d.origin].count+=1;
+    });
+    return Object.entries(originRatings)
+      .filter(([,v])=>v.count>=1)
+      .sort((a,b)=>(b[1].sum/b[1].count)-(a[1].sum/a[1].count))[0]?.[0]||"—";
+  },[norm]);
+
+  // Most frequent origin
   const originCounts = useMemo(()=>{
     const c={};
     norm.forEach(d=>{if(d.origin&&d.origin!=="Blend")c[d.origin]=(c[d.origin]||0)+1;});
     return c;
   },[norm]);
   const favOrigin = Object.entries(originCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
+
   const processCounts = useMemo(()=>{
     const c={};
     norm.forEach(d=>{if(d.process&&d.process!=="Blend")c[d.process]=(c[d.process]||0)+1;});
     return c;
   },[norm]);
   const topProcess = Object.entries(processCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
-  const topRated = useMemo(()=>[...norm].filter(d=>d.rating>=4).sort((a,b)=>b.rating-a.rating).slice(0,6),[norm]);
+
+  // Top rated: 2 espresso + 2 pour over
+  const topRated = useMemo(()=>{
+    const espr=norm.filter(d=>d.rating>0&&["home-espresso","office-espresso"].includes(d.kitId)).sort((a,b)=>b.rating-a.rating).slice(0,2);
+    const pour=norm.filter(d=>d.rating>0&&["home-pour-over","office-pour-over","home-french-press","office-french-press"].includes(d.kitId)).sort((a,b)=>b.rating-a.rating).slice(0,2);
+    return [...espr,...pour];
+  },[norm]);
 
   return (
     <div className="screen fade-in">
@@ -806,7 +830,7 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
       </div>
 
       {/* Active coffees */}
-      <div className="sec"><span className="sec-title">Active Coffees</span><select className="sort-sel" value={sort} onChange={e=>setSort(e.target.value)}><option value="recent">Recent</option><option value="rating">Rating</option><option value="name">Name</option></select></div>
+      <div className="sec"><span className="sec-title">Active Coffees</span></div>
       {sorted.length===0
         ? <div className="empty"><div className="empty-ico">☕</div><div className="empty-t">No active coffees</div><div className="empty-s">Tap ☕ to add one</div></div>
         : sorted.map(g=><ActiveCard key={`${g.coffeeName}⌀${g.roaster}`} group={g} settings={settings} onClick={()=>nav("dialin",g.entries[0],"home")}/>)
@@ -837,20 +861,28 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
       <div className="sec"><span className="sec-title">My Journey</span></div>
       <div className="stat-chips">
         <div className="stat-chip"><div className="stat-chip-v">{dialins.length}</div><div className="stat-chip-l">Logged</div></div>
-        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"14px"}}>{favOrigin}</div><div className="stat-chip-l">Top Origin</div></div>
-        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"14px"}}>{topProcess}</div><div className="stat-chip-l">Top Process</div></div>
+        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{favOrigin}</div><div className="stat-chip-l">Top Origin</div></div>
+        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{topProcess}</div><div className="stat-chip-l">Top Process</div></div>
+        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{bestRatedOrigin}</div><div className="stat-chip-l">Best Rated</div></div>
       </div>
       {topRated.length>0&&(
         <>
           <div style={{padding:"0 18px 6px",fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)"}}>Top Rated</div>
           <div className="top-rated-scroll">
-            {topRated.map(d=>(
-              <div key={d.id} className="top-rated-card" onClick={()=>nav("dialin",d,"home")}>
-                <div className="top-rated-roaster">{d.roaster}</div>
-                <div className="top-rated-name">{d.coffeeName}</div>
-                <Stars n={d.rating} size={10}/>
-              </div>
-            ))}
+            {topRated.map(d=>{
+              const isEspr=["home-espresso","office-espresso"].includes(d.kitId);
+              const dotColor=isEspr?DOT_COLOR.espr:DOT_COLOR.pour;
+              return (
+                <div key={d.id} className="top-rated-card" onClick={()=>nav("dialin",d,"home")} style={{borderTopColor:dotColor,borderTopWidth:"2px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
+                    <div style={{width:"6px",height:"6px",borderRadius:"50%",background:dotColor,flexShrink:0}}/>
+                    <div className="top-rated-roaster">{d.roaster}</div>
+                  </div>
+                  <div className="top-rated-name">{d.coffeeName}</div>
+                  <Stars n={d.rating} size={10}/>
+                </div>
+              );
+            })}
           </div>
         </>
       )}
