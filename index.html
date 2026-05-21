@@ -59,14 +59,16 @@
     .acc-r2 { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
     .acc-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; }
     .acc-status { font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:5px; }
-    .acc-r3 { display:grid; grid-template-columns:1fr 1px 1fr; gap:0; padding-top:10px; border-top:1px solid var(--border); }
+    .acc-r3 { display:grid; grid-template-columns:1fr 1px 2fr; gap:0; padding-top:10px; border-top:1px solid var(--border); }
     .acc-divider { background:var(--border); }
-    .acc-grinds { display:flex; align-items:baseline; gap:0; }
-    .acc-grind-num { font-family:'DM Mono',monospace; font-size:22px; font-weight:500; color:var(--accent); line-height:1; min-width:52px; display:inline-block; }
-    .acc-grind-sep { color:var(--tx3); font-size:16px; padding:0 6px; }
-    .acc-params { padding-left:14px; display:flex; flex-wrap:wrap; gap:0 6px; align-items:baseline; }
+    .acc-grinds { display:flex; align-items:center; gap:0; padding:2px 0; }
+    .acc-grind-num { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:var(--accent); line-height:1; min-width:34px; display:inline-block; }
+    .acc-grind-sep { color:var(--tx3); font-size:13px; padding:0 4px; }
+    .acc-params-wrap { padding-left:12px; display:flex; flex-direction:column; gap:3px; justify-content:center; }
+    .acc-params { display:flex; flex-wrap:wrap; gap:0 5px; align-items:baseline; }
     .acc-param { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx2); }
-    .acc-param + .acc-param::before { content:'·'; margin-right:6px; color:var(--tx3); }
+    .acc-param + .acc-param::before { content:'·'; margin-right:5px; color:var(--tx3); }
+    .acc-phases { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); display:flex; gap:3px; flex-wrap:wrap; }
 
     /* ── Frozen row ── */
     .frozen-row { margin:0 18px 6px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:border-color .15s; }
@@ -76,15 +78,14 @@
     .frozen-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
     /* ── Journey stats ── */
-    .stat-chips { display:flex; gap:6px; padding:0 18px 12px; flex-wrap:wrap; }
-    .stat-chip { background:var(--card); border:1px solid var(--border); border-radius:9px; padding:10px 14px; text-align:center; flex:1; min-width:80px; }
-    .stat-chip-v { font-family:'DM Mono',monospace; font-size:18px; font-weight:500; color:var(--accent); }
-    .stat-chip-l { font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); margin-top:3px; }
-    .top-rated-scroll { display:flex; gap:8px; padding:0 18px 14px; overflow-x:auto; scrollbar-width:none; }
-    .top-rated-scroll::-webkit-scrollbar { display:none; }
-    .top-rated-card { flex-shrink:0; background:var(--card); border:1px solid var(--border); border-radius:9px; padding:10px 12px; width:130px; }
-    .top-rated-roaster { font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
-    .top-rated-name { font-family:'Cormorant Garamond',serif; font-size:13px; font-weight:500; line-height:1.3; margin-bottom:6px; }
+    .stat-chips { display:flex; gap:6px; padding:0 18px 12px; }
+    .stat-chip { background:var(--card); border:1px solid var(--border); border-radius:9px; padding:10px 6px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:62px; }
+    .stat-chip-v { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--accent); line-height:1.2; }
+    .stat-chip-l { font-size:8px; letter-spacing:.08em; text-transform:uppercase; color:var(--tx3); margin-top:4px; }
+    .top-rated-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:0 18px 14px; }
+    .top-rated-card { background:var(--card); border:1px solid var(--border); border-radius:9px; padding:9px 8px; border-top-width:2px; }
+    .top-rated-roaster { font-size:8px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--tx3); margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .top-rated-name { font-family:'Cormorant Garamond',serif; font-size:12px; font-weight:500; line-height:1.3; margin-bottom:5px; word-break:break-word; }
 
     /* ── Stars ── */
     .stars { display:flex; gap:1px; }
@@ -574,11 +575,20 @@ function ActiveCard({group, onClick, settings}) {
           </div>
           <div className="acc-divider"/>
           {paramEntry && (
-            <div className="acc-params">
-              {temp && <span className="acc-param">{temp}</span>}
-              {paramEntry.doseIn>0&&paramEntry.yieldOut>0 && <span className="acc-param">{paramEntry.doseIn}→{paramEntry.yieldOut}g</span>}
-              {r && <span className="acc-param">{r}</span>}
-              {timeStr && <span className="acc-param">{timeStr}</span>}
+            <div className="acc-params-wrap">
+              <div className="acc-params">
+                {temp && <span className="acc-param">{temp}</span>}
+                {paramEntry.doseIn>0&&paramEntry.yieldOut>0 && <span className="acc-param">{paramEntry.doseIn}→{paramEntry.yieldOut}g</span>}
+                {r && <span className="acc-param">{r}</span>}
+                {timeStr && <span className="acc-param">{timeStr}</span>}
+              </div>
+              {isFilter && paramEntry.filterPours?.length>0 && (
+                <div className="acc-phases">
+                  {paramEntry.filterPours.map((p,i)=>(
+                    <span key={i}>{i>0&&<span style={{color:"var(--border)",margin:"0 2px"}}>›</span>}{p.targetGrams}g</span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -868,18 +878,18 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
       {topRated.length>0&&(
         <>
           <div style={{padding:"0 18px 6px",fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)"}}>Top Rated</div>
-          <div className="top-rated-scroll">
+          <div className="top-rated-grid">
             {topRated.map(d=>{
               const isEspr=["home-espresso","office-espresso"].includes(d.kitId);
               const dotColor=isEspr?DOT_COLOR.espr:DOT_COLOR.pour;
               return (
                 <div key={d.id} className="top-rated-card" onClick={()=>nav("dialin",d,"home")} style={{borderTopColor:dotColor,borderTopWidth:"2px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
-                    <div style={{width:"6px",height:"6px",borderRadius:"50%",background:dotColor,flexShrink:0}}/>
+                  <div style={{display:"flex",alignItems:"center",gap:"4px",marginBottom:"3px"}}>
+                    <div style={{width:"5px",height:"5px",borderRadius:"50%",background:dotColor,flexShrink:0}}/>
                     <div className="top-rated-roaster">{d.roaster}</div>
                   </div>
                   <div className="top-rated-name">{d.coffeeName}</div>
-                  <Stars n={d.rating} size={10}/>
+                  <Stars n={d.rating} size={9}/>
                 </div>
               );
             })}
