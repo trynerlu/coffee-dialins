@@ -41,7 +41,7 @@
         {
           "phase": 3,
           "targetGrams": 260,
-          "startSecondl": 90
+          "startSeconds": 90
         },
         {
           "phase": 4,
