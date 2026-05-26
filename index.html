@@ -600,10 +600,22 @@ function ActiveCard({group, onClick, settings}) {
 // ── HOME QUIZ CARD ────────────────────────────────────────────────────────────
 function HomeQuizCard({questions, quizState, onAnswer, onNext, onLaunchFull}) {
   if (!questions||!questions.length) return null;
-  const {currentIdx, answered} = quizState;
+  const [localRevealed, setLocalRevealed] = useState(null); // {selected, correct} for current card only
+  const {currentIdx} = quizState;
   const q = questions[currentIdx % questions.length];
-  const state = answered[q.id];
   const CAT_COLOR = {"General":"var(--blue)","My Journey":"var(--accent)","Technique":"var(--green)"};
+
+  const handleSelect = (i) => {
+    if (localRevealed) return;
+    const correct = i === q.a;
+    setLocalRevealed({selected:i, correct});
+    onAnswer(q.id, i);
+  };
+
+  const handleNext = () => {
+    setLocalRevealed(null);
+    onNext();
+  };
 
   return (
     <div className="quiz-card">
@@ -618,34 +630,34 @@ function HomeQuizCard({questions, quizState, onAnswer, onNext, onLaunchFull}) {
       <div className="quiz-opts">
         {q.opts.map((opt,i)=>{
           let cls = "quiz-opt";
-          if (state) {
+          if (localRevealed) {
             if (i===q.a) cls+=" quiz-opt-correct";
-            else if (i===state.selected) cls+=" quiz-opt-wrong";
+            else if (i===localRevealed.selected) cls+=" quiz-opt-wrong";
             else cls+=" quiz-opt-dim";
           }
           return (
-            <div key={i} className={cls} onClick={()=>!state&&onAnswer(q.id,i)}>
+            <div key={i} className={cls} onClick={()=>!localRevealed&&handleSelect(i)}>
               <span className="quiz-opt-key">{String.fromCharCode(65+i)}</span>
               <span style={{fontSize:"11px",lineHeight:1.35}}>{opt}</span>
             </div>
           );
         })}
       </div>
-      {state && (
+      {localRevealed && (
         <>
-          <div className="quiz-explain" style={{borderLeft:`2px solid ${state.correct?"var(--green)":"var(--red)"}`}}>
-            <span style={{fontSize:"10px",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:state.correct?"var(--green)":"var(--red)",display:"block",marginBottom:"5px"}}>{state.correct?"✓ Correct":"✗ Incorrect"}</span>
+          <div className="quiz-explain" style={{borderLeft:`2px solid ${localRevealed.correct?"var(--green)":"var(--red)"}`}}>
+            <span style={{fontSize:"10px",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:localRevealed.correct?"var(--green)":"var(--red)",display:"block",marginBottom:"5px"}}>{localRevealed.correct?"✓ Correct":"✗ Incorrect"}</span>
             {q.explain}
           </div>
           <div className="quiz-footer">
-            <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(answered).length} answered</span>
-            <button className="quiz-next" onClick={onNext}>Next question →</button>
+            <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(quizState.answered).length} answered</span>
+            <button className="quiz-next" onClick={handleNext}>Next question →</button>
           </div>
         </>
       )}
-      {!state && (
+      {!localRevealed && (
         <div className="quiz-footer">
-          <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(answered).length} answered · tap an option</span>
+          <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(quizState.answered).length} answered · tap an option</span>
         </div>
       )}
     </div>
