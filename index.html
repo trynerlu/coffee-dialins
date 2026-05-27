@@ -310,7 +310,7 @@ const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
 const APP_VERSION   = "4.0.0";
-const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz" };
+const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz", wishlist:"ca_wishlist" };
 const PROCESSES     = ["Washed","Natural","Honey","Anaerobic","Wet-Hulled","Blend"];
 const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
 const BREW_METHODS  = ["Espresso","Pour Over","French Press"];
@@ -845,6 +845,7 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
           <div style={{fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"1px"}}>{lastSync?`Synced ${lastSync}`:`${active.length} active`}</div>
         </div>
         <div className="topbar-actions">
+          <button className="icon-btn" onClick={()=>nav("discovery")} title="Discovery">🔭</button>
           <button className="icon-btn" onClick={()=>nav("add")} title="Add coffee">☕</button>
           <button className="icon-btn" onClick={()=>nav("settings")} title="Settings">⚙</button>
           <button className="icon-btn" onClick={onSync} title="Sync"><span className={syncing?"spin":""}>{syncing?"↻":"⟳"}</span></button>
@@ -1600,6 +1601,114 @@ function SettingsData({dialins, onRemove, nav}) {
   );
 }
 
+// ── DISCOVERY SCREEN ─────────────────────────────────────────────────────────
+function DiscoveryScreen({wishlist, dialins, nav, onMarkOrdered, onRemove}) {
+  const [tab, setTab] = useState("radar"); // radar | tasted | reorder
+
+  // Auto-populate reorder: 4★+ wouldBuy:true, no recent open/shelf entry
+  const reorders = useMemo(()=>{
+    const norm = dialins.map(normalizeDiaLin);
+    const activeKeys = new Set(
+      norm.filter(d=>["shelf","open"].includes(d.beanLocation))
+          .map(d=>`${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`)
+    );
+    const seen = new Set();
+    return norm
+      .filter(d=>d.rating>=4&&d.wouldBuy&&!activeKeys.has(`${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`))
+      .filter(d=>{ const k=`${(d.coffeeName||"").toLowerCase()}⌀${(d.roaster||"").toLowerCase()}`; if(seen.has(k))return false; seen.add(k); return true; })
+      .sort((a,b)=>b.rating-a.rating);
+  },[dialins]);
+
+  const radar   = wishlist.filter(w=>w.type==="radar"&&!w.ordered);
+  const tasted  = wishlist.filter(w=>w.type==="tasted"&&!w.ordered);
+
+  const TABS=[["radar",`🔭 Radar (${radar.length})`],["tasted",`☕ Tasted (${tasted.length})`],["reorder",`♻ Reorder (${reorders.length})`]];
+
+  const WishCard=({w})=>(
+    <div style={{margin:"0 18px 8px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"12px",padding:"14px 16px"}}>
+      <div style={{display:"flex",alignItems:"flex-start",gap:"8px",marginBottom:w.coffeeName||w.flavorNotes||w.source?8:0}}>
+        <div style={{flex:1,minWidth:0}}>
+          {w.coffeeName
+            ? <><div style={{fontSize:"11px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"3px"}}>{w.roaster}</div>
+               <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"17px",fontWeight:500}}>{w.coffeeName}</div></>
+            : <div style={{fontSize:"16px",fontWeight:600,letterSpacing:".04em",color:"var(--tx1)"}}>{w.roaster}</div>
+          }
+        </div>
+        <button onClick={()=>onRemove(w.id)} style={{background:"none",border:"none",color:"var(--tx3)",cursor:"pointer",fontSize:"16px",padding:"0 0 0 8px",flexShrink:0}}>✕</button>
+      </div>
+      {w.source&&<div style={{fontSize:"11px",color:"var(--tx3)",marginBottom:"4px"}}>📍 {w.source}</div>}
+      {w.flavorNotes&&<div style={{fontSize:"11px",color:"var(--tx2)",fontStyle:"italic",marginBottom:"4px"}}>{w.flavorNotes}</div>}
+      {w.notes&&<div style={{fontSize:"12px",color:"var(--tx2)",lineHeight:1.55,marginBottom:"6px"}}>"{w.notes}"</div>}
+      {w.url&&<a href={w.url} target="_blank" rel="noopener" style={{fontSize:"11px",color:"var(--accent)",textDecoration:"none"}}>🔗 View coffee page</a>}
+      <div style={{display:"flex",gap:"8px",marginTop:"10px",paddingTop:"10px",borderTop:"1px solid var(--border)"}}>
+        <button onClick={()=>onMarkOrdered(w.id)} style={{flex:1,background:"var(--green-d)",border:"1px solid rgba(90,136,96,0.3)",color:"var(--green)",borderRadius:"7px",padding:"7px 10px",cursor:"pointer",fontFamily:"'Jost',sans-serif",fontSize:"12px",fontWeight:500}}>✓ Ordered</button>
+        {w.addedDate&&<span style={{fontSize:"10px",color:"var(--tx3)",alignSelf:"center"}}>{fmtShort(w.addedDate)}</span>}
+      </div>
+    </div>
+  );
+
+  const ReorderCard=({d})=>(
+    <div style={{margin:"0 18px 8px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"12px",padding:"14px 16px",cursor:"pointer"}} onClick={()=>nav("dialin",d,"discovery")}>
+      <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}>
+        <BrewDot brewMethods={d.brewMethods||[]} size={7}/>
+        <div style={{fontSize:"11px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)"}}>{d.roaster}</div>
+        <Stars n={d.rating} size={10}/>
+      </div>
+      <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"17px",fontWeight:500,marginBottom:"4px"}}>{d.coffeeName}</div>
+      {d.flavorNotes&&<div style={{fontSize:"11px",color:"var(--tx2)",fontStyle:"italic"}}>{d.flavorNotes}</div>}
+    </div>
+  );
+
+  return (
+    <div className="screen fade-in">
+      <div className="det-topbar">
+        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
+        <div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"22px",fontWeight:500}}>Discovery</div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{display:"flex",gap:"6px",padding:"12px 18px 4px"}}>
+        {TABS.map(([id,lbl])=>(
+          <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"8px 4px",borderRadius:"8px",border:"1px solid",borderColor:tab===id?"var(--accent)":"var(--border)",background:tab===id?"var(--accent-d)":"var(--surface)",color:tab===id?"var(--accent)":"var(--tx3)",fontFamily:"'Jost',sans-serif",fontSize:"10px",fontWeight:600,letterSpacing:".06em",cursor:"pointer",transition:"all .15s"}}>
+            {lbl}
+          </button>
+        ))}
+      </div>
+
+      {tab==="radar"&&(
+        <>
+          <div className="sec"><span className="sec-title">Roasters & coffees to explore</span></div>
+          {radar.length===0
+            ? <div className="empty"><div className="empty-ico">🔭</div><div className="empty-t">Nothing on the radar yet</div><div className="empty-s">Use a push link from the other chat to add roasters and coffees you want to explore.</div></div>
+            : radar.map(w=><WishCard key={w.id} w={w}/>)
+          }
+        </>
+      )}
+
+      {tab==="tasted"&&(
+        <>
+          <div className="sec"><span className="sec-title">Coffees you tasted & loved</span></div>
+          {tasted.length===0
+            ? <div className="empty"><div className="empty-ico">☕</div><div className="empty-t">Nothing tasted yet</div><div className="empty-s">Add coffees you had at a café, roastery, or restaurant via push link.</div></div>
+            : tasted.map(w=><WishCard key={w.id} w={w}/>)
+          }
+        </>
+      )}
+
+      {tab==="reorder"&&(
+        <>
+          <div className="sec"><span className="sec-title">From your logbook — worth reordering</span></div>
+          <div style={{padding:"0 18px 8px",fontSize:"11px",color:"var(--tx3)"}}>4★+ coffees marked "Would Buy Again" not currently active.</div>
+          {reorders.length===0
+            ? <div className="empty"><div className="empty-ico">♻</div><div className="empty-t">Nothing to suggest yet</div><div className="empty-s">Rate coffees 4★+ and mark "Would Buy Again" to see them here.</div></div>
+            : reorders.map(d=><ReorderCard key={d.id} d={d}/>)
+          }
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── SPLASH ────────────────────────────────────────────────────────────────────
 function Splash() {
   return (
@@ -1635,6 +1744,7 @@ function App() {
   const [kits,        setKits]      = useState(DEF_KITS);
   const [dialins,     setDialins]   = useState([]);
   const [questions,   setQuestions] = useState([]);
+  const [wishlist,    setWishlist]  = useState(()=>lsGet(LS.wishlist)||[]);
   const [syncing,     setSyncing]   = useState(false);
   const [toast,       setToast]     = useState(null);
   const [lastSync,    setLastSync]  = useState(null);
@@ -1653,17 +1763,25 @@ function App() {
     setReady(true);
     const s=lsGet(LS.settings)||{};
     if(s.owner&&s.repo&&navigator.onLine) autoSync(s,ck,cd);
-    // Load questions from repo if available
-    if(s.owner&&s.repo) loadQuestions(s);
+    // Load questions and wishlist from repo if available
+    if(s.owner&&s.repo) { loadQuestions(s); loadWishlist(s); }
     const onVisible=()=>{
       if(document.visibilityState==="visible"){
         const sv=lsGet(LS.settings)||{};
-        if(sv.owner&&sv.repo&&navigator.onLine){autoSync(sv,lsGet(LS.kits),lsGet(LS.dialins));loadQuestions(sv);}
+        if(sv.owner&&sv.repo&&navigator.onLine){autoSync(sv,lsGet(LS.kits),lsGet(LS.dialins));loadQuestions(sv);loadWishlist(sv);}
       }
     };
     document.addEventListener("visibilitychange",onVisible);
     return ()=>document.removeEventListener("visibilitychange",onVisible);
   },[]);
+
+  const loadWishlist=async(s)=>{
+    try {
+      const r=await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/wishlist.json?_=${Date.now()}`);
+      if(r.status===404) return; // not created yet
+      if(r.ok){const ws=await r.json();if(Array.isArray(ws)){setWishlist(ws);lsSet(LS.wishlist,ws);}}
+    }catch(e){}
+  };
 
   const loadQuestions=async(s)=>{
     try {
@@ -1718,6 +1836,20 @@ function App() {
     if(to==="dialin"&&data)     setCurDial(data);
     if(to==="editdialin"&&data) setCurDial(data);
     setScreen(to);
+  };
+
+  const markWishlistOrdered=async(id)=>{
+    const updated=wishlist.map(w=>w.id===id?{...w,ordered:true,orderedDate:new Date().toISOString().split("T")[0]}:w);
+    setWishlist(updated);lsSet(LS.wishlist,updated);
+    if(settings.token){try{await ghWrite(settings,"wishlist.json",updated);flash("✓ Marked as ordered");}catch(e){flash(`⚠ Saved locally`);}}
+    else flash("✓ Saved locally");
+  };
+
+  const removeWishlist=async(id)=>{
+    const updated=wishlist.filter(w=>w.id!==id);
+    setWishlist(updated);lsSet(LS.wishlist,updated);
+    if(settings.token){try{await ghWrite(settings,"wishlist.json",updated);flash("✓ Removed");}catch(e){flash(`⚠ Saved locally`);}}
+    else flash("✓ Removed locally");
   };
 
   const editDialin=(d)=>{setCurDial(d);setScreen("editdialin");};
@@ -1780,7 +1912,7 @@ function App() {
     setQuizState(s=>({...s,currentIdx:s.currentIdx+1}));
   };
 
-  const DETAIL_SCREENS=["dialin","editdialin","kit","editkit","add","settings","settings-kits","settings-github","settings-controls","settings-data","quiz"];
+  const DETAIL_SCREENS=["dialin","editdialin","kit","editkit","add","settings","settings-kits","settings-github","settings-controls","settings-data","quiz","discovery"];
   const isDetail=DETAIL_SCREENS.includes(screen);
   if(!ready) return <Splash/>;
 
@@ -1799,6 +1931,7 @@ function App() {
     "settings-controls":<SettingsControls settings={settings} onSave={saveSettings} kits={kits} nav={nav}/>,
     "settings-data":    <SettingsData dialins={dialins} onRemove={removeDialin} nav={nav}/>,
     quiz:    <QuizFullScreen questions={questions} nav={nav}/>,
+    discovery:<DiscoveryScreen wishlist={wishlist} dialins={dialins} nav={nav} onMarkOrdered={markWishlistOrdered} onRemove={removeWishlist}/>,
   };
 
   return (

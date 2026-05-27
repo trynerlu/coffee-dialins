@@ -81,6 +81,7 @@
     .badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:.06em; padding:3px 8px; border-radius:4px; }
     .b-dialin  { background:var(--accent-d); color:var(--accent); }
     .b-appupdate { background:rgba(90,112,152,0.14); color:#5A7098; }
+    .b-wishlist { background:rgba(90,136,96,0.14); color:#5A8860; }
   </style>
 </head>
 <body>
@@ -384,6 +385,64 @@ window.executePushJson = async function() {
   }
 };
 
+// ── WISHLIST PUSH ─────────────────────────────────────────────────────────────
+async function fetchWishlist(token) {
+  const r = await fetch(
+    `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/wishlist.json?_=${Date.now()}`
+  );
+  if (r.status === 404) return []; // file doesn't exist yet
+  if (!r.ok) throw new Error('Could not fetch wishlist.json');
+  const parsed = await r.json();
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function renderWishlistPreview(entry, token) {
+  const typeLabel = entry.type === 'tasted' ? '☕ Tasted somewhere' : '🔭 On my radar';
+  root.innerHTML = `
+    <div class="preview">
+      <div class="preview-label">${typeLabel} · <span class="badge b-wishlist">${entry.type||'radar'}</span></div>
+      <div class="preview-name">${entry.coffeeName || entry.roaster}</div>
+      ${entry.coffeeName ? `<div class="preview-roaster">${entry.roaster}</div>` : ''}
+      ${entry.source ? `<div class="preview-row"><span class="preview-key">Source</span><span class="preview-val">${entry.source}</span></div>` : ''}
+      ${entry.date   ? `<div class="preview-row"><span class="preview-key">Date</span><span class="preview-val">${entry.date}</span></div>` : ''}
+      ${entry.flavorNotes ? `<div class="preview-row"><span class="preview-key">Flavour</span><span class="preview-val">${entry.flavorNotes}</span></div>` : ''}
+      ${entry.url    ? `<div class="preview-row"><span class="preview-key">URL</span><span class="preview-val" style="word-break:break-all;font-size:10px">${entry.url}</span></div>` : ''}
+      ${entry.notes  ? `<div class="preview-notes">"${entry.notes}"</div>` : ''}
+    </div>
+    <button class="btn btn-p" id="wishlistBtn" onclick="executePushWishlist()">Add to Discovery →</button>
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+
+  window._pendingEntry = entry;
+  window._pendingToken = token;
+}
+
+window.executePushWishlist = async function() {
+  const btn = document.getElementById('wishlistBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin">↻</span> Saving…';
+  try {
+    const current = await fetchWishlist(window._pendingToken);
+    const entry = {
+      ...window._pendingEntry,
+      id: window._pendingEntry.id || `w-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+      addedDate: window._pendingEntry.addedDate || new Date().toISOString().split('T')[0],
+      ordered: window._pendingEntry.ordered || false,
+      orderedDate: window._pendingEntry.orderedDate || '',
+      dialinId: window._pendingEntry.dialinId || '',
+    };
+    const existingIdx = current.findIndex(e => e.id === entry.id);
+    const updated = existingIdx >= 0
+      ? current.map((e, i) => i === existingIdx ? entry : e)
+      : [entry, ...current];
+    await ghWrite(window._pendingToken, 'wishlist.json', JSON.stringify(updated, null, 2));
+    try { localStorage.setItem('ca_wishlist', JSON.stringify(updated)); } catch(e) {}
+    const name = entry.coffeeName || entry.roaster;
+    renderSuccess('Added to Discovery!', `${name} is now on your radar. Open the app and it will sync automatically.`);
+  } catch(e) {
+    renderError('Push failed', e.message);
+  }
+};
+
 // ── MAIN ─────────────────────────────────────────────────────────────────────
 function main() {
   const params = new URLSearchParams(window.location.search);
@@ -412,6 +471,7 @@ function main() {
       if (type === 'dialin') renderDialinPreview(parsed, t);
       else if (type === 'app')  renderAppUpdatePreview(parsed, t);
       else if (type === 'json') renderJsonPreview(parsed, t);
+      else if (type === 'wishlist') renderWishlistPreview(parsed, t);
     });
     return;
   }
@@ -420,6 +480,7 @@ function main() {
   else if (type === 'app')  renderAppUpdatePreview(parsed, token);
   else if (type === 'json') renderJsonPreview(parsed, token);
   else if (type === 'json-paste') renderJsonPastePreview(parsed, token);
+  else if (type === 'wishlist') renderWishlistPreview(parsed, token);
   else renderError('Unknown type', `push type "${type}" not recognised`);
 }
 
