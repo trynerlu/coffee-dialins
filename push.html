@@ -81,6 +81,7 @@
     .badge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:.06em; padding:3px 8px; border-radius:4px; }
     .b-dialin  { background:var(--accent-d); color:var(--accent); }
     .b-appupdate { background:rgba(90,112,152,0.14); color:#5A7098; }
+    .b-wishlist { background:rgba(90,136,96,0.14); color:#5A8860; }
   </style>
 </head>
 <body>
@@ -156,6 +157,37 @@ async function fetchDialins(token) {
   const parsed = await r.json();
   // Handle wrapped format {_appWrittenAt, entries} or legacy plain array
   return Array.isArray(parsed) ? parsed : (parsed.entries || []);
+}
+
+
+// ── SAFE READ-MODIFY-WRITE (GitHub API, sha-guarded, re-merges on conflict) ──
+function b64decodeUtf8(b64){ return decodeURIComponent(escape(atob(b64.replace(/\n/g,'')))); }
+async function apiRead(token, file){
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}?ref=main&_=${Date.now()}`,
+    { headers:{ Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json' }, cache:'no-store' });
+  if (r.status===404) return { data:null, sha:null };
+  if (!r.ok) throw new Error(`Could not read ${file} (HTTP ${r.status})`);
+  const j = await r.json();
+  return { data: JSON.parse(b64decodeUtf8(j.content)), sha: j.sha };
+}
+// mutate(currentArray) -> newArray. dialins.json is stored wrapped {_appWrittenAt, entries}.
+async function updateJsonFile(token, file, mutate, attempts=4){
+  for (let i=0;i<attempts;i++){
+    const { data, sha } = await apiRead(token, file);
+    const arr = data==null ? [] : (Array.isArray(data) ? data : (data.entries||[]));
+    const next = mutate(arr);
+    const payload = file==='dialins.json' ? { _appWrittenAt: Date.now(), entries: next } : next;
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${file}`,{
+      method:'PUT',
+      headers:{ Authorization:`Bearer ${token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ message:`Update ${file} via Push link`, content:encoded, branch:'main', ...(sha?{sha}:{}) })
+    });
+    if (res.ok) return next;
+    if (res.status===409 || res.status===422){ await new Promise(r=>setTimeout(r,1200)); continue; } // someone else wrote — re-read & re-merge
+    const e = await res.json().catch(()=>({})); throw new Error(e.message||`HTTP ${res.status}`);
+  }
+  throw new Error(`${file} kept changing — try again`);
 }
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
@@ -259,20 +291,18 @@ window.executePushDialin = async function() {
   btn.disabled = true;
   btn.innerHTML = '<span class="spin">↻</span> Saving…';
   try {
-    const current = await fetchDialins(window._pendingToken);
     const entry = { ...window._pendingEntry,
       id: window._pendingEntry.id || `d-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
       date: window._pendingEntry.date || new Date().toISOString().split('T')[0]
     };
-    const existingIdx = current.findIndex(e => e.id === entry.id);
-    const updated = existingIdx >= 0
-      ? current.map((e, i) => i === existingIdx ? entry : e)
-      : [entry, ...current];
-    await ghWrite(window._pendingToken, 'dialins.json', JSON.stringify(updated, null, 2));
-    // Update local cache too
+    let existed = false;
+    const updated = await updateJsonFile(window._pendingToken, 'dialins.json', cur => {
+      const i = cur.findIndex(e => e.id === entry.id);
+      existed = i >= 0;
+      return existed ? cur.map((e,j)=> j===i ? {...e, ...entry} : e) : [entry, ...cur];
+    });
     try { localStorage.setItem('ca_dialins', JSON.stringify(updated)); } catch(e) {}
-    const action = existingIdx >= 0 ? 'updated in' : 'added to';
-    renderSuccess('Saved!', `${entry.coffeeName} ${action} your logbook. Open the app and it will sync automatically.`);
+    renderSuccess('Saved!', `${entry.coffeeName} ${existed?'updated in':'added to'} your library. Open the app and it will sync automatically.`);
   } catch(e) {
     renderError('Push failed', e.message);
   }
@@ -386,6 +416,41 @@ window.executePushJson = async function() {
   }
 };
 
+
+// ── WISHLIST PUSH ─────────────────────────────────────────────────────────────
+function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function renderWishlistPreview(entry, token) {
+  const typeLabel = entry.type === 'tasted' ? '☕ Tasted somewhere' : '🔭 On my radar';
+  root.innerHTML = `
+    <div class="preview">
+      <div class="preview-label">${typeLabel} · <span class="badge b-wishlist">${esc(entry.type||'radar')}</span></div>
+      <div class="preview-name">${esc(entry.coffeeName || entry.roaster)}</div>
+      ${entry.coffeeName ? `<div class="preview-roaster">${esc(entry.roaster)}</div>` : ''}
+      ${entry.source ? `<div class="preview-row"><span class="preview-key">Source</span><span class="preview-val">${esc(entry.source)}</span></div>` : ''}
+      ${entry.date ? `<div class="preview-row"><span class="preview-key">Date</span><span class="preview-val">${esc(entry.date)}</span></div>` : ''}
+      ${entry.flavorNotes ? `<div class="preview-row"><span class="preview-key">Flavour</span><span class="preview-val">${esc(entry.flavorNotes)}</span></div>` : ''}
+      ${entry.notes ? `<div class="preview-notes">"${esc(entry.notes)}"</div>` : ''}
+    </div>
+    <button class="btn btn-p" id="wishlistBtn" onclick="executePushWishlist()">Add to Discovery →</button>
+    <a href="/coffee-dialins/" class="btn btn-s" style="display:block;text-align:center;text-decoration:none;padding:14px">Cancel</a>`;
+  window._pendingEntry = entry; window._pendingToken = token;
+}
+window.executePushWishlist = async function() {
+  const btn = document.getElementById('wishlistBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin">↻</span> Saving…';
+  try {
+    const entry = { ordered:false, orderedDate:'', dialinId:'', ...window._pendingEntry,
+      id: window._pendingEntry.id || `w-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+      addedDate: window._pendingEntry.addedDate || new Date().toISOString().split('T')[0] };
+    const updated = await updateJsonFile(window._pendingToken, 'wishlist.json', cur => {
+      const i = cur.findIndex(e => e.id === entry.id);
+      return i>=0 ? cur.map((e,j)=> j===i ? entry : e) : [entry, ...cur];
+    });
+    try { localStorage.setItem('ca_wishlist', JSON.stringify(updated)); } catch(e) {}
+    renderSuccess('Added to Discovery!', `${esc(entry.coffeeName || entry.roaster)} is on your radar.`);
+  } catch(e) { renderError('Push failed', e.message); }
+};
+
 // ── MAIN ─────────────────────────────────────────────────────────────────────
 function main() {
   const params = new URLSearchParams(window.location.search);
@@ -414,6 +479,7 @@ function main() {
       if (type === 'dialin') renderDialinPreview(parsed, t);
       else if (type === 'app')  renderAppUpdatePreview(parsed, t);
       else if (type === 'json') renderJsonPreview(parsed, t);
+      else if (type === 'wishlist') renderWishlistPreview(parsed, t);
     });
     return;
   }
@@ -422,6 +488,7 @@ function main() {
   else if (type === 'app')  renderAppUpdatePreview(parsed, token);
   else if (type === 'json') renderJsonPreview(parsed, token);
   else if (type === 'json-paste') renderJsonPastePreview(parsed, token);
+  else if (type === 'wishlist') renderWishlistPreview(parsed, token);
   else renderError('Unknown type', `push type "${type}" not recognised`);
 }
 
