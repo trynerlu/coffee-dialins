@@ -309,7 +309,7 @@
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const APP_VERSION   = "4.1.0";
+const APP_VERSION   = "4.1.1";
 const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz", wishlist:"ca_wishlist" };
 const PROCESSES     = ["Washed","Natural","Honey","Anaerobic Natural","Anaerobic Washed","Anaerobic","Carbonic Maceration","Wet-Hulled","Experimental","Blend"];
 const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
@@ -395,7 +395,7 @@ function normalizeDiaLin(d) {
     wouldBuy:false, isChoice:false, tags:[], brewMethods:[],
     dialEase:null, dialStability:null, filterPours:[],
     coffeeUrl:"", coffeeDescription:"", notes:"",
-    review:"", variety:"", producer:"", farm:"", altitude:"", photo:"",
+    review:"", variety:"", producer:"", farm:"", altitude:"",
     ...d
   };
   if (!base.brewMethods?.length && base.intendedFor) {
@@ -1124,7 +1124,6 @@ function DialInDetail({d, kits, dialins, nav, onEdit, listScreen, settings, onQu
 
       {/* Hero */}
       <div className="det-hero">
-        {norm.photo&&<img src={norm.photo} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}} style={{width:"100%",maxHeight:"260px",objectFit:"cover",borderRadius:"12px",border:"1px solid var(--border)",marginBottom:"14px",display:"block"}}/>}
         <div className="det-date">{fmt(d.date)}{norm.roastDate&&` · Roasted ${fmt(norm.roastDate)}`}</div>
         <div className="det-roaster">
           {norm.coffeeUrl
