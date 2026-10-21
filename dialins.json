@@ -1,6 +1,52 @@
 {
-  "_appWrittenAt": 1792597529790,
+  "_appWrittenAt": 1792599164427,
   "entries": [
+    {
+      "roastDate": "2026-05-11",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Peru",
+      "region": "Jaén",
+      "process": "Washed",
+      "roastLevel": "",
+      "roaster": "Right Side",
+      "flavorNotes": "Violet, sweet toffee, honey",
+      "grindSetting": "15",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 300,
+      "timeSeconds": 225,
+      "temperature": 91,
+      "rating": 2,
+      "dialStatus": "dialed",
+      "beanLocation": "open",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "flat",
+        "boring"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label: 'This Typica from Jaén offers delicate violet aromas and sweet toffee notes. A coffee with a very good body, dense, with hints of honey.' Roasted in Barcelona. 250g.",
+      "notes": "Home V60, 20g/300ml, 91C, ~3:45. Tried classic 4-phase, 10 pours of 30g every 15s, and Lance Hendrick 60+60 double bloom; none changed the verdict.",
+      "review": "Not much impressed: dull, not versatile, not playful, not even a crowd-pleaser. Washed and floral as on the bag, but otherwise mostly trpký (tart).",
+      "variety": "Typica",
+      "producer": "Smallholder farmers (direct trade, 2024)",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1780056000000-rs-sal01",
+      "date": "2026-05-29",
+      "coffeeName": "Sallique Typica",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "id": "d-1746921600000-cg-eth01",
       "date": "2026-05-09",
