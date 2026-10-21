@@ -1,8 +1,7 @@
 {
-  "_comment": "Dial-In App v3.1 — Schema reference for push link generation",
-  "_version": "3.1.0",
-  "_updated": "2026-05",
-
+  "_comment": "Dial-In App — data contract. Both chats read this before writing. Edit only from the app chat.",
+  "_version": "3.2.0",
+  "_updated": "2026-10-21",
   "kitIds": [
     "home-espresso",
     "home-pour-over",
@@ -11,64 +10,297 @@
     "office-pour-over",
     "office-french-press"
   ],
-
   "enums": {
-    "process":      ["Washed","Natural","Honey","Anaerobic","Wet-Hulled","Blend"],
-    "roastLevel":   ["Light","Medium-Light","Medium","Medium-Dark","Dark"],
-    "brewMethods":  ["Espresso","Pour Over","French Press"],
-    "dialStatus":   ["waiting","dialing","dialed","abandoned"],
-    "beanLocation": ["shelf","open","frozen","empty"],
-    "dialEase":     ["easy","medium","hard"],
-    "dialStability":["stable","unstable"],
+    "process": [
+      "Washed",
+      "Natural",
+      "Honey",
+      "Anaerobic Natural",
+      "Anaerobic Washed",
+      "Anaerobic",
+      "Carbonic Maceration",
+      "Wet-Hulled",
+      "Experimental",
+      "Blend"
+    ],
+    "roastLevel": [
+      "Light",
+      "Medium-Light",
+      "Medium",
+      "Medium-Dark",
+      "Dark"
+    ],
+    "brewMethods": [
+      "Espresso",
+      "Pour Over",
+      "French Press"
+    ],
+    "dialStatus": [
+      "waiting",
+      "dialing",
+      "dialed",
+      "abandoned"
+    ],
+    "beanLocation": [
+      "shelf",
+      "open",
+      "frozen",
+      "empty"
+    ],
+    "dialEase": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "dialStability": [
+      "stable",
+      "unstable"
+    ],
     "tags": [
-      "interesting","complex","funky","versatile","well responding",
-      "good value","good for milk","crowd-pleaser","affogato","my choice",
-      "flat","boring","not well responding"
+      "interesting",
+      "complex",
+      "funky",
+      "versatile",
+      "well responding",
+      "good value",
+      "good for milk",
+      "crowd-pleaser",
+      "affogato",
+      "my choice",
+      "flat",
+      "boring",
+      "not well responding"
     ]
   },
-
   "fields": {
-    "id":               { "type":"string",  "required":true,  "note":"Format: d-{timestamp}-{slug}, e.g. d-1746921600000-cg-eth01" },
-    "date":             { "type":"date",    "required":true,  "note":"ISO date YYYY-MM-DD — dial-in date" },
-    "kitId":            { "type":"enum",    "required":true,  "note":"See kitIds above" },
-    "coffeeName":       { "type":"string",  "required":true  },
-    "roaster":          { "type":"string",  "required":false },
-    "origin":           { "type":"string",  "required":false },
-    "region":           { "type":"string",  "required":false },
-    "process":          { "type":"enum",    "required":false },
-    "roastLevel":       { "type":"enum",    "required":false },
-    "roastDate":        { "type":"date",    "required":false, "note":"ISO date YYYY-MM-DD. Empty string if unknown." },
-    "brewMethods":      { "type":"array",   "required":true,  "note":"Array of strings from enums.brewMethods" },
-    "flavorNotes":      { "type":"string",  "required":false, "note":"Comma-separated keywords e.g. 'Jasmine, lemon, honey'" },
-    "grindSetting":     { "type":"string",  "required":false, "note":"String to allow values like '15 (Sculptor) / 21 (Encore)'" },
-    "grinder":          { "type":"string",  "required":false },
-    "doseIn":           { "type":"number",  "required":false, "note":"Grams" },
-    "yieldOut":         { "type":"number",  "required":false, "note":"Grams (espresso) or grams (pour over — NOT ml)" },
-    "timeSeconds":      { "type":"number",  "required":false, "note":"Total time in seconds" },
-    "temperature":      { "type":"number",  "required":false, "note":"Celsius" },
-    "rating":           { "type":"number",  "required":false, "note":"0–5, 0 = unrated" },
-    "dialStatus":       { "type":"enum",    "required":true  },
-    "experimenting":    { "type":"boolean", "required":false, "default":false },
-    "beanLocation":     { "type":"enum",    "required":true  },
-    "frozenDate":       { "type":"date",    "required":false, "note":"ISO date. Set when beanLocation becomes 'frozen'. Empty string if not frozen." },
-    "thawDate":         { "type":"date",    "required":false, "note":"ISO date. Set automatically when moving out of frozen. Empty string otherwise." },
-    "dialEase":         { "type":"enum",    "required":false },
-    "dialStability":    { "type":"enum",    "required":false },
-    "wouldBuy":         { "type":"boolean", "required":false, "default":false },
-    "isChoice":         { "type":"boolean", "required":false, "default":false },
-    "isEarlyEntry":     { "type":"boolean", "required":false, "default":false },
-    "tags":             { "type":"array",   "required":false, "note":"Array of strings from enums.tags. Empty array if none." },
-    "filterPours":      { "type":"array",   "required":false, "note":"Array of {phase:number, targetGrams:number, startSeconds:number}. Cumulative grams. Phase 1 = bloom. Empty array for espresso." },
-    "coffeeUrl":        { "type":"string",  "required":false, "note":"Product page URL" },
-    "coffeeDescription":{ "type":"string",  "required":false },
-    "notes":            { "type":"string",  "required":false }
+    "id": {
+      "type": "string",
+      "required": true,
+      "note": "Format: d-{timestamp}-{slug}, e.g. d-1746921600000-cg-eth01"
+    },
+    "date": {
+      "type": "date",
+      "required": true,
+      "note": "ISO date YYYY-MM-DD — dial-in date"
+    },
+    "kitId": {
+      "type": "enum",
+      "required": false,
+      "note": "Optional since v3.2. Set only when a specific kit was dialed; library reviews may leave it empty."
+    },
+    "coffeeName": {
+      "type": "string",
+      "required": true
+    },
+    "roaster": {
+      "type": "string",
+      "required": false
+    },
+    "origin": {
+      "type": "string",
+      "required": false
+    },
+    "region": {
+      "type": "string",
+      "required": false
+    },
+    "process": {
+      "type": "enum",
+      "required": false,
+      "note": "Use the most specific enum value. Blends of mixed process = 'Blend'."
+    },
+    "roastLevel": {
+      "type": "enum",
+      "required": false
+    },
+    "roastDate": {
+      "type": "date",
+      "required": false,
+      "note": "ISO date YYYY-MM-DD. Empty string if unknown."
+    },
+    "brewMethods": {
+      "type": "array",
+      "required": true,
+      "note": "Array of strings from enums.brewMethods"
+    },
+    "flavorNotes": {
+      "type": "string",
+      "required": false,
+      "note": "Comma-separated keywords e.g. 'Jasmine, lemon, honey'"
+    },
+    "grindSetting": {
+      "type": "string",
+      "required": false,
+      "note": "String to allow values like '15 (Sculptor) / 21 (Encore)'"
+    },
+    "grinder": {
+      "type": "string",
+      "required": false
+    },
+    "doseIn": {
+      "type": "number",
+      "required": false,
+      "note": "Grams"
+    },
+    "yieldOut": {
+      "type": "number",
+      "required": false,
+      "note": "Grams (espresso) or grams (pour over — NOT ml)"
+    },
+    "timeSeconds": {
+      "type": "number",
+      "required": false,
+      "note": "Total time in seconds"
+    },
+    "temperature": {
+      "type": "number",
+      "required": false,
+      "note": "Celsius"
+    },
+    "rating": {
+      "type": "number",
+      "required": false,
+      "note": "0–5, 0 = unrated"
+    },
+    "dialStatus": {
+      "type": "enum",
+      "required": true,
+      "default": "dialed"
+    },
+    "experimenting": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "beanLocation": {
+      "type": "enum",
+      "required": true,
+      "default": "empty",
+      "note": "Library reviews of finished bags = 'empty'."
+    },
+    "frozenDate": {
+      "type": "date",
+      "required": false,
+      "note": "ISO date. Set when beanLocation becomes 'frozen'. Empty string if not frozen."
+    },
+    "thawDate": {
+      "type": "date",
+      "required": false,
+      "note": "ISO date. Set automatically when moving out of frozen. Empty string otherwise."
+    },
+    "dialEase": {
+      "type": "enum",
+      "required": false
+    },
+    "dialStability": {
+      "type": "enum",
+      "required": false
+    },
+    "wouldBuy": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "isChoice": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "isEarlyEntry": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "required": false,
+      "note": "Array of strings from enums.tags. Empty array if none."
+    },
+    "filterPours": {
+      "type": "array",
+      "required": false,
+      "note": "Array of {phase:number, targetGrams:number, startSeconds:number}. Cumulative grams. Phase 1 = bloom. Empty array for espresso."
+    },
+    "coffeeUrl": {
+      "type": "string",
+      "required": false,
+      "note": "Product page URL"
+    },
+    "coffeeDescription": {
+      "type": "string",
+      "required": false
+    },
+    "notes": {
+      "type": "string",
+      "required": false
+    },
+    "review": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. Lukáš's verdict in 1–3 sentences, written from his dictation. The headline text of the entry."
+    },
+    "variety": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. e.g. 'SL28, SL34', 'Heirloom', 'Gesha'. Only if stated by the roaster."
+    },
+    "producer": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. Producer/cooperative/washing station. Only if stated by the roaster."
+    },
+    "farm": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. Farm name if different from producer."
+    },
+    "altitude": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. As stated, e.g. '1900–2100 m'."
+    },
+    "photo": {
+      "type": "string",
+      "required": false,
+      "note": "v3.2. Repo path 'photos/<id>.jpg'. Set by dialin_api.py --photo, never by hand."
+    }
   },
-
   "deprecated_do_not_use": [
-    "intendedFor", "dialDifficulty", "shotStability", "roasterUrl",
-    "filterBloomGrams", "filterBloomSeconds", "bagStatus", "status"
+    "intendedFor",
+    "dialDifficulty",
+    "shotStability",
+    "roasterUrl",
+    "filterBloomGrams",
+    "filterBloomSeconds",
+    "bagStatus",
+    "status"
   ],
-
-  "push_link_format": "https://trynerlu.github.io/coffee-dialins/push.html?type=dialin&d=BASE64",
+  "write_rules": [
+    "Write only via tools/dialin_api.py (GitHub API + sha guard). Never PUT dialins.json from a copy you read earlier.",
+    "dialins.json is stored as {_appWrittenAt, entries}; the script handles this.",
+    "Draft the entry in chat first and wait for Lukáš to confirm before writing.",
+    "variety/producer/farm/altitude: only facts from the roaster's own page or bag label — never guessed. Leave empty if unknown.",
+    "Unknown dates/values: empty string or 0, never invented.",
+    "New coffee = new entry. Same coffee on another kit/brew = separate entry with the same coffeeName + roaster (the app groups them)."
+  ],
+  "wishlist": {
+    "file": "wishlist.json (plain array)",
+    "fields": {
+      "id": "w-{timestamp}-{slug}",
+      "type": "'radar' (roaster/coffee to explore) | 'tasted' (had it somewhere)",
+      "roaster": "required",
+      "coffeeName": "'' for roaster-level interest",
+      "source": "where/how",
+      "date": "YYYY-MM-DD or ''",
+      "flavorNotes": "",
+      "notes": "",
+      "url": "",
+      "ordered": false,
+      "orderedDate": "",
+      "dialinId": "",
+      "addedDate": "YYYY-MM-DD"
+    }
+  },
+  "push_link_format_fallback": "https://trynerlu.github.io/coffee-dialins/push.html?type=dialin&d=BASE64",
   "base64_python": "base64.urlsafe_b64encode(json.dumps(obj).encode()).decode().rstrip('=')"
 }
