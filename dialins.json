@@ -1,5 +1,5 @@
 {
-  "_appWrittenAt": 1778969514604,
+  "_appWrittenAt": 1792597504320,
   "entries": [
     {
       "id": "d-1746921600000-cg-eth01",
@@ -71,7 +71,7 @@
       "roaster": "Merrybeans Pražírna",
       "origin": "Blend",
       "region": "Brazil (1100m) + Guatemala (1400-2000m)",
-      "process": "Natural + Washed",
+      "process": "Blend",
       "roastLevel": "Medium",
       "flavorNotes": "Chocolate, hazelnuts, honey — none present in black espresso",
       "grindSetting": "6.3",
@@ -341,7 +341,7 @@
       "roaster": "Coffeein",
       "origin": "Colombia",
       "region": "Las Flores",
-      "process": "Washed Anaerobic",
+      "process": "Anaerobic Washed",
       "roastLevel": "Light",
       "flavorNotes": "Tropical fruit, mint, floral, caramel — wild, persistent mint throughout",
       "grindSetting": "14.5 (Sculptor)",
