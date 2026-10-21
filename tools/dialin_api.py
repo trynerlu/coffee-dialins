@@ -272,8 +272,9 @@ def main():
     w = sub.add_parser("wishlist"); w.add_argument("file")
     sub.add_parser("check")
     l = sub.add_parser("list");     l.add_argument("--limit", type=int, default=20)
-    for p in (a, u, w): p.add_argument("--dry-run", action="store_true")
+    for p in (a, u, w): p.add_argument("--dry-run", action="store_true", default=argparse.SUPPRESS)  # don't override a top-level --dry-run
     args = ap.parse_args()
+    if args.dry_run: print("[dry-run] nothing will be written")
     {"add": cmd_add, "update": cmd_update, "wishlist": cmd_wishlist,
      "check": cmd_check, "list": cmd_list}[args.cmd](args)
 
