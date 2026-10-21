@@ -12,8 +12,8 @@ Safe by design:
 Token: env var GITHUB_TOKEN (or --token). Never hardcode it in this file.
 
 Usage
-  python dialin_api.py add     entries.json [--photo ID=bag.jpg ...] [--dry-run]
-  python dialin_api.py update  ID patch.json [--photo ID=bag.jpg] [--dry-run]
+  python dialin_api.py add     entries.json [--dry-run]
+  python dialin_api.py update  ID patch.json [--dry-run]
   python dialin_api.py wishlist items.json [--dry-run]
   python dialin_api.py check                       # validate the live dialins.json
   python dialin_api.py list    [--limit 20]        # newest entries, one line each
@@ -26,7 +26,6 @@ from datetime import date
 
 OWNER, REPO, BRANCH = "trynerlu", "coffee-dialins", "main"
 API = f"https://api.github.com/repos/{OWNER}/{REPO}/contents"
-PHOTO_DIR = "photos"
 
 # ── HTTP ──────────────────────────────────────────────────────────────────────
 def _token(args=None):
@@ -97,7 +96,7 @@ DEFAULTS = {
     "tags": [], "dialEase": None, "dialStability": None, "filterPours": [],
     "coffeeUrl": "", "coffeeDescription": "", "notes": "",
     # v3.2 library fields
-    "review": "", "variety": "", "producer": "", "farm": "", "altitude": "", "photo": "",
+    "review": "", "variety": "", "producer": "", "farm": "", "altitude": "",
 }
 DEPRECATED = ["intendedFor","dialDifficulty","shotStability","roasterUrl",
               "filterBloomGrams","filterBloomSeconds","bagStatus","status"]
@@ -114,7 +113,7 @@ def normalize(e):
         e["id"] = f"d-{int(time.time()*1000)}-{slug(e.get('roaster',''))[:6]}-{slug(e.get('coffeeName',''))[:10]}"
         time.sleep(0.002)
     if not e.get("date"): e["date"] = date.today().isoformat()
-    for k in DEPRECATED: e.pop(k, None)
+    for k in DEPRECATED + ["photo"]: e.pop(k, None)   # photos are input only, never stored
     for p in e.get("filterPours") or []:
         if "startSecondl" in p: p["startSeconds"] = p.pop("startSecondl")
     return e
@@ -147,38 +146,10 @@ def validate(e, schema):
     if not e.get("review") and not e.get("notes"): warns.append("no review/notes text")
     return errs, warns
 
-# ── PHOTOS ────────────────────────────────────────────────────────────────────
-def compress_photo(path, max_side=1200, quality=78):
-    try:
-        from PIL import Image, ImageOps
-        import io
-        im = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
-        im.thumbnail((max_side, max_side))
-        buf = io.BytesIO(); im.save(buf, "JPEG", quality=quality, optimize=True, progressive=True)
-        return buf.getvalue()
-    except ImportError:
-        return open(path, "rb").read()
-
-def upload_photo(entry_id, path, token, dry_run=False):
-    data = compress_photo(path)
-    dest = f"{PHOTO_DIR}/{entry_id}.jpg"
-    if dry_run: return dest, len(data)
-    _, sha = read_file(dest, token)
-    st, j = put_file(dest, data, token, sha, f"Photo for {entry_id}")
-    if st not in (200, 201): raise RuntimeError(f"photo upload: HTTP {st} {j.get('message','')}")
-    return dest, len(data)
-
 # ── COMMANDS ──────────────────────────────────────────────────────────────────
 def _load_objs(path):
     obj = json.load(open(path, encoding="utf-8"))
     return obj if isinstance(obj, list) else [obj]
-
-def _photos(args):
-    out = {}
-    for spec in args.photo or []:
-        k, _, v = spec.partition("=")
-        out[k] = v
-    return out
 
 def summary(e):
     stars = "★"*int(e.get("rating") or 0)
@@ -194,12 +165,6 @@ def cmd_add(args):
         for w in warns: print(f"  ! {e['coffeeName']}: {w}")
         for x in errs: print(f"  ✗ {e.get('coffeeName','?')}: {x}"); bad = True
     if bad: sys.exit("Validation failed — nothing written.")
-    for eid, p in _photos(args).items():
-        match = [e for e in entries if e["id"] == eid or slug(e["coffeeName"]) == slug(eid)]
-        if not match: sys.exit(f"--photo {eid}: no entry with that id/name")
-        dest, size = upload_photo(match[0]["id"], p, tok, args.dry_run)
-        match[0]["photo"] = dest
-        print(f"  📷 {dest} ({size//1024} KB)")
     ids = {e["id"] for e in entries}
     def mut(cur):
         dup = [c["id"] for c in cur if c["id"] in ids]
@@ -213,10 +178,6 @@ def cmd_add(args):
 def cmd_update(args):
     tok = _token(args); schema = load_schema(tok)
     patch = json.load(open(args.file, encoding="utf-8"))
-    photos = _photos(args)
-    if photos:
-        dest, size = upload_photo(args.id, list(photos.values())[0], tok, args.dry_run)
-        patch["photo"] = dest; print(f"  📷 {dest} ({size//1024} KB)")
     result = {}
     def mut(cur):
         i = next((k for k, c in enumerate(cur) if c["id"] == args.id), None)
@@ -267,8 +228,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--token"); ap.add_argument("--dry-run", action="store_true")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    a = sub.add_parser("add");      a.add_argument("file"); a.add_argument("--photo", action="append")
-    u = sub.add_parser("update");   u.add_argument("id"); u.add_argument("file"); u.add_argument("--photo", action="append")
+    a = sub.add_parser("add");      a.add_argument("file")
+    u = sub.add_parser("update");   u.add_argument("id"); u.add_argument("file")
     w = sub.add_parser("wishlist"); w.add_argument("file")
     sub.add_parser("check")
     l = sub.add_parser("list");     l.add_argument("--limit", type=int, default=20)
