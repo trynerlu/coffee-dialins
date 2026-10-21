@@ -1,6 +1,6 @@
 {
   "_comment": "Dial-In App — data contract. Both chats read this before writing. Edit only from the app chat.",
-  "_version": "3.2.0",
+  "_version": "3.2.1",
   "_updated": "2026-10-21",
   "kitIds": [
     "home-espresso",
@@ -116,7 +116,7 @@
     "roastDate": {
       "type": "date",
       "required": false,
-      "note": "ISO date YYYY-MM-DD. Empty string if unknown."
+      "note": "From the bag label (handwritten dates are common, e.g. '10.12.25'). Empty if not visible."
     },
     "brewMethods": {
       "type": "array",
@@ -224,7 +224,7 @@
     "coffeeUrl": {
       "type": "string",
       "required": false,
-      "note": "Product page URL"
+      "note": "Product page on the roaster's site, found by matching the bag label. Primary source for filling gaps."
     },
     "coffeeDescription": {
       "type": "string",
@@ -258,11 +258,6 @@
       "type": "string",
       "required": false,
       "note": "v3.2. As stated, e.g. '1900–2100 m'."
-    },
-    "photo": {
-      "type": "string",
-      "required": false,
-      "note": "v3.2. Repo path 'photos/<id>.jpg'. Set by dialin_api.py --photo, never by hand."
     }
   },
   "deprecated_do_not_use": [
@@ -279,6 +274,8 @@
     "Write only via tools/dialin_api.py (GitHub API + sha guard). Never PUT dialins.json from a copy you read earlier.",
     "dialins.json is stored as {_appWrittenAt, entries}; the script handles this.",
     "Draft the entry in chat first and wait for Lukáš to confirm before writing.",
+    "Bag photos are input only: read every detail on the label, then find the product page online to fill gaps. Never upload or store the photo.",
+    "Source priority: bag label > roaster's product page > nothing. If the two disagree, use the label and mention it in the draft.",
     "variety/producer/farm/altitude: only facts from the roaster's own page or bag label — never guessed. Leave empty if unknown.",
     "Unknown dates/values: empty string or 0, never invented.",
     "New coffee = new entry. Same coffee on another kit/brew = separate entry with the same coffeeName + roaster (the app groups them)."
