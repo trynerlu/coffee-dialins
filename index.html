@@ -309,9 +309,9 @@
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const APP_VERSION   = "4.0.0";
+const APP_VERSION   = "4.1.0";
 const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz", wishlist:"ca_wishlist" };
-const PROCESSES     = ["Washed","Natural","Honey","Anaerobic","Wet-Hulled","Blend"];
+const PROCESSES     = ["Washed","Natural","Honey","Anaerobic Natural","Anaerobic Washed","Anaerobic","Carbonic Maceration","Wet-Hulled","Experimental","Blend"];
 const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
 const BREW_METHODS  = ["Espresso","Pour Over","French Press"];
 const DIAL_STATUSES = ["waiting","dialing","dialed","abandoned"];
@@ -395,6 +395,7 @@ function normalizeDiaLin(d) {
     wouldBuy:false, isChoice:false, tags:[], brewMethods:[],
     dialEase:null, dialStability:null, filterPours:[],
     coffeeUrl:"", coffeeDescription:"", notes:"",
+    review:"", variety:"", producer:"", farm:"", altitude:"", photo:"",
     ...d
   };
   if (!base.brewMethods?.length && base.intendedFor) {
@@ -832,8 +833,9 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
 
   // Top rated: 2 espresso + 2 pour over
   const topRated = useMemo(()=>{
-    const espr=norm.filter(d=>d.rating>0&&["home-espresso","office-espresso"].includes(d.kitId)).sort((a,b)=>b.rating-a.rating).slice(0,2);
-    const pour=norm.filter(d=>d.rating>0&&["home-pour-over","office-pour-over","home-french-press","office-french-press"].includes(d.kitId)).sort((a,b)=>b.rating-a.rating).slice(0,2);
+    const isE=d=>(d.brewMethods||[]).includes("Espresso")||["home-espresso","office-espresso"].includes(d.kitId);
+    const espr=norm.filter(d=>d.rating>0&&isE(d)).sort((a,b)=>b.rating-a.rating).slice(0,2);
+    const pour=norm.filter(d=>d.rating>0&&!isE(d)).sort((a,b)=>b.rating-a.rating).slice(0,2);
     return [...espr,...pour];
   },[norm]);
 
@@ -893,7 +895,7 @@ function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, qu
           <div style={{padding:"0 18px 6px",fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)"}}>Top Rated</div>
           <div className="top-rated-grid">
             {topRated.map(d=>{
-              const isEspr=["home-espresso","office-espresso"].includes(d.kitId);
+              const isEspr=(d.brewMethods||[]).includes("Espresso")||["home-espresso","office-espresso"].includes(d.kitId);
               const dotColor=isEspr?DOT_COLOR.espr:DOT_COLOR.pour;
               return (
                 <div key={d.id} className="top-rated-card" onClick={()=>nav("dialin",d,"home")} style={{borderTopColor:dotColor,borderTopWidth:"2px"}}>
@@ -932,7 +934,7 @@ function LogbookScreen({kits, dialins, nav, settings}) {
 
   const filteredGroups = useMemo(()=>{
     return buildCoffeeGroups(dialins).filter(g=>{
-      const sm=!q||[g.coffeeName,g.roaster,...g.entries.flatMap(e=>[e.origin,e.process,e.flavorNotes])].join(" ").toLowerCase().includes(q.toLowerCase());
+      const sm=!q||[g.coffeeName,g.roaster,...g.entries.flatMap(e=>[e.origin,e.region,e.process,e.flavorNotes,e.variety,e.producer,e.farm,e.review])].join(" ").toLowerCase().includes(q.toLowerCase());
       const allBrews=[...new Set(g.entries.flatMap(e=>e.brewMethods||[]))];
       const allRoasts=g.entries.map(e=>ROAST_KEY[e.roastLevel]).filter(Boolean);
       const allStatus=g.entries.map(e=>e.dialStatus);
@@ -1122,6 +1124,7 @@ function DialInDetail({d, kits, dialins, nav, onEdit, listScreen, settings, onQu
 
       {/* Hero */}
       <div className="det-hero">
+        {norm.photo&&<img src={norm.photo} alt="" loading="lazy" onError={e=>{e.currentTarget.style.display="none";}} style={{width:"100%",maxHeight:"260px",objectFit:"cover",borderRadius:"12px",border:"1px solid var(--border)",marginBottom:"14px",display:"block"}}/>}
         <div className="det-date">{fmt(d.date)}{norm.roastDate&&` · Roasted ${fmt(norm.roastDate)}`}</div>
         <div className="det-roaster">
           {norm.coffeeUrl
@@ -1217,7 +1220,7 @@ function DialInDetail({d, kits, dialins, nav, onEdit, listScreen, settings, onQu
       {/* Coffee Info */}
       <div className="sec"><span className="sec-title">Coffee Info</span></div>
       <div className="det-info-grid">
-        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Process",d.process],["Roast",d.roastLevel],["Brewed as",(norm.brewMethods||[]).join(" · ")],["Roast Date",norm.roastDate?fmt(norm.roastDate):null],["Flavour",d.flavorNotes]].filter(([,v])=>v&&String(v).trim()).map(([lbl,val])=>(
+        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Producer",[norm.producer,norm.farm].filter(Boolean).join(" · ")],["Variety",norm.variety],["Altitude",norm.altitude],["Process",d.process],["Roast",d.roastLevel],["Brewed as",(norm.brewMethods||[]).join(" · ")],["Roast Date",norm.roastDate?fmt(norm.roastDate):null],["Flavour",d.flavorNotes]].filter(([,v])=>v&&String(v).trim()).map(([lbl,val])=>(
           <div key={lbl} className="det-info-cell">
             <div className="det-info-label">{lbl}</div>
             <div className="det-info-val">{val}</div>
@@ -1225,6 +1228,7 @@ function DialInDetail({d, kits, dialins, nav, onEdit, listScreen, settings, onQu
         ))}
       </div>
 
+      {norm.review&&<><div className="sec"><span className="sec-title">My Verdict</span></div><div className="det-notes" style={{color:"var(--tx1)",fontSize:"18px"}}>{norm.review}</div></>}
       {norm.notes&&<><div className="sec"><span className="sec-title">My Notes</span></div><div className="det-notes">"{norm.notes}"</div></>}
 
       {norm.coffeeDescription&&<>
@@ -1413,7 +1417,10 @@ function EditDialIn({d, kits, onSave, nav, settings}) {
       <div className="toggle-row"><div><div className="toggle-lbl">Would Buy Again</div></div><Toggle on={f.wouldBuy} onToggle={()=>s("wouldBuy",!f.wouldBuy)}/></div>
       <div className="toggle-row"><div><div className="toggle-lbl">My Pick</div></div><Toggle on={f.isChoice} onToggle={()=>s("isChoice",!f.isChoice)}/></div>
       <div className="toggle-row"><div><div className="toggle-lbl">Early Entry</div></div><Toggle on={f.isEarlyEntry} onToggle={()=>s("isEarlyEntry",!f.isEarlyEntry)}/></div>
-      <div className="f-grp" style={{marginTop:"8px"}}><label className="f-lbl">My Notes</label><textarea className="f-ta" value={f.notes||""} onChange={e=>s("notes",e.target.value)}/></div>
+      <div className="f-grp" style={{marginTop:"8px"}}><label className="f-lbl">My Verdict</label><textarea className="f-ta" style={{minHeight:"60px"}} value={f.review||""} onChange={e=>s("review",e.target.value)}/></div>
+      <div className="f-row"><div className="f-grp"><label className="f-lbl">Producer</label><input className="f-in" value={f.producer||""} onChange={e=>s("producer",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Farm</label><input className="f-in" value={f.farm||""} onChange={e=>s("farm",e.target.value)}/></div></div>
+      <div className="f-row"><div className="f-grp"><label className="f-lbl">Variety</label><input className="f-in" value={f.variety||""} onChange={e=>s("variety",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Altitude</label><input className="f-in" value={f.altitude||""} onChange={e=>s("altitude",e.target.value)}/></div></div>
+      <div className="f-grp"><label className="f-lbl">My Notes</label><textarea className="f-ta" value={f.notes||""} onChange={e=>s("notes",e.target.value)}/></div>
       <div className="btn-area">
         <button className="btn btn-p" onClick={save} disabled={!f.coffeeName}>Save Changes</button>
         <button className="btn btn-s" onClick={()=>nav("dialin",d)}>Cancel</button>
