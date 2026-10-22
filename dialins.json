@@ -1,5 +1,5 @@
 {
-  "_appWrittenAt": 1792667779261,
+  "_appWrittenAt": 1792667782894,
   "entries": [
     {
       "roastDate": "",
@@ -344,7 +344,7 @@
       "temperature": 91,
       "rating": 2,
       "dialStatus": "dialed",
-      "beanLocation": "open",
+      "beanLocation": "empty",
       "experimenting": false,
       "wouldBuy": false,
       "isChoice": false,
