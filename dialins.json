@@ -1,6 +1,52 @@
 {
-  "_appWrittenAt": 1792666613515,
+  "_appWrittenAt": 1792666890315,
   "entries": [
+    {
+      "roastDate": "2026-01-05",
+      "frozenDate": "2026-03-15",
+      "thawDate": "",
+      "kitId": "office-pour-over",
+      "origin": "Rwanda",
+      "region": "",
+      "process": "",
+      "roastLevel": "",
+      "roaster": "Café Gape",
+      "flavorNotes": "Fig jam, peach, tea",
+      "grindSetting": "20",
+      "grinder": "Baratza Encore ESP",
+      "doseIn": 30,
+      "yieldOut": 450,
+      "timeSeconds": 0,
+      "temperature": 0,
+      "rating": 3,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "good value",
+        "boring"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "",
+      "notes": "Office V60, Encore grind 20, 30g/450ml for two people (bloom 60g, slow phases 2+3). Frozen 2026-03-15; roast date 2026-01-05.",
+      "review": "Tastes exactly as described on the bag: fig jam, peach, tea. Not boring in a bad way, but it did not wow me and I could not get it into a more interesting state. It was cheap, so no complaints, but I would not buy it again.",
+      "variety": "",
+      "producer": "",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1778241600000-cg-rw306",
+      "date": "2026-05-08",
+      "coffeeName": "Rwanda Gitesi #306",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "2026-02-06",
       "frozenDate": "2026-03-15",
