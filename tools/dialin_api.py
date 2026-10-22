@@ -137,7 +137,8 @@ def validate(e, schema):
         errs.append(f"kitId {e['kitId']!r} unknown")
     for t in e.get("tags") or []:
         if "tags" in en and t not in en["tags"]: warns.append(f"tag {t!r} not in standard list")
-    if not (0 <= (e.get("rating") or 0) <= 5): errs.append("rating must be 0–5")
+    r = e.get("rating") or 0
+    if not (0 <= r <= 5) or (r * 2) != int(r * 2): errs.append("rating must be 0–5 in 0.5 steps")
     for p in e.get("filterPours") or []:
         if set(p) != {"phase","targetGrams","startSeconds"}: errs.append(f"bad pour phase {p}")
     for d in ("date","roastDate","frozenDate","thawDate"):
@@ -152,7 +153,8 @@ def _load_objs(path):
     return obj if isinstance(obj, list) else [obj]
 
 def summary(e):
-    stars = "★"*int(e.get("rating") or 0)
+    r = e.get("rating") or 0
+    stars = "★"*int(r) + ("½" if r % 1 else "")
     bm = "/".join(e.get("brewMethods") or [])
     return f"{e['date']}  {e.get('roaster','')} — {e.get('coffeeName','')}  [{bm}] {stars}  ({e['id']})"
 
