@@ -1,6 +1,52 @@
 {
-  "_appWrittenAt": 1792667782894,
+  "_appWrittenAt": 1792668337056,
   "entries": [
+    {
+      "roastDate": "",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "",
+      "origin": "Honduras",
+      "region": "",
+      "process": "",
+      "roastLevel": "",
+      "roaster": "Right Side",
+      "flavorNotes": "Kiwi, black tea, citrus",
+      "grindSetting": "",
+      "grinder": "",
+      "doseIn": 0,
+      "yieldOut": 0,
+      "timeSeconds": 0,
+      "temperature": 0,
+      "rating": 1.5,
+      "dialStatus": "abandoned",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "flat",
+        "boring"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "Per Right Side's site: SL28 from Honduras, filter, kiwi, black tea and citrus notes.",
+      "notes": "Tasted at a café with a friend, no bag bought. Tried a few different approaches to get flavour out of it. Dial-in date approximate (April 2026).",
+      "review": "Flat and boring. No kiwi, and it did not even taste like a normal black or citrus tea. Underwhelming in every way. We tried a few approaches, then decided not to buy the bag.",
+      "variety": "SL28",
+      "producer": "",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1776254400000-rs-darwin",
+      "date": "2026-04-15",
+      "coffeeName": "SL28 Darwin Moreno",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
