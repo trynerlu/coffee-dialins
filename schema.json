@@ -1,7 +1,7 @@
 {
   "_comment": "Dial-In App — data contract. Both chats read this before writing. Edit only from the app chat.",
-  "_version": "3.2.1",
-  "_updated": "2026-10-21",
+  "_version": "3.3.0",
+  "_updated": "2026-10-22",
   "kitIds": [
     "home-espresso",
     "home-pour-over",
@@ -160,7 +160,7 @@
     "rating": {
       "type": "number",
       "required": false,
-      "note": "0–5, 0 = unrated"
+      "note": "0–5 in 0.5 steps (e.g. 3.5). 0 = unrated."
     },
     "dialStatus": {
       "type": "enum",
