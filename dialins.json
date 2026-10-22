@@ -1,5 +1,5 @@
 {
-  "_appWrittenAt": 1792668337056,
+  "_appWrittenAt": 1792669073244,
   "entries": [
     {
       "roastDate": "",
@@ -1407,15 +1407,15 @@
       "filterPours": []
     },
     {
-      "id": "d-1737500000000-do01",
-      "date": "2026-01-22",
+      "roastDate": "2026-01-21",
+      "frozenDate": "",
+      "thawDate": "",
       "kitId": "home-pour-over",
-      "coffeeName": "Costa Rica San Ramon de Altura",
-      "roaster": "DOT Coffee",
       "origin": "Costa Rica",
       "region": "Tarrazú",
       "process": "Washed",
       "roastLevel": "Light",
+      "roaster": "DOT Coffee",
       "flavorNotes": "Floral perfume, figs, honey, white tea",
       "grindSetting": "10.0",
       "grinder": "Timemore Sculptor 064S",
@@ -1423,27 +1423,20 @@
       "yieldOut": 320,
       "timeSeconds": 180,
       "temperature": 88,
-      "rating": 5,
-      "coffeeUrl": "https://www.dotcoffee.cz",
-      "coffeeDescription": "DOT Coffee — Czech specialty roastery. Costa Rica San Ramon de Altura — farm San Ramon Cafe de Altura, Tarrazú, 1400m, Caturra and Catuai. Flavor: floral perfume, figs, honey, white tea. 250g. Roasted 21.01.2026.",
-      "notes": "V60, home filter. Classic elegant Costa Rican filter — Earl Grey / white tea character, silky body, low-medium sweetness, tea-like acidity, short clean finish. Also tried Honey Mode at 94-95C for more sweetness and fig notes. Second Costa Rica that really impressed.",
+      "rating": 4.5,
       "dialStatus": "dialed",
-      "experimenting": false,
       "beanLocation": "empty",
-      "dialEase": "easy",
-      "dialStability": "stable",
-      "brewMethods": [
-        "Pour Over"
-      ],
-      "isEarlyEntry": false,
-      "roastDate": "2026-01-21",
+      "experimenting": false,
       "wouldBuy": true,
       "isChoice": true,
+      "isEarlyEntry": false,
       "tags": [
         "interesting",
         "complex",
         "funky"
       ],
+      "dialEase": "easy",
+      "dialStability": "stable",
       "filterPours": [
         {
           "phase": 1,
@@ -1466,8 +1459,20 @@
           "startSeconds": 130
         }
       ],
-      "frozenDate": "",
-      "thawDate": ""
+      "coffeeUrl": "https://www.dotcoffee.cz",
+      "coffeeDescription": "DOT Coffee — Czech specialty roastery. Costa Rica San Ramon de Altura — farm San Ramon Cafe de Altura, Tarrazú, 1400m, Caturra and Catuai. Flavor: floral perfume, figs, honey, white tea. 250g. Roasted 21.01.2026.",
+      "notes": "V60, home filter. Classic elegant Costa Rican filter — Earl Grey / white tea character, silky body, low-medium sweetness, tea-like acidity, short clean finish. Also tried Honey Mode at 94-95C for more sweetness and fig notes. Second Costa Rica that really impressed.",
+      "review": "Took a lot of shots to dial in and reach the nearly perfect ones; otherwise 4.5. For a 5 it would need to be perfect almost every time and easy to dial.",
+      "variety": "",
+      "producer": "",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1737500000000-do01",
+      "date": "2026-01-22",
+      "coffeeName": "Costa Rica San Ramon de Altura",
+      "brewMethods": [
+        "Pour Over"
+      ]
     },
     {
       "id": "d-1738000000000-mw01",
