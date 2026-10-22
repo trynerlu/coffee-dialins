@@ -89,8 +89,10 @@
 
     /* ── Stars ── */
     .stars { display:flex; gap:1px; }
-    .star-on { color:var(--accent); font-size:11px; }
-    .star-off { color:var(--tx3); font-size:11px; }
+    .star-on { color:var(--accent); }
+    .star-off { color:var(--tx3); }
+    .star-cell { position:relative; display:inline-block; line-height:1; }
+    .star-fill { position:absolute; left:0; top:0; overflow:hidden; white-space:nowrap; color:var(--accent); pointer-events:none; }
     .star-btn { background:none; border:none; cursor:pointer; font-size:22px; color:var(--tx3); transition:color .1s,transform .1s; padding:0; }
     .star-btn:hover { transform:scale(1.15); }
     .star-btn-on { color:var(--accent); }
@@ -309,7 +311,7 @@
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 // ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const APP_VERSION   = "4.1.1";
+const APP_VERSION   = "4.2.0";
 const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz", wishlist:"ca_wishlist" };
 const PROCESSES     = ["Washed","Natural","Honey","Anaerobic Natural","Anaerobic Washed","Anaerobic","Carbonic Maceration","Wet-Hulled","Experimental","Blend"];
 const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
@@ -491,14 +493,37 @@ async function ghWrite(s, file, data) {
 }
 
 // ── MICRO COMPONENTS ──────────────────────────────────────────────────────────
+// Half-star aware: n in 0.5 steps (3.5 → ★★★½☆)
+function starFill(n,i){ return n>=i?1:(n>=i-0.5?0.5:0); }
 function Stars({n,size=11}) {
-  return <div className="stars">{[1,2,3,4,5].map(i=><span key={i} style={{fontSize:`${size}px`}} className={i<=n?"star-on":"star-off"}>★</span>)}</div>;
+  const v=+n||0;
+  return <div className="stars" title={v?`${v} / 5`:""}>{[1,2,3,4,5].map(i=>{
+    const f=starFill(v,i);
+    return <span key={i} className="star-cell" style={{fontSize:`${size}px`}}>
+      <span className="star-off">★</span>
+      {f>0&&<span className="star-fill" style={{width:f===1?"100%":"50%"}}>★</span>}
+    </span>;
+  })}</div>;
 }
 function Toggle({on,onToggle}) {
   return <button className={`toggle-btn ${on?"toggle-on":"toggle-off"}`} onClick={onToggle}/>;
 }
+// Tap left half of a star = x.5, right half = whole star, tap current value again = clear
 function StarInput({val,set}) {
-  return <div className="star-in">{[1,2,3,4,5].map(i=><button key={i} type="button" className={`star-btn${i<=val?" star-btn-on":""}`} onClick={()=>set(i===val?0:i)}>★</button>)}</div>;
+  const v=+val||0;
+  const pick=(e,i)=>{ const r=e.currentTarget.getBoundingClientRect(); const nv=(e.clientX-r.left)<r.width/2?i-0.5:i; set(nv===v?0:nv); };
+  return (
+    <div className="star-in" style={{display:"flex",alignItems:"center",gap:"2px"}}>
+      {[1,2,3,4,5].map(i=>{
+        const f=starFill(v,i);
+        return <button key={i} type="button" className="star-btn star-cell" onClick={e=>pick(e,i)} aria-label={`${i-0.5} or ${i} stars`}>
+          <span className="star-off">★</span>
+          {f>0&&<span className="star-fill" style={{width:f===1?"100%":"50%"}}>★</span>}
+        </button>;
+      })}
+      <span style={{fontFamily:"'DM Mono',monospace",fontSize:"13px",color:v?"var(--accent)":"var(--tx3)",marginLeft:"10px",minWidth:"28px"}}>{v?v.toFixed(1):"—"}</span>
+    </div>
+  );
 }
 
 function BrewDot({brewMethods,size=8}) {
