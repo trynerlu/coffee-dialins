@@ -1,6 +1,51 @@
 {
-  "_appWrittenAt": 1793079825707,
+  "_appWrittenAt": 1793080206420,
   "entries": [
+    {
+      "roastDate": "2026-08-27",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Ethiopia",
+      "region": "Sidamo",
+      "process": "Washed",
+      "roastLevel": "",
+      "roaster": "Kafe Jak Lusk",
+      "flavorNotes": "Green tea, mandarins",
+      "grindSetting": "",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 320,
+      "timeSeconds": 0,
+      "temperature": 95,
+      "rating": 2.5,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "boring"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label: Ethiopia Sidamo, Heirloom, washed, 1600-2100 m, roasted 27-08-2026, notes green tea and mandarins (zeleny caj, mandarinky). 100% Arabica, 250 g. Roaster: Kafe Jak Lusk, Olomouc. Bought as both a filter bag and an espresso bag (same coffee, same roast date).",
+      "notes": "Home V60, 20 g, 60 g bloom, a second 60 g pour, then the rest up to 320 g; 95C, tried other temperatures. The espresso bag was never used properly: too little left and it was older. Could deserve a proper espresso test someday. Dial-in date is approximate (roast date).",
+      "review": "Mid. Muddy and mixed up. I could not get any clarity or interesting notes, or push it toward more tea-like, more distinct flavours. Boring, nothing pushing. It tasted the same from the espresso bag and the filter bag.",
+      "variety": "Heirloom",
+      "producer": "",
+      "farm": "",
+      "altitude": "1600-2100 m",
+      "id": "d-1787832000000-kjl-sidamo",
+      "date": "2026-08-27",
+      "coffeeName": "Ethiopia Sidamo",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "2026-09-15",
       "frozenDate": "",
