@@ -1,6 +1,52 @@
 {
-  "_appWrittenAt": 1793080902097,
+  "_appWrittenAt": 1793689713183,
   "entries": [
+    {
+      "roastDate": "2026-09-15",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Ethiopia",
+      "region": "Guji",
+      "process": "Washed",
+      "roastLevel": "",
+      "roaster": "Friedhats",
+      "flavorNotes": "Jasmine, white peach, bergamot",
+      "grindSetting": "",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 330,
+      "timeSeconds": 0,
+      "temperature": 98,
+      "rating": 3,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "interesting",
+        "crowd-pleaser"
+      ],
+      "dialEase": "",
+      "dialStability": "unstable",
+      "filterPours": [],
+      "coffeeUrl": "https://friedhats.com/products/ethiopia-bisrat-melaku-washed",
+      "coffeeDescription": "Product page (Friedhats): Wolisho variety, washed, producer Bisrat Melaku, Uraga Bisrat washing station, Guji, 2150-2350 masl, notes jasmine, white peach and bergamot. Importer Trabocca. Bought as the filter roast.",
+      "notes": "Home V60, mostly 20 g in and 330 g out at 97-99C, which gave the brightest cup. Bought together with the Kamuchege and dialed in the same period (about 20-24 October 2026), finished around 24 October. Roast date assumed to be the same as the Kamuchege (15 September 2026). Dial-in date is approximate.",
+      "review": "Better than the Kenya, but quite unstable: small changes to the grind, temperature or ratio changed the flavour a lot, from a very good cup to a muddy, uninteresting one. At 97-99C it was bright and interesting, with jasmine tea and a little white peach in the background; pushing the white peach forward never worked. Crowd-pleasing. A few cups were 3.5, mostly 2.5 to 3. Above average, but I would not buy it.",
+      "variety": "Wolisho",
+      "producer": "Bisrat Melaku (Uraga Bisrat washing station)",
+      "farm": "",
+      "altitude": "2150-2350 masl",
+      "id": "d-1792670400000-fh-bisrat",
+      "date": "2026-10-22",
+      "coffeeName": "Ethiopia Bisrat Melaku Washed",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
