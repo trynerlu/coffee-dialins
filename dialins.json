@@ -1,6 +1,51 @@
 {
-  "_appWrittenAt": 1793774906255,
+  "_appWrittenAt": 1793779337437,
   "entries": [
+    {
+      "roastDate": "",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "office-espresso",
+      "origin": "Rwanda",
+      "region": "Macuba / Nyamasheke",
+      "process": "Natural",
+      "roastLevel": "",
+      "roaster": "Pepe Coffee",
+      "flavorNotes": "Blueberry jam, mango, flowers, chocolate",
+      "grindSetting": "",
+      "grinder": "Eureka Zenith 65E",
+      "doseIn": 0,
+      "yieldOut": 0,
+      "timeSeconds": 0,
+      "temperature": 0,
+      "rating": 1,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "flat"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label: Rwanda Muharo, 100% Arabica, natural, Red Bourbon, Macuba / Nyamasheke, 1450-1750 m; notes blueberry jam, mango, flowers, chocolate (boruvkovy dzem, mango, kvetiny, cokolada). 1 kg whole bean. Pepe Coffee, Hradec Kralove. Roast date field blank on the label.",
+      "notes": "Office espresso setup. No recipe recorded. The bag was finished around June 2026, possibly partly used for a new grinder test or calibration for colleagues. Dial-in date is approximate (June 2026).",
+      "review": "Dreadful. We expected something like the Be Berry Uganda, but there were no flavours and it felt burned. No setup brought out what was in the coffee. Not undrinkable, but not far from it. Nothing positive to add.",
+      "variety": "Red Bourbon",
+      "producer": "",
+      "farm": "",
+      "altitude": "1450-1750 m",
+      "id": "d-1781524800000-pepe-muharo",
+      "date": "2026-06-15",
+      "coffeeName": "Rwanda Muharo",
+      "brewMethods": [
+        "Espresso"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
