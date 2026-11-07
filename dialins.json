@@ -1,6 +1,64 @@
 {
-  "_appWrittenAt": 1793780414620,
+  "_appWrittenAt": 1794059151205,
   "entries": [
+    {
+      "roastDate": "2026-08-01",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Ethiopia",
+      "region": "Goro / Guji",
+      "process": "Washed",
+      "roastLevel": "",
+      "roaster": "OTO Coffee",
+      "flavorNotes": "Sweet citrus, currant, floral and spice",
+      "grindSetting": "22 (pin moved +6)",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 320,
+      "timeSeconds": 143,
+      "temperature": 97,
+      "rating": 4,
+      "dialStatus": "dialing",
+      "beanLocation": "open",
+      "experimenting": false,
+      "wouldBuy": true,
+      "isChoice": true,
+      "isEarlyEntry": false,
+      "tags": [
+        "complex",
+        "interesting",
+        "funky"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [
+        {
+          "phase": 1,
+          "targetGrams": 60,
+          "startSeconds": 0
+        },
+        {
+          "phase": 2,
+          "targetGrams": 320,
+          "startSeconds": 45
+        }
+      ],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label: OTO Etiopia, Goro / Guji, producer Tagel Alamayehu, Ethiopian Heirloom, washed; notes sweet citrus, currant, floral and spice (slodkie cytrusy, porzeczka, nuty kwiatowe i korzenne). 250 g, roasted 01.08.2026, best within 6 months. OTO Coffee, Poland (otocoffee.pl). Bought in Wroclaw.",
+      "notes": "Brew #1, 2026-11-07: V60 (plastic), one-and-done, Sculptor at 22 (pin moved +6), Timemore Fish kettle at 97C, fridge-filtered water; 20 g to 320 g (1:16); 60 g bloom for 45 s, then a single pour from 0:45 to 1:45; drawdown about 2:15-2:30. Aroma spicy and floral. Frozen since purchase (dates not recorded). Next tests: 1:17 (340 g) for more separation, a lighter body and less lingering clove; if the clove still clings with a bitter edge, grind 1 click coarser; later try 1:15 to see whether the separation holds. Update planned after more tests.",
+      "review": "Hot, it is sweet, tropical-leaning citrus up front, then fairly heavy florals, then a strong clove finish, with clear notes in sequence. All the roaster notes were present except currant. Slightly heavy body, and the clove aftertaste lingers with a sharp, slightly bitter edge. Cooled, jasmine and tea come forward, and it is less separated but still very good. Best served hot. Funky in the multiple-flavours way. Great so far.",
+      "variety": "Ethiopian Heirloom",
+      "producer": "Tagel Alamayehu",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1794052800000-oto-etiopia",
+      "date": "2026-11-07",
+      "coffeeName": "OTO Etiopia",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
