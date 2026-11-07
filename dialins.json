@@ -1,6 +1,51 @@
 {
-  "_appWrittenAt": 1794060118927,
+  "_appWrittenAt": 1794060450651,
   "entries": [
+    {
+      "roastDate": "",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Costa Rica",
+      "region": "Tarrazú",
+      "process": "Honey",
+      "roastLevel": "Light",
+      "roaster": "Francin Roasters",
+      "flavorNotes": "Jasmine, oranges in chocolate, blueberries",
+      "grindSetting": "",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 320,
+      "timeSeconds": 0,
+      "temperature": 0,
+      "rating": 2.5,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "complex"
+      ],
+      "dialEase": "",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label (CZ): Mozart, Kostarika Tarazzu, Raisin honey; light roast sticker; notes jasmin, pomerance v cokolade, boruvky (jasmine, oranges in chocolate, blueberries). Scales on the bag: acidity 4/5, intensity 5/5, body 4/5. Francin Roasters, Francinova Specialka. No roast date visible.",
+      "notes": "Brewed at both the home and the office V60, same approach as the Rocket Flower: 20 g in, 320 g out, probably around 93C or lower; grind and pours not remembered. Likely under-extracted by today's standards (97-99C works better lately); worth a retest if it returns. Dial-in date is approximate (June 2026), dialed at the same time as the Yummy Rummy and Rocket Flower.",
+      "review": "Mediocre and not to my liking, not impressive. A distinct orange and sweet citrus, and a bit of the profile on the bag, but not really it, and far from the cup I had today. Not bad, and quite complex, but not funky enough for that tag. I probably did not dial it right: I used to keep light coffees around 93C or lower, and 97 to 99C works better lately, so it might deserve a retest. I would probably not buy it.",
+      "variety": "",
+      "producer": "",
+      "farm": "",
+      "altitude": "",
+      "id": "d-1781524800000-francin-mozart",
+      "date": "2026-06-15",
+      "coffeeName": "Mozart (Francinova Speciálka)",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
