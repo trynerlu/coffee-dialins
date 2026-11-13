@@ -1,6 +1,51 @@
 {
-  "_appWrittenAt": 1794577431274,
+  "_appWrittenAt": 1794602202442,
   "entries": [
+    {
+      "roastDate": "",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "office-espresso",
+      "origin": "Ethiopia",
+      "region": "Kaffa",
+      "process": "Natural",
+      "roastLevel": "",
+      "roaster": "Be Berry",
+      "flavorNotes": "Apricot jam, milk chocolate, strawberries",
+      "grindSetting": "",
+      "grinder": "Eureka Zenith 65E",
+      "doseIn": 0,
+      "yieldOut": 0,
+      "timeSeconds": 0,
+      "temperature": 0,
+      "rating": 3.5,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": false,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "interesting"
+      ],
+      "dialEase": "hard",
+      "dialStability": "",
+      "filterPours": [],
+      "coffeeUrl": "https://www.beberrycoffee.cz/product/ethiopia-ephrem-mulugeta/",
+      "coffeeDescription": "Be Berry product page: Ethiopia Ephrem Mulugeta, espresso; Gundira Shela farm (Gushe Buna), Kaffa, 1850 m; varieties 74110 and 74112; natural, 21 days drying on African beds; score 86; notes apricot jam, milk chocolate, strawberries; 349 CZK for 250 g. Roast date and roast level not listed.",
+      "notes": "Office espresso, dialed several times with the first bag, which was used for a colleague's wedding and finished by the beginning of October 2026. A new bag arrived around the beginning of November 2026. Recipe not recorded. Dial-in date is approximate (beginning of October 2026).",
+      "review": "Similar sweet-and-sour Be Berry style, but more on the sour side and less complex than the Uganda. The Uganda is the only espresso that was clean, complex, stable and easy to dial. This one is much tougher to dial: something always stops it from fully opening up, and it feels mixed with unwanted notes from a not-quite-right extraction. You can be 90% right on extraction and only 50% there on flavour, while the Uganda gave about 80% of the flavour even with a very bad extraction. Less crowd-friendly, with a purer sour side. Interesting as an espresso, but far from the better ones. I would not buy it myself.",
+      "variety": "74110, 74112",
+      "producer": "Ephrem Mulugeta (Gundira Shela farm)",
+      "farm": "",
+      "altitude": "1850 m",
+      "id": "d-1791201600000-bb-ephrem",
+      "date": "2026-10-05",
+      "coffeeName": "Ethiopia Ephrem Mulugeta",
+      "brewMethods": [
+        "Espresso"
+      ]
+    },
     {
       "roastDate": "2026-06-01",
       "frozenDate": "",
