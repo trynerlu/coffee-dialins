@@ -1,5 +1,5 @@
 {
-  "_appWrittenAt": 1794063051120,
+  "_appWrittenAt": 1794577431274,
   "entries": [
     {
       "roastDate": "2026-06-01",
@@ -339,9 +339,9 @@
       "yieldOut": 320,
       "timeSeconds": 143,
       "temperature": 97,
-      "rating": 4,
-      "dialStatus": "dialing",
-      "beanLocation": "open",
+      "rating": 3.5,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
       "experimenting": false,
       "wouldBuy": true,
       "isChoice": true,
@@ -349,10 +349,11 @@
       "tags": [
         "complex",
         "interesting",
-        "funky"
+        "funky",
+        "not well responding"
       ],
       "dialEase": "",
-      "dialStability": "",
+      "dialStability": "unstable",
       "filterPours": [
         {
           "phase": 1,
@@ -367,8 +368,8 @@
       ],
       "coffeeUrl": "",
       "coffeeDescription": "Label: OTO Etiopia, Goro / Guji, producer Tagel Alamayehu, Ethiopian Heirloom, washed; notes sweet citrus, currant, floral and spice (slodkie cytrusy, porzeczka, nuty kwiatowe i korzenne). 250 g, roasted 01.08.2026, best within 6 months. OTO Coffee, Poland (otocoffee.pl). Bought in Wroclaw.",
-      "notes": "Brew #1, 2026-11-07: V60 (plastic), one-and-done, Sculptor at 22 (pin moved +6), Timemore Fish kettle at 97C, fridge-filtered water; 20 g to 320 g (1:16); 60 g bloom for 45 s, then a single pour from 0:45 to 1:45; drawdown about 2:15-2:30. Aroma spicy and floral. Frozen since purchase (dates not recorded). Next tests: 1:17 (340 g) for more separation, a lighter body and less lingering clove; if the clove still clings with a bitter edge, grind 1 click coarser; later try 1:15 to see whether the separation holds. Update planned after more tests.",
-      "review": "Hot, it is sweet, tropical-leaning citrus up front, then fairly heavy florals, then a strong clove finish, with clear notes in sequence. All the roaster notes were present except currant. Slightly heavy body, and the clove aftertaste lingers with a sharp, slightly bitter edge. Cooled, jasmine and tea come forward, and it is less separated but still very good. Best served hot. Funky in the multiple-flavours way. Great so far.",
+      "notes": "Brew #1, 2026-11-07: V60 (plastic), one-and-done, Sculptor at 22 (pin moved +6), Timemore Fish kettle at 97C, fridge-filtered water; 20 g to 320 g (1:16); 60 g bloom for 45 s, then a single pour from 0:45 to 1:45; drawdown about 2:15-2:30. Aroma spicy and floral. Frozen since purchase (dates not recorded). Next tests: 1:17 (340 g) for more separation, a lighter body and less lingering clove; if the clove still clings with a bitter edge, grind 1 click coarser; later try 1:15 to see whether the separation holds. FINAL: 1:16 (20 g in, 320 g out) was the best ratio and the first dial-in the best cup. Further tests with a lower temperature or a changed ratio were worse. Rating lowered from 4 to 3.5 for the narrow good-taste window, the same logic as the half-step cuts on DOT and Coffeein. Bag finished.",
+      "review": "Hot, it is sweet, tropical-leaning citrus up front, then fairly heavy florals, then a strong clove finish, with clear notes in sequence. All the roaster notes were present except currant. Slightly heavy body, and the clove aftertaste lingers with a sharp, slightly bitter edge. Cooled, jasmine and tea come forward, and it is less separated but still very good. Best served hot. Funky in the multiple-flavours way. Very narrow good-taste window: the first dial-in was best, but lowering the temperature or changing the ratio slightly makes it collapse, hollow, harsh and uneven, much more than just shifting the flavour percentages. 1:16 was the best ratio. Still would buy it.",
       "variety": "Ethiopian Heirloom",
       "producer": "Tagel Alamayehu",
       "farm": "",
