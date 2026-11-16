@@ -1,6 +1,63 @@
 {
-  "_appWrittenAt": 1794829917676,
+  "_appWrittenAt": 1794833145829,
   "entries": [
+    {
+      "roastDate": "",
+      "frozenDate": "",
+      "thawDate": "",
+      "kitId": "home-pour-over",
+      "origin": "Colombia",
+      "region": "Pitalito, Huila",
+      "process": "Experimental",
+      "roastLevel": "",
+      "roaster": "Finca Lab",
+      "flavorNotes": "Raspberry, chocolate, blueberry, citrus",
+      "grindSetting": "20",
+      "grinder": "Timemore Sculptor 064S",
+      "doseIn": 20,
+      "yieldOut": 320,
+      "timeSeconds": 130,
+      "temperature": 93,
+      "rating": 3.5,
+      "dialStatus": "dialed",
+      "beanLocation": "empty",
+      "experimenting": false,
+      "wouldBuy": true,
+      "isChoice": false,
+      "isEarlyEntry": false,
+      "tags": [
+        "complex",
+        "crowd-pleaser"
+      ],
+      "dialEase": "easy",
+      "dialStability": "stable",
+      "filterPours": [
+        {
+          "phase": 1,
+          "targetGrams": 60,
+          "startSeconds": 0
+        },
+        {
+          "phase": 2,
+          "targetGrams": 320,
+          "startSeconds": 45
+        }
+      ],
+      "coffeeUrl": "",
+      "coffeeDescription": "Label: Finca Lab (finca.shop), Funky Gem collection 26, roasted by Altura Co Roasters, Paris. Farm Perla Negra, Pitalito, Huila, Colombia, 1780 m; grower José David Alfonso, processed by Sigilo. Gesha. Natural Thermal Shock: yeast fermentation, hot-water treatment, dried on African beds, then dehumidified. Roaster notes raspberry, chocolate, blueberry, citrus; score 88. About 150 g. Note: other roasters list Sigilo's Perla Negra lot as Pink Bourbon; the label says Gesha.",
+      "notes": "Bought at Coffee Festival Prague, mid-October 2026; roasted about 15–20 Oct (exact date not on record), brewed at about 4 weeks. Home V60, one-and-done, Sculptor 064S, 20 g dose; 60 g bloom for 45 s, then one pour to the target. Brews: (1) Sculptor 22, 320 g, 93 C: great, complex, baseline. (2) 22, 340 g, 93 C: complex, more mixed up, very pleasant; drawdown about 2:00. (3) 20, 320 g, 93 C: fullest version, full-mouth complex fruit (raspberry, blueberry, lemon in the background), slight chocolate/bitter finish that builds up sip by sip; most wow; drawdown about 2:10–2:15. (4) 20, 320 g, 91 C: medium body, same flavours toned down; tart forest raspberry / red currant and light citrus move from the body into the finish; bitter/chocolate finish gone, stays fresh sip after sip; clean and very drinkable but safe, less wow. TWO RECIPES: wow / cozy cup = 20 / 320 g / 93 C (intense and complex, for one slow cup); daily / drinkable = 20 / 320 g / 91 C (clean, no buildup, for repeated cups). Bag finished.",
+      "review": "Integrated, mixed fruit rather than separated notes; very forgiving and stable, delivers nearly its full potential with a basic recipe but can't be pushed into an analytical, separated cup. Outstanding green quality, an extremely good crowd-pleaser and a good cold-weather coffee. 3.5 for my taste: top-tier quality, but not my analytical, floral/citrus, funky style; I'd buy it again as a reliable coffee to serve others.",
+      "variety": "Gesha",
+      "producer": "José David Alfonso",
+      "farm": "Perla Negra",
+      "altitude": "1780 m",
+      "id": "d-1794744000000-fincalab-perla-negra",
+      "date": "2026-11-15",
+      "coffeeName": "Funky Gem 26 – Perla Negra Gesha",
+      "brewMethods": [
+        "Pour Over"
+      ]
+    },
     {
       "roastDate": "",
       "frozenDate": "",
