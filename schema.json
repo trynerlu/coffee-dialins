@@ -1,7 +1,7 @@
 {
   "_comment": "Dial-In App — data contract. Both chats read this before writing. Edit only from the app chat.",
-  "_version": "3.3.0",
-  "_updated": "2026-10-22",
+  "_version": "3.3.1",
+  "_updated": "2026-11-16",
   "kitIds": [
     "home-espresso",
     "home-pour-over",
@@ -271,7 +271,7 @@
     "status"
   ],
   "write_rules": [
-    "Write only via tools/dialin_api.py (GitHub API + sha guard). Never PUT dialins.json from a copy you read earlier.",
+    "Write only via tools/dialin_api.py (git commit + push to main, re-applied and retried if main moved). Never commit dialins.json from a copy you read earlier.",
     "dialins.json is stored as {_appWrittenAt, entries}; the script handles this.",
     "Draft the entry in chat first and wait for Lukáš to confirm before writing.",
     "Bag photos are input only: read every detail on the label, then find the product page online to fill gaps. Never upload or store the photo.",
@@ -297,7 +297,5 @@
       "dialinId": "",
       "addedDate": "YYYY-MM-DD"
     }
-  },
-  "push_link_format_fallback": "https://trynerlu.github.io/coffee-dialins/push.html?type=dialin&d=BASE64",
-  "base64_python": "base64.urlsafe_b64encode(json.dumps(obj).encode()).decode().rstrip('=')"
+  }
 }

@@ -7,18 +7,18 @@ This repo is Lukáš's personal coffee dial-in app. `dialins.json` is the logboo
 2. **Read and look up.** Read the label (see Photos). Then search for the coffee on the **roaster's own** product page to fill gaps and set `coffeeUrl`.
 3. **Draft card.** Show the entry as a short table, plus only the questions that are still open. Discuss flavour, palate or recipe if he wants.
 4. **Dry run.** After he confirms, write the entries to a JSON file in the scratchpad (one object or a list) and run:
-   `GITHUB_TOKEN=$(gh auth token) python3 tools/dialin_api.py add <file> --dry-run`
+   `python3 tools/dialin_api.py add <file> --dry-run`
 5. **Write.** The same command without `--dry-run`. For a change to an existing entry use `update <id> <patch.json>`.
-6. **Verify.** Run `GITHUB_TOKEN=$(gh auth token) python3 tools/dialin_api.py check` (prints the entry count and validates everything). Report the new count. Then `git pull` so the local copy is current.
+6. **Verify.** Run `python3 tools/dialin_api.py check` (prints the entry count and validates everything). Report the new count.
 7. The app picks up the change on its next sync. Nothing else to do.
 
 ## Hard rules
 1. Never edit `dialins.json` by hand. Write only with `tools/dialin_api.py add|update|wishlist`, and always dry-run first.
 2. Always show a **draft card** and wait for confirmation before writing.
 3. Re-read the current `schema.json` and `tools/dialin_api.py` before every write. Do not rely on memory of them.
-4. **No token setup is needed.** The GitHub CLI (`gh`) is logged in; pass its token inline as `GITHUB_TOKEN=$(gh auth token)`. Never print, echo, paste or commit a token. If `gh auth status` fails, ask Lukáš to run `! gh auth login`. Don't ask him for a token.
-5. **Logbook writes go straight to `main`.** `dialin_api.py` commits on GitHub by itself (`Add N entries via dialin_api` / `Update <id> via dialin_api`), so there is no local commit, branch or PR for entries.
-6. **Everything else needs discussion first, and it's Lukáš's call:** app code (`index.html`, `push.html`, `chat.html`), `schema.json`, `kits.json`, `tools/`, README, this file. Propose the change, wait for his OK, then use a branch plus a pull request. He merges it.
+4. **The script writes with plain git** (commit + push to `main`) using the access this session already has. There is nothing to set up. If a push fails, show Lukáš the error.
+5. **Logbook writes go straight to `main`.** `dialin_api.py` builds and pushes the commit itself (`Add N entries via dialin_api` / `Update <id> via dialin_api`), from any branch, without touching the working tree. No branch or PR for entries. It reads from `origin/main`, so a stale local copy doesn't matter.
+6. **Everything else needs discussion first, and it's Lukáš's call:** app code (`index.html`), `schema.json`, `kits.json`, `tools/`, README, this file. Propose the change, wait for his OK, then use a branch plus a pull request. He merges it.
 7. Do not add to the wishlist unless asked. It is intentionally empty.
 
 ## Entry conventions
