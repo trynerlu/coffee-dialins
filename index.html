@@ -18,6 +18,7 @@
 :root{
   --bg:#F0F1EC; --surface:#FFFFFF; --sunk:#E5E7E0; --ink:#17191A; --muted:#5F665C; --line:#D7DAD0;
   --pick:#4338CA; --pick-ink:#FFFFFF;
+  --m-pour:#0891B2; --m-esp:#C026D3; --m-ink:#FFFFFF;
   --sc-sat:72%; --sc-bg:87%; --sc-fg:25%; --sc-none:#DADDD4;
   /* palate card colours (same in both themes; each card sets its own text colour) */
   --w-lime:#D3F04A; --w-violet:#5537D6; --w-coral:#FF6A55; --w-yellow:#FFD34D; --w-sky:#5CC4F2;
@@ -29,10 +30,12 @@
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0F1110; --surface:#191C1A; --sunk:#232724; --ink:#ECEEE8; --muted:#9CA396; --line:#2D322D;
-  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D; color-scheme:dark }}
+  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D;
+  --m-pour:#22D3EE; --m-esp:#E879F9; --m-ink:#111214; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#0F1110; --surface:#191C1A; --sunk:#232724; --ink:#ECEEE8; --muted:#9CA396; --line:#2D322D;
-  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D; color-scheme:dark }
+  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D;
+  --m-pour:#22D3EE; --m-esp:#E879F9; --m-ink:#111214; color-scheme:dark }
 
 *{box-sizing:border-box}
 body{margin:0}
@@ -64,11 +67,12 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .selwrap{position:relative;flex:none}
 .selwrap select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:40px;padding:0 34px 0 15px;font-size:14px;font-weight:500;color:var(--ink)}
 .selwrap::after{content:"";position:absolute;right:15px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
-.quick{display:flex;gap:6px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.quick{display:flex;gap:4px;margin-top:10px;padding:4px;background:var(--sunk);border-radius:14px;overflow-x:auto;scrollbar-width:none}
 .quick::-webkit-scrollbar{display:none}
-.quick .chip{flex:1 1 auto;justify-content:center;padding:0 10px;gap:5px}
-.ico{display:inline-block;vertical-align:-2px;flex:none}
-.meta .ico{margin-right:3px;opacity:.85}
+.seg{flex:1 1 auto;border:0;background:transparent;border-radius:10px;min-height:40px;padding:0 8px;font-size:14px;font-weight:500;white-space:nowrap;color:var(--ink)}
+.seg[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg.m{box-shadow:inset 0 0 0 1.5px var(--mc)}
+.seg.m[aria-pressed="true"]{background:var(--mc);color:var(--m-ink);box-shadow:none}
 .chip.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 
 /* picks shelf */
@@ -77,7 +81,9 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .shelf h2 span{font:400 14px var(--f-body);color:var(--muted)}
 .rail{display:grid;grid-auto-flow:column;grid-auto-columns:76%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
 .rail::-webkit-scrollbar{display:none}
-.pick{scroll-snap-align:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;min-height:176px}
+.mline{align-self:stretch;width:4px;border-radius:2px;background:var(--ml)}
+.pick{position:relative;overflow:hidden;padding-left:20px !important;scroll-snap-align:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;min-height:176px}
+.pick::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ml)}
 .pick .rt{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .pick .ro{font-size:13px;font-weight:600;color:var(--pick)}
 .pick h3{font-size:21px;line-height:1.15;margin-top:2px}
@@ -89,7 +95,7 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .group > h2{font-size:15px;font-family:var(--f-body);font-weight:600;display:flex;justify-content:space-between;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .group > h2 span{color:var(--muted);font-weight:400;white-space:nowrap}
 .list{list-style:none;margin:0;padding:0}
-.row{display:grid;grid-template-columns:minmax(0,1fr) 46px 50px;gap:10px;align-items:center;width:100%;min-height:68px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0}
+.row{display:grid;grid-template-columns:4px minmax(0,1fr) 46px 50px;gap:10px;align-items:center;width:100%;min-height:68px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0}
 .row:active{background:var(--sunk)}
 .name{font:600 17px/1.25 var(--f-display);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .meta{font-size:14px;color:var(--muted);display:block;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -137,6 +143,8 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .badge{font-size:14px;font-weight:500;padding:6px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
 .badge.p{background:var(--pick);color:var(--pick-ink);border-color:var(--pick)}
 .badge.b{border:1.5px solid var(--pick);color:var(--pick)}
+.badge.m{background:var(--mc);color:var(--m-ink);border-color:var(--mc);font-weight:600}
+details.m{border-left:5px solid var(--mc)}
 .verdict{margin-top:22px;font:400 20px/1.5 var(--f-display);letter-spacing:-.005em}
 .lab{display:block;font:600 12px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .section{margin-top:28px}
@@ -185,11 +193,11 @@ summary .score{height:30px;min-width:40px;font-size:14px;border-radius:8px}
 .vs em{font-style:normal;font:700 15px var(--f-body);opacity:.7;padding-bottom:22px}
 .vs .lo b{opacity:.45}
 .podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;margin-top:18px}
-.podium .pl{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+.podium .step{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;border-radius:16px 16px 6px 6px;padding:12px 6px 10px;background:color-mix(in srgb,var(--tint) 42%,#FFFFFF);color:#141414}
 .podium svg{display:block;margin-bottom:6px}
 .podium b{font:800 26px/1 var(--f-display)}
-.podium .nm{font-size:14px;font-weight:600;line-height:1.2;margin:4px 0 8px;overflow-wrap:anywhere}
-.podium .step{align-self:stretch;border-radius:12px 12px 4px 4px;background:rgb(255 255 255 / .3);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:12.5px;font-weight:500}
+.podium .nm{font-size:14px;font-weight:600;line-height:1.2;margin-top:4px;overflow-wrap:anywhere}
+.podium small{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:500;opacity:.8}
 .tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
 .tile{all:unset;box-sizing:border-box;cursor:pointer;border-radius:16px;padding:14px;background:rgb(255 255 255 / .16);display:flex;flex-direction:column;gap:4px;min-width:0}
 .tile:focus-visible{outline:2px solid currentColor}
@@ -296,7 +304,7 @@ const S = { coffees:[], q:"", quick:"all", sort:"rating", group:"none",
 try{ const v=JSON.parse(localStorage.getItem("dialin.view")||"{}"); if(v.sort) S.sort=v.sort; if(v.group) S.group=v.group; }catch(e){}
 const saveView=()=>{ try{ localStorage.setItem("dialin.view",JSON.stringify({sort:S.sort,group:S.group})); }catch(e){} };
 
-const QUICK=[["all","All"],["picks","Pick"],["buy","Buy"],["filter","Pour over"],["espresso","Espresso"]];
+const QUICK=[["all","All"],["picks","My pick"],["buy","Buy"],["filter","Pour over"],["espresso","Espresso"]];
 const FACETS=[["origin","Origin",c=>origins(c.origin).length?origins(c.origin):(c.origin==="Blend"?["Blend"]:[])],["process","Process",c=>c.process?[c.process]:[]],
   ["roast","Roast",c=>c.roastLevel?[c.roastLevel]:[]],["roaster","Roaster",c=>[c.roaster]],["tag","Tags",c=>c.tags]];
 
@@ -322,17 +330,16 @@ const ICON={
   share:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>',
   book:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 19a2 2 0 0 0 2 2h13"/></svg>',
   palate:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>',
-  pour:'<svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 10h-4z"/><path d="M12 15v3M7 20h10"/></svg>',
-  espresso:'<svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17M3 21h16"/></svg>',
   filter:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
 };
 
 const whereOf=c=>[...new Set([c.origin,c.process].filter(Boolean))].join(" · ");
-const methodIcons=c=>(c.methods.includes("Pour Over")?ICON.pour:"")+(c.methods.includes("Espresso")?ICON.espresso:"");
+const mline=c=>{ const p=c.methods.includes("Pour Over"), e=c.methods.includes("Espresso");
+  return p&&e?"linear-gradient(var(--m-pour) 50%,var(--m-esp) 50%)":p?"var(--m-pour)":e?"var(--m-esp)":"var(--line)"; };
 function rowHTML(c){
   const where=whereOf(c);
-  return `<li><button class="row" data-open="${c.key}">
-    <span style="min-width:0"><span class="name">${esc(c.name)}</span><span class="meta" aria-label="${esc(c.methods.join(" and "))}. ${esc(c.roaster)}${where?", "+esc(where):""}">${methodIcons(c)}${esc(c.roaster)}${where?" · "+esc(where):""}</span></span>
+  return `<li><button class="row" data-open="${c.key}" style="--ml:${mline(c)}">
+    <span class="mline" aria-hidden="true"></span><span style="min-width:0"><span class="name">${esc(c.name)}</span><span class="meta" aria-label="${esc(c.methods.join(" and "))}. ${esc(c.roaster)}${where?", "+esc(where):""}">${esc(c.roaster)}${where?" · "+esc(where):""}</span></span>
     <span class="flagcol" aria-label="${[c.isChoice&&"My pick",c.wouldBuy&&"Would buy again"].filter(Boolean).join(", ")}">${c.isChoice?'<span class="flag p">Pick</span>':"<span></span>"}${c.wouldBuy?'<span class="flag b">Buy</span>':"<span></span>"}</span>
     ${scoreEl(c.rating)}</button></li>`;
 }
@@ -356,7 +363,7 @@ function libraryHTML(){
   <header class="top"><div class="wrap">
     <div class="titlerow"><h1>Library</h1><span class="count" id="libcount">${list.length} of ${S.coffees.length} coffees</span></div>
     <label class="search">${ICON.search}<input id="q" type="search" placeholder="Coffee, roaster, origin, notes" value="${esc(S.q)}" autocomplete="off" aria-label="Search"></label>
-    <div class="quick" role="group" aria-label="Quick filters">${QUICK.map(([k,l])=>`<button class="chip" aria-pressed="${S.quick===k}" data-quick="${k}">${k==="filter"?ICON.pour:k==="espresso"?ICON.espresso:""}${l}</button>`).join("")}</div>
+    <div class="quick" role="group" aria-label="Quick filters">${QUICK.map(([k,l])=>`<button class="seg${k==="filter"||k==="espresso"?" m":""}" ${k==="filter"?'style="--mc:var(--m-pour)"':k==="espresso"?'style="--mc:var(--m-esp)"':""} aria-pressed="${S.quick===k}" data-quick="${k}">${l}</button>`).join("")}</div>
     <div class="chips">
       <button class="chip${fc?" on":""}" data-act="sheet">${ICON.filter} Filter${fc?` · ${fc}`:""}</button>
       <span class="selwrap"><select id="sort" aria-label="Sort"><option value="rating">Best rated</option><option value="low">Lowest rated</option><option value="date">Newest</option><option value="roaster">Roaster A–Z</option></select></span>
@@ -366,7 +373,7 @@ function libraryHTML(){
   </div></header>
   <main class="wrap" id="libmain">
     ${showShelf&&picks.length?`<section class="shelf"><h2>My picks <span>${picks.length} to show a friend</span></h2>
-      <div class="rail">${picks.map(c=>`<button class="pick" data-open="${c.key}">
+      <div class="rail">${picks.map(c=>`<button class="pick" data-open="${c.key}" style="--ml:${mline(c)}">
         <span class="rt"><span style="min-width:0"><span class="ro">${esc(c.roaster)}</span><h3>${esc(c.name)}</h3></span>${scoreEl(c.rating)}</span>
         <span class="wh">${esc(whereOf(c))}</span>
         <span class="notes">${esc(c.flavorNotes||c.review)}</span></button>`).join("")}</div></section>
@@ -390,7 +397,7 @@ function sheetHTML(){
 function detailHTML(c){
   const facts=[["Origin",[c.origin,c.region].filter(Boolean).join(", ")],["Producer",[c.producer,c.farm].filter(Boolean).join(" · ")],["Variety",c.variety],["Process",c.process],["Altitude",c.altitude],["Roast",c.roastLevel]].filter(f=>f[1]);
   const notes=splitList(c.flavorNotes);
-  const badges=[c.isChoice?'<span class="badge p">Pick</span>':"",c.wouldBuy?'<span class="badge b">Buy</span>':"",...c.tags.map(t=>`<span class="badge">${esc(t)}</span>`)].join("");
+  const badges=[...c.methods.map(m=>`<span class="badge m" style="--mc:var(${m==="Espresso"?"--m-esp":"--m-pour"})">${m==="Espresso"?"Espresso":"Pour over"}</span>`),c.isChoice?'<span class="badge p">My pick</span>':"",c.wouldBuy?'<span class="badge b">Buy</span>':"",...c.tags.map(t=>`<span class="badge">${esc(t)}</span>`)].join("");
   const brews=c.entries.map(e=>{
     const esp=(e.brewMethods||[]).includes("Espresso"), cells=[];
     if(e.doseIn) cells.push([e.doseIn+" g","Dose"]);
@@ -401,7 +408,8 @@ function detailHTML(c){
     if(e.grindSetting) cells.push([e.grindSetting,(e.grinder||"Grind").replace(/^(Timemore|Eureka|Baratza) /,"")]);
     const pours=(e.filterPours||[]).length?`<p class="pours mono">${e.filterPours.map(p=>`${p.targetGrams} g @ ${Math.floor(p.startSeconds/60)}:${String(p.startSeconds%60).padStart(2,"0")}`).join(" → ")}</p>`:"";
     const ease=[e.dialEase,e.dialStability].filter(Boolean).join(", ");
-    return `<details><summary>${esc(KITS[e.kitId]||(e.brewMethods||[]).join(", ")||"Brew")}${c.entries.length>1?" "+scoreEl(e.rating):""}<span class="sub">${esc(fmtDate(e.date))}</span></summary>
+    const mc=(e.brewMethods||[]).includes("Espresso")?"--m-esp":(e.brewMethods||[]).includes("Pour Over")?"--m-pour":"";
+    return `<details${mc?` class="m" style="--mc:var(${mc})"`:""}><summary>${esc(KITS[e.kitId]||(e.brewMethods||[]).join(", ")||"Brew")}${c.entries.length>1?" "+scoreEl(e.rating):""}<span class="sub">${esc(fmtDate(e.date))}</span></summary>
       <div class="dbody">${cells.length?`<div class="recipe">${cells.map(([v,l])=>`<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</div>`:`<p class="pours">No recipe recorded.</p>`}
       ${pours}${ease?`<p class="pours">Dial-in: ${esc(ease)}</p>`:""}${e.notes?`<p>${esc(e.notes)}</p>`:""}</div></details>`;
   }).join("");
@@ -430,8 +438,8 @@ function groupStats(entries,get,minN=2){ const g=new Map(); for(const e of entri
 const monthsAgo=d=>{ const a=new Date(d), b=new Date(); return (b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth(); };
 const r2=x=>x.toFixed(2), r1=x=>x.toFixed(1);
 const MEDAL={1:["#F4C542","#B8891A"],2:["#DCE1E6","#8E99A4"],3:["#E09A62","#9A5A2A"]};
-function medal(rank){ const [fill,edge]=MEDAL[rank]||MEDAL[3];
-  return `<svg width="38" height="46" viewBox="0 0 38 46" role="img" aria-label="${["","Gold","Silver","Bronze"][rank]} medal"><path d="M10 0h7l4 12h-7zM28 0h-7l-4 12h7z" fill="#E5484D"/><circle cx="19" cy="28" r="15" fill="${fill}" stroke="${edge}" stroke-width="2.5"/><text x="19" y="33.5" text-anchor="middle" style="font:800 15px var(--f-display);fill:#2A2205">${rank}</text></svg>`; }
+function medal(rank){ const [fill,edge]=MEDAL[rank]||MEDAL[3], sz={1:1.3,2:1.1,3:0.95}[rank]||1;
+  return `<svg width="${Math.round(38*sz)}" height="${Math.round(46*sz)}" viewBox="0 0 38 46" role="img" aria-label="${["","Gold","Silver","Bronze"][rank]} medal"><path d="M10 0h7l4 12h-7zM28 0h-7l-4 12h7z" fill="#E5484D"/><circle cx="19" cy="28" r="15" fill="${fill}" stroke="${edge}" stroke-width="2.5"/><text x="19" y="33.5" text-anchor="middle" style="font:800 15px var(--f-display);fill:#2A2205">${rank}</text></svg>`; }
 
 function palateHTML(){
   if(!SEED.entries.some(e=>e.rating>0&&e.date)) return `<div class="wrap"><header class="pal-head"><h1>Palate</h1></header><div class="empty">${SYNC.state==="error"?"Couldn't load the logbook.":"Loading the logbook…"}</div></div>`;
@@ -491,8 +499,8 @@ function palateHTML(){
     const top3=rs.slice(0,3); let rank=0, prev=null;
     for(const s of top3){ const v=r1(s.m); if(v!==prev){ rank++; prev=v; } s.rank=rank; }
     const golds=top3.filter(s=>s.rank===1);
-    const stepH={1:84,2:60,3:40};
-    const pl=s=>`<div class="pl">${medal(s.rank)}<b>${r1(s.m)}</b><span class="nm">${esc(s.k)}</span><div class="step" style="height:${stepH[s.rank]}px">${s.n} brews</div></div>`;
+    const stepH={1:220,2:192,3:170}, tint={1:"#F4C542",2:"#DCE1E6",3:"#E09A62"};
+    const pl=s=>`<div class="step" style="min-height:${stepH[s.rank]}px;--tint:${tint[s.rank]}">${medal(s.rank)}<b>${r1(s.m)}</b><span class="nm">${esc(s.k)}</span><small>${s.n} brews</small></div>`;
     const order=[top3[1],top3[0],top3[2]];
     cards.push(`<section class="w" style="--bgc:var(--w-sky)"><div class="k">Roaster podium</div><h2>${golds.length>1?golds.map(s=>esc(s.k)).join(" and ")+" share gold.":esc(golds[0].k)+" takes gold."}</h2>
       <div class="podium">${order.map(pl).join("")}</div>
