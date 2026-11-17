@@ -21,7 +21,7 @@
   --sc-sat:72%; --sc-bg:87%; --sc-fg:25%; --sc-none:#DADDD4;
   /* palate card colours (same in both themes; each card sets its own text colour) */
   --w-lime:#D3F04A; --w-violet:#5537D6; --w-coral:#FF6A55; --w-yellow:#FFD34D; --w-sky:#5CC4F2;
-  --w-ink:#18181D; --w-pink:#FF92CB; --w-green:#169B62; --w-orange:#FF9636; --w-cream:#F6EEDC;
+  --w-ink:#18181D; --w-pink:#FF92CB; --w-green:#169B62; --w-orange:#FF9636; --w-cream:#F6EEDC; --w-teal:#0E7A86;
   --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
   --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -64,6 +64,11 @@ h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:
 .selwrap{position:relative;flex:none}
 .selwrap select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:40px;padding:0 34px 0 15px;font-size:14px;font-weight:500;color:var(--ink)}
 .selwrap::after{content:"";position:absolute;right:15px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.quick{display:flex;gap:6px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.quick::-webkit-scrollbar{display:none}
+.quick .chip{flex:1 1 auto;justify-content:center;padding:0 10px;gap:5px}
+.ico{display:inline-block;vertical-align:-2px;flex:none}
+.meta .ico{margin-right:3px;opacity:.85}
 .chip.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 
 /* picks shelf */
@@ -180,16 +185,32 @@ summary .score{height:30px;min-width:40px;font-size:14px;border-radius:8px}
 .vs em{font-style:normal;font:700 15px var(--f-body);opacity:.7;padding-bottom:22px}
 .vs .lo b{opacity:.45}
 .podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;margin-top:18px}
-.podium div{border-radius:14px 14px 4px 4px;padding:10px 8px;text-align:center;background:rgb(255 255 255 / .28);display:flex;flex-direction:column;justify-content:flex-end;min-width:0}
+.podium .pl{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+.podium svg{display:block;margin-bottom:6px}
 .podium b{font:800 26px/1 var(--f-display)}
-.podium span{font-size:13px;font-weight:600;line-height:1.2;margin-top:6px;overflow-wrap:anywhere}
-.podium small{font-size:12px;opacity:.75}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.podium .nm{font-size:14px;font-weight:600;line-height:1.2;margin:4px 0 8px;overflow-wrap:anywhere}
+.podium .step{align-self:stretch;border-radius:12px 12px 4px 4px;background:rgb(255 255 255 / .3);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:12.5px;font-weight:500}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;border-radius:16px;padding:14px;background:rgb(255 255 255 / .16);display:flex;flex-direction:column;gap:4px;min-width:0}
+.tile:focus-visible{outline:2px solid currentColor}
+.tile b{font:800 19px/1.15 var(--f-display);overflow-wrap:anywhere}
+.tile span{font-size:13px;opacity:.85}
+.tile .sc{font:800 26px/1 var(--f-display);opacity:1;margin-bottom:4px}
+.tile.more{align-items:center;justify-content:center;font-weight:600}
+.kv{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0 14px}
+.kv div{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.kv div:last-child{border-bottom:0}
+.kv dt{font-size:14px;color:var(--muted)}
+.kv dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.split > div{min-width:0}
 .split > div{border-radius:16px;padding:14px;background:rgb(255 255 255 / .22)}
 .split h3{font:700 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;opacity:.8;margin-bottom:8px}
 .split ol{margin:0;padding:0;list-style:none;display:grid;gap:6px}
 .split li{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:15px}
-.split li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.split li{align-items:baseline}
+.split li span:first-child{min-width:0;overflow-wrap:anywhere;line-height:1.25}
+.split li span:last-child{flex:none}
 .split li span:last-child{font-family:var(--f-mono);font-weight:500}
 .facts-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
 .facts-list li{background:rgb(255 255 255 / .1);border-radius:14px;padding:12px 14px;font-size:15.5px;line-height:1.4}
@@ -275,7 +296,7 @@ const S = { coffees:[], q:"", quick:"all", sort:"rating", group:"none",
 try{ const v=JSON.parse(localStorage.getItem("dialin.view")||"{}"); if(v.sort) S.sort=v.sort; if(v.group) S.group=v.group; }catch(e){}
 const saveView=()=>{ try{ localStorage.setItem("dialin.view",JSON.stringify({sort:S.sort,group:S.group})); }catch(e){} };
 
-const QUICK=[["all","All"],["picks","My picks"],["buy","Buy again"],["filter","Pour over"],["espresso","Espresso"],["misses","Misses"]];
+const QUICK=[["all","All"],["picks","Pick"],["buy","Buy"],["filter","Pour over"],["espresso","Espresso"]];
 const FACETS=[["origin","Origin",c=>origins(c.origin).length?origins(c.origin):(c.origin==="Blend"?["Blend"]:[])],["process","Process",c=>c.process?[c.process]:[]],
   ["roast","Roast",c=>c.roastLevel?[c.roastLevel]:[]],["roaster","Roaster",c=>[c.roaster]],["tag","Tags",c=>c.tags]];
 
@@ -287,7 +308,6 @@ function filtered(){
     if(S.quick==="buy"&&!c.wouldBuy) return false;
     if(S.quick==="filter"&&!c.methods.includes("Pour Over")) return false;
     if(S.quick==="espresso"&&!c.methods.includes("Espresso")) return false;
-    if(S.quick==="misses"&&!(c.rating>0&&c.rating<=2)) return false;
     for(const [k,,get] of FACETS){ const s=S.f[k]; if(s.size&&!get(c).some(v=>s.has(v))) return false; }
     return true;
   }).sort((a,b)=> S.sort==="rating" ? (b.rating-a.rating)||(b.date||"").localeCompare(a.date||"")
@@ -302,13 +322,17 @@ const ICON={
   share:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>',
   book:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 19a2 2 0 0 0 2 2h13"/></svg>',
   palate:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>',
+  pour:'<svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 10h-4z"/><path d="M12 15v3M7 20h10"/></svg>',
+  espresso:'<svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17M3 21h16"/></svg>',
   filter:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
 };
 
+const whereOf=c=>[...new Set([c.origin,c.process].filter(Boolean))].join(" · ");
+const methodIcons=c=>(c.methods.includes("Pour Over")?ICON.pour:"")+(c.methods.includes("Espresso")?ICON.espresso:"");
 function rowHTML(c){
-  const where=[c.origin,c.process].filter(Boolean).join(" · ");
+  const where=whereOf(c);
   return `<li><button class="row" data-open="${c.key}">
-    <span style="min-width:0"><span class="name">${esc(c.name)}</span><span class="meta">${esc(c.roaster)}${where?" · "+esc(where):""}</span></span>
+    <span style="min-width:0"><span class="name">${esc(c.name)}</span><span class="meta" aria-label="${esc(c.methods.join(" and "))}. ${esc(c.roaster)}${where?", "+esc(where):""}">${methodIcons(c)}${esc(c.roaster)}${where?" · "+esc(where):""}</span></span>
     <span class="flagcol" aria-label="${[c.isChoice&&"My pick",c.wouldBuy&&"Would buy again"].filter(Boolean).join(", ")}">${c.isChoice?'<span class="flag p">Pick</span>':"<span></span>"}${c.wouldBuy?'<span class="flag b">Buy</span>':"<span></span>"}</span>
     ${scoreEl(c.rating)}</button></li>`;
 }
@@ -332,7 +356,7 @@ function libraryHTML(){
   <header class="top"><div class="wrap">
     <div class="titlerow"><h1>Library</h1><span class="count" id="libcount">${list.length} of ${S.coffees.length} coffees</span></div>
     <label class="search">${ICON.search}<input id="q" type="search" placeholder="Coffee, roaster, origin, notes" value="${esc(S.q)}" autocomplete="off" aria-label="Search"></label>
-    <div class="chips" role="group" aria-label="Quick filters">${QUICK.map(([k,l])=>`<button class="chip" aria-pressed="${S.quick===k}" data-quick="${k}">${l}</button>`).join("")}</div>
+    <div class="quick" role="group" aria-label="Quick filters">${QUICK.map(([k,l])=>`<button class="chip" aria-pressed="${S.quick===k}" data-quick="${k}">${k==="filter"?ICON.pour:k==="espresso"?ICON.espresso:""}${l}</button>`).join("")}</div>
     <div class="chips">
       <button class="chip${fc?" on":""}" data-act="sheet">${ICON.filter} Filter${fc?` · ${fc}`:""}</button>
       <span class="selwrap"><select id="sort" aria-label="Sort"><option value="rating">Best rated</option><option value="low">Lowest rated</option><option value="date">Newest</option><option value="roaster">Roaster A–Z</option></select></span>
@@ -344,7 +368,7 @@ function libraryHTML(){
     ${showShelf&&picks.length?`<section class="shelf"><h2>My picks <span>${picks.length} to show a friend</span></h2>
       <div class="rail">${picks.map(c=>`<button class="pick" data-open="${c.key}">
         <span class="rt"><span style="min-width:0"><span class="ro">${esc(c.roaster)}</span><h3>${esc(c.name)}</h3></span>${scoreEl(c.rating)}</span>
-        <span class="wh">${esc([c.origin,c.process].filter(Boolean).join(" · "))}</span>
+        <span class="wh">${esc(whereOf(c))}</span>
         <span class="notes">${esc(c.flavorNotes||c.review)}</span></button>`).join("")}</div></section>
       <h2 style="font-size:20px;margin-top:24px">All coffees</h2>`:""}
     ${body}
@@ -366,7 +390,7 @@ function sheetHTML(){
 function detailHTML(c){
   const facts=[["Origin",[c.origin,c.region].filter(Boolean).join(", ")],["Producer",[c.producer,c.farm].filter(Boolean).join(" · ")],["Variety",c.variety],["Process",c.process],["Altitude",c.altitude],["Roast",c.roastLevel]].filter(f=>f[1]);
   const notes=splitList(c.flavorNotes);
-  const badges=[c.isChoice?'<span class="badge p">My pick</span>':"",c.wouldBuy?'<span class="badge b">Would buy again</span>':"",...c.tags.map(t=>`<span class="badge">${esc(t)}</span>`)].join("");
+  const badges=[c.isChoice?'<span class="badge p">Pick</span>':"",c.wouldBuy?'<span class="badge b">Buy</span>':"",...c.tags.map(t=>`<span class="badge">${esc(t)}</span>`)].join("");
   const brews=c.entries.map(e=>{
     const esp=(e.brewMethods||[]).includes("Espresso"), cells=[];
     if(e.doseIn) cells.push([e.doseIn+" g","Dose"]);
@@ -385,11 +409,11 @@ function detailHTML(c){
     <div class="dhead"><button class="iconbtn" data-act="back">${ICON.back} Back</button><button class="iconbtn" data-act="share">${ICON.share} Share</button></div>
     <article>
       <div class="hero"><div style="min-width:0"><div class="roaster">${esc(c.roaster)}</div><h1>${esc(c.name)}</h1>
-        <div class="where">${esc([c.origin,c.process].filter(Boolean).join(" · "))}${c.date?" · "+esc(fmtMonth(c.date)):""}</div></div>${scoreEl(c.rating,true)}</div>
+        <div class="where">${esc(whereOf(c))}${c.date?" · "+esc(fmtMonth(c.date)):""}</div></div>${scoreEl(c.rating,true)}</div>
       ${badges?`<div class="badges">${badges}</div>`:""}
       ${c.review?`<p class="verdict"><span class="lab">My verdict</span>${esc(c.review)}</p>`:""}
       ${notes.length?`<section class="section"><span class="lab">Roaster's tasting notes</span><div class="notes-chips">${notes.map(n=>`<span>${esc(n)}</span>`).join("")}</div></section>`:""}
-      ${facts.length?`<section class="section"><span class="lab">The coffee</span><dl class="facts">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+      ${facts.length?`<section class="section"><span class="lab">The coffee</span><dl class="kv">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
         ${c.coffeeUrl?`<a class="link" href="${esc(c.coffeeUrl)}" target="_blank" rel="noopener">Roaster's page ↗</a>`:""}</section>`:""}
       <section class="section"><span class="lab">How I brewed it</span>${brews}
         ${c.coffeeDescription?`<details><summary>From the bag and roaster</summary><div class="dbody"><p>${esc(c.coffeeDescription)}</p></div></details>`:""}</section>
@@ -405,6 +429,9 @@ function groupStats(entries,get,minN=2){ const g=new Map(); for(const e of entri
   return [...g.entries()].filter(([,a])=>a.length>=minN).map(([k,a])=>({k,n:a.length,m:wavg(a.map(e=>[e.rating,W(e)])),list:a})).sort((a,b)=>b.m-a.m); }
 const monthsAgo=d=>{ const a=new Date(d), b=new Date(); return (b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth(); };
 const r2=x=>x.toFixed(2), r1=x=>x.toFixed(1);
+const MEDAL={1:["#F4C542","#B8891A"],2:["#DCE1E6","#8E99A4"],3:["#E09A62","#9A5A2A"]};
+function medal(rank){ const [fill,edge]=MEDAL[rank]||MEDAL[3];
+  return `<svg width="38" height="46" viewBox="0 0 38 46" role="img" aria-label="${["","Gold","Silver","Bronze"][rank]} medal"><path d="M10 0h7l4 12h-7zM28 0h-7l-4 12h7z" fill="#E5484D"/><circle cx="19" cy="28" r="15" fill="${fill}" stroke="${edge}" stroke-width="2.5"/><text x="19" y="33.5" text-anchor="middle" style="font:800 15px var(--f-display);fill:#2A2205">${rank}</text></svg>`; }
 
 function palateHTML(){
   if(!SEED.entries.some(e=>e.rating>0&&e.date)) return `<div class="wrap"><header class="pal-head"><h1>Palate</h1></header><div class="empty">${SYNC.state==="error"?"Couldn't load the logbook.":"Loading the logbook…"}</div></div>`;
@@ -420,13 +447,24 @@ function palateHTML(){
     <div class="row3"><div><b>${C.length}</b><span>coffees</span></div><div><b>${roasters.size}</b><span>roasters</span></div><div><b>${orgs.size}</b><span>origins</span></div></div>
     <p>Busiest month: <b>${fmtMonth(byMonth[0].k)}</b>, ${byMonth[0].n} brews.</p></section>`);
 
-  // 2. number one
-  const top=[...C].sort((a,b)=>b.rating-a.rating||(b.date||"").localeCompare(a.date||""))[0];
-  const quote=(top.review||"").split(/(?<=\.)\s/)[0];
-  cards.push(`<section class="w" style="--bgc:var(--w-violet);--fg:#fff"><div class="k">Your number one</div>
-    <h2 style="font-size:clamp(34px,10vw,48px)">${esc(top.name)}</h2><p style="opacity:.85">${esc(top.roaster)} · ${esc(top.origin)} · rated ${fmtR(top.rating)}</p>
-    ${quote?`<p style="font:400 20px/1.4 var(--f-display);margin-top:14px">“${esc(quote)}”</p>`:""}
-    <button class="inline" data-open="${top.key}">Open the coffee</button></section>`);
+  // 2. number one, per brew method (ties become tiles)
+  const coffeeOf=e=>C.find(c=>c.entries.includes(e));
+  for(const [method,label,bg,quick] of [["Espresso","Espresso","var(--w-violet)","espresso"],["Pour Over","Pour over","var(--w-teal)","filter"]]){
+    const me=R.filter(e=>(e.brewMethods||[]).includes(method)); if(!me.length) continue;
+    const best=Math.max(...me.map(e=>e.rating));
+    const winners=[...new Set(me.filter(e=>e.rating===best).map(coffeeOf))].filter(Boolean).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+    const head=`<section class="w" style="--bgc:${bg};--fg:#fff"><div class="k">Your number one · ${label}</div>`;
+    if(winners.length===1){ const t=winners[0], quote=(t.review||"").split(/(?<=[.!])\s/)[0];
+      cards.push(`${head}<h2 style="font-size:clamp(34px,10vw,48px)">${esc(t.name)}</h2><p style="opacity:.85">${esc(t.roaster)} · ${esc(t.origin)} · rated ${fmtR(best)}</p>
+        ${quote?`<p style="font:400 20px/1.4 var(--f-display);margin-top:14px">“${esc(quote)}”</p>`:""}
+        <button class="inline" data-open="${t.key}">Open the coffee</button></section>`);
+    } else {
+      const shown=winners.length>4?winners.slice(0,3):winners, extra=winners.length-shown.length;
+      cards.push(`${head}<h2>${winners.length} coffees share the top spot at ${fmtR(best)}.</h2>
+        <div class="tiles">${shown.map(t=>`<button class="tile" data-open="${t.key}"><span class="sc">${fmtR(best)}</span><b>${esc(t.name)}</b><span>${esc(t.roaster)}${t.origin?" · "+esc(t.origin):""}</span></button>`).join("")}
+        ${extra?`<button class="tile more" data-more="${quick}">+${extra} more</button>`:""}</div></section>`);
+    }
+  }
 
   // 3. roast face-off
   const roast=groupStats(R,e=>e.roastLevel?[e.roastLevel]:[]);
@@ -442,14 +480,22 @@ function palateHTML(){
   if(tagStats.length){ const t=tagStats[0], worst=groupStats(R,e=>e.tags||[],3).filter(s=>NEG_TAGS.has(s.k)).sort((a,b)=>a.m-b.m)[0];
     cards.push(`<section class="w" style="--bgc:var(--w-yellow)"><div class="k">The magic word</div>
       <div class="huge" style="font-size:clamp(56px,17vw,92px)">${esc(t.k)}</div>
-      <p>Coffees you tag <b>${esc(t.k)}</b> average <b>${r2(t.m)}</b>, against your overall ${r2(overall)}.${worst?` The kiss of death is <b>${esc(worst.k)}</b> at ${r2(worst.m)}.`:""}</p>
-      <div class="tags dark">${groupStats(R,e=>e.tags||[],3).map(s=>`<span>${esc(s.k)}<small>${r1(s.m)}</small></span>`).join("")}</div></section>`); }
+      <p>Coffees you tag <b>${esc(t.k)}</b> average <b>${r1(t.m)}</b>, against your overall ${r1(overall)}.${worst?` The kiss of death is <b>${esc(worst.k)}</b> at ${r1(worst.m)}.`:""}</p>
+      ${(()=>{ const all=groupStats(R,e=>e.tags||[],3), up=all.filter(s=>s.m>=overall), down=all.filter(s=>s.m<overall);
+        const li=a=>a.map(s=>`<li><span>${esc(s.k)}</span><span>${r1(s.m)}</span></li>`).join("");
+        return `<div class="split"><div style="background:rgb(0 0 0 / .07)"><h3>Lifts the score</h3><ol>${li(up)}</ol></div><div style="background:rgb(0 0 0 / .07)"><h3>Drags it down</h3><ol>${li(down)}</ol></div></div>`; })()}</section>`); }
 
   // 5. roaster podium
   const rs=groupStats(R,e=>[e.roaster]);
-  if(rs.length>=3){ const [a,b,c]=rs; const h=[110,140,90];
-    cards.push(`<section class="w" style="--bgc:var(--w-sky)"><div class="k">Roaster podium</div><h2>${esc(a.k)} takes gold.</h2>
-      <div class="podium">${[[b,2,h[0]],[a,1,h[1]],[c,3,h[2]]].map(([s,p,ht])=>`<div style="height:${ht}px"><small>#${p}</small><b>${r1(s.m)}</b><span>${esc(s.k)}</span><small>${s.n} brews</small></div>`).join("")}</div>
+  if(rs.length>=3){
+    const top3=rs.slice(0,3); let rank=0, prev=null;
+    for(const s of top3){ const v=r1(s.m); if(v!==prev){ rank++; prev=v; } s.rank=rank; }
+    const golds=top3.filter(s=>s.rank===1);
+    const stepH={1:84,2:60,3:40};
+    const pl=s=>`<div class="pl">${medal(s.rank)}<b>${r1(s.m)}</b><span class="nm">${esc(s.k)}</span><div class="step" style="height:${stepH[s.rank]}px">${s.n} brews</div></div>`;
+    const order=[top3[1],top3[0],top3[2]];
+    cards.push(`<section class="w" style="--bgc:var(--w-sky)"><div class="k">Roaster podium</div><h2>${golds.length>1?golds.map(s=>esc(s.k)).join(" and ")+" share gold.":esc(golds[0].k)+" takes gold."}</h2>
+      <div class="podium">${order.map(pl).join("")}</div>
       <p>At least 2 brews to qualify. Bottom of the table: ${rs.slice(-2).map(s=>`${esc(s.k)} (${r1(s.m)})`).join(", ")}.</p></section>`); }
 
   // 6. origins
@@ -556,9 +602,10 @@ function render(){
 function go(view){ if(lastView!=="coffee") scrolls[lastView]=scrollY; render(); const r=route().view; scrollTo(0, r==="coffee"?0:(lastView===r?scrollY:scrolls[r]||0)); lastView=r; }
 function keep(fn){ const y=scrollY, sc=$(".sheet")?.scrollTop; fn(); render(); scrollTo(0,y); if(sc!=null&&$(".sheet")) $(".sheet").scrollTop=sc; }
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-open],[data-quick],[data-f],[data-unf],[data-act],[data-go],[data-pf]"); if(!t) return;
+  const t=e.target.closest("[data-open],[data-more],[data-quick],[data-f],[data-unf],[data-act],[data-go],[data-pf]"); if(!t) return;
   if(t.dataset.open){ navDepth++; location.hash=t.dataset.open; return; }
   if(t.dataset.go){ if(location.hash.slice(1)===t.dataset.go||(!location.hash&&t.dataset.go==="library")){ scrollTo({top:0,behavior:"smooth"}); return; } location.hash=t.dataset.go; return; }
+  if(t.dataset.more){ S.quick=t.dataset.more; S.sort="rating"; for(const x of Object.values(S.f)) x.clear(); S.q=""; location.hash="library"; return; }
   if(t.dataset.quick){ S.quick=t.dataset.quick; render(); scrollTo(0,0); return; }
   if(t.dataset.pf){ return keep(()=>S.pf=t.dataset.pf); }
   if(t.dataset.f||t.dataset.unf){ const k=t.dataset.f||t.dataset.unf, v=t.dataset.v; return keep(()=>S.f[k].has(v)?S.f[k].delete(v):S.f[k].add(v)); }
