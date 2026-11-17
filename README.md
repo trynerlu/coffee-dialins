@@ -4,7 +4,8 @@ Web app for easy coffee dial-in listing
 ## How to run
 
 - **Live:** https://trynerlu.github.io/coffee-dialins/
-- **Locally:** open `index.html` in a browser. There's nothing to install or build. It loads React and Babel from cdnjs, so it needs internet.
+- **Locally:** open `index.html` in a browser. There's nothing to install or build. It's plain HTML and JavaScript and reads `dialins.json` from GitHub, so it needs internet on first load (after that it works offline from its cache).
+- **The app is read-only.** It has two views: **Library** (search, filters, picks) and **Palate** (taste stats computed from the logbook). Entries are written only through `tools/dialin_api.py`.
 - **Data script:** `tools/dialin_api.py` adds and updates entries by committing and pushing to `main` with git (standard Python only):
   ```
   python tools/dialin_api.py list

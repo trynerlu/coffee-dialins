@@ -1,1990 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Dial-In"/>
-  <meta name="theme-color" content="#0C0501"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
-  <title>Dial-In</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    :root {
-      --bg:#0C0501; --surface:#170C06; --elevated:#1C0E07; --card:#181008;
-      --border:rgba(200,118,58,0.14); --bh:rgba(200,118,58,0.35);
-      --accent:#C87840; --accent-d:rgba(200,120,64,0.12); --accent-b:#E09050;
-      --tx1:#EDD8B4; --tx2:#9A7050; --tx3:#5A3A22;
-      --green:#5A8860; --green-d:rgba(90,136,96,0.13);
-      --teal:#4A8888; --teal-d:rgba(74,136,136,0.13);
-      --blue:#5A7098; --blue-d:rgba(90,112,152,0.13);
-      --purple:#7A5A8A; --purple-d:rgba(122,90,138,0.13);
-      --red:#A05050; --red-d:rgba(160,80,80,0.13);
-    }
-    html,body { height:100%; background:var(--bg); color:var(--tx1); font-family:'Jost',sans-serif; font-weight:400; -webkit-font-smoothing:antialiased; overscroll-behavior:none; }
-    #root { height:100%; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F0F1EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1110" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dial-In">
+<title>Dial-In</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: phone-first single column (tested at 412px, Pixel 8 Pro), sticky search header, bottom tab bar in thumb reach.
+   Library = calm neutrals; scores on a red→yellow→green scale; Palate = bold colour cards. */
+:root{
+  --bg:#F0F1EC; --surface:#FFFFFF; --sunk:#E5E7E0; --ink:#17191A; --muted:#5F665C; --line:#D7DAD0;
+  --pick:#4338CA; --pick-ink:#FFFFFF;
+  --sc-sat:72%; --sc-bg:87%; --sc-fg:25%; --sc-none:#DADDD4;
+  /* palate card colours (same in both themes; each card sets its own text colour) */
+  --w-lime:#D3F04A; --w-violet:#5537D6; --w-coral:#FF6A55; --w-yellow:#FFD34D; --w-sky:#5CC4F2;
+  --w-ink:#18181D; --w-pink:#FF92CB; --w-green:#169B62; --w-orange:#FF9636; --w-cream:#F6EEDC;
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1110; --surface:#191C1A; --sunk:#232724; --ink:#ECEEE8; --muted:#9CA396; --line:#2D322D;
+  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1110; --surface:#191C1A; --sunk:#232724; --ink:#ECEEE8; --muted:#9CA396; --line:#2D322D;
+  --pick:#A5B4FC; --pick-ink:#14123A; --sc-sat:55%; --sc-bg:21%; --sc-fg:74%; --sc-none:#2D322D; color-scheme:dark }
 
-    /* ── Layout ── */
-    .screen { min-height:100vh; max-width:480px; margin:0 auto; padding-bottom:80px; }
-    .fade-in { animation:fadeIn .2s ease; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:16px/1.5 var(--f-body);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,select{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--pick);outline-offset:2px;border-radius:8px}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 
-    /* ── Section headers ── */
-    .sec { padding:22px 18px 8px; display:flex; align-items:center; gap:10px; }
-    .sec-title { font-size:9px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--tx3); }
-    .sec::after { content:''; flex:1; height:1px; background:var(--border); }
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:14px 10px;border-bottom:1px solid transparent}
+.top.scrolled{border-bottom-color:var(--line)}
+.titlerow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.titlerow h1{font-size:32px;font-weight:800}
+.count{color:var(--muted);font-size:14px}
+.search{margin-top:12px;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:48px}
+.search input{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--ink);outline:none}
+.search svg{flex:none;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-top:10px;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:40px;padding:0 15px;font-size:14px;font-weight:500;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip .n{opacity:.55;font-size:13px}
+.selwrap{position:relative;flex:none}
+.selwrap select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;min-height:40px;padding:0 34px 0 15px;font-size:14px;font-weight:500;color:var(--ink)}
+.selwrap::after{content:"";position:absolute;right:15px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.chip.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 
-    /* ── Top bar ── */
-    .topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 18px 0; }
-    .topbar-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:500; letter-spacing:.02em; }
-    .topbar-actions { display:flex; gap:8px; }
-    .icon-btn { width:36px; height:36px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:var(--tx2); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:18px; flex-shrink:0; }
-    .icon-btn:hover { border-color:var(--bh); color:var(--tx1); }
-    .sort-sel { background:var(--surface); border:1px solid var(--border); border-radius:7px; color:var(--tx2); font-family:'Jost',sans-serif; font-size:11px; padding:5px 8px; outline:none; cursor:pointer; }
-    .sort-sel option { background:var(--elevated); }
+/* picks shelf */
+.shelf{margin-top:20px}
+.shelf h2{font-size:20px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.shelf h2 span{font:400 14px var(--f-body);color:var(--muted)}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:76%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px));scroll-padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.rail::-webkit-scrollbar{display:none}
+.pick{scroll-snap-align:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:8px;min-height:176px}
+.pick .rt{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pick .ro{font-size:13px;font-weight:600;color:var(--pick)}
+.pick h3{font-size:21px;line-height:1.15;margin-top:2px}
+.pick .wh{font-size:14px;color:var(--muted)}
+.pick .notes{font-size:14px;margin-top:auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
-    /* ── Active coffee card (new design) ── */
-    .acc { margin:0 18px 6px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px; cursor:pointer; transition:border-color .15s; }
-    .acc:hover { border-color:var(--bh); }
-    .acc-r1 { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
-    .acc-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .acc-roaster { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); flex:1; }
-    .acc-freshness { font-size:10px; font-weight:600; letter-spacing:.04em; }
-    .acc-r2 { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-    .acc-name { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:500; }
-    .acc-status { font-size:9px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:3px 8px; border-radius:5px; }
-    .acc-r3 { display:grid; grid-template-columns:1fr 1px 2fr; gap:0; padding-top:10px; border-top:1px solid var(--border); }
-    .acc-divider { background:var(--border); }
-    .acc-grinds { display:flex; align-items:center; gap:0; padding:2px 0; }
-    .acc-grind-num { font-family:'DM Mono',monospace; font-size:16px; font-weight:500; color:var(--accent); line-height:1; min-width:34px; display:inline-block; }
-    .acc-grind-sep { color:var(--tx3); font-size:13px; padding:0 4px; }
-    .acc-params-wrap { padding-left:12px; display:flex; flex-direction:column; gap:3px; justify-content:center; }
-    .acc-params { display:flex; flex-wrap:wrap; gap:0 5px; align-items:baseline; }
-    .acc-param { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx2); }
-    .acc-param + .acc-param::before { content:'·'; margin-right:5px; color:var(--tx3); }
-    .acc-phases { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); display:flex; gap:3px; flex-wrap:wrap; }
+/* list */
+.group{margin-top:22px}
+.group > h2{font-size:15px;font-family:var(--f-body);font-weight:600;display:flex;justify-content:space-between;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.group > h2 span{color:var(--muted);font-weight:400;white-space:nowrap}
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 46px 50px;gap:10px;align-items:center;width:100%;min-height:68px;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0}
+.row:active{background:var(--sunk)}
+.name{font:600 17px/1.25 var(--f-display);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:14px;color:var(--muted);display:block;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flagcol{display:grid;grid-template-rows:20px 20px;gap:4px}
+.flag{display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;height:20px}
+.flag.p{background:var(--pick);color:var(--pick-ink)}
+.flag.b{border:1.5px solid var(--pick);color:var(--pick)}
+.score{display:inline-flex;align-items:center;justify-content:center;font:600 16px/1 var(--f-mono);height:40px;min-width:50px;border-radius:11px;
+  background:hsl(var(--h) var(--sc-sat) var(--sc-bg));color:hsl(var(--h) var(--sc-sat) var(--sc-fg))}
+.score.none{background:var(--sc-none);color:var(--muted)}
+.score.big{font-size:32px;height:auto;min-width:92px;padding:14px 0;border-radius:16px;flex-direction:column;gap:4px}
+.score.big small{font:500 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.empty{padding:48px 0;text-align:center;color:var(--muted)}
+.legend{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-top:18px}
+.legend .bar{flex:1;max-width:160px;height:8px;border-radius:4px;background:linear-gradient(90deg,hsl(4 var(--sc-sat) 55%),hsl(50 var(--sc-sat) 55%),hsl(130 var(--sc-sat) 40%))}
 
-    /* ── Frozen row ── */
-    .frozen-row { margin:0 18px 6px; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:border-color .15s; }
-    .frozen-row:hover { border-color:var(--bh); }
-    .frozen-row-title { font-size:13px; color:var(--tx2); flex:1; }
-    .frozen-item { margin:0 18px 4px; padding:10px 16px; background:var(--elevated); border-radius:8px; display:flex; gap:10px; align-items:center; }
-    .frozen-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:25;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  padding:8px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.tabs .in{max-width:440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--sunk);border-radius:16px;padding:4px}
+.tab{border:0;background:transparent;border-radius:12px;min-height:48px;font-weight:600;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+.tab[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .1)}
 
-    /* ── Journey stats ── */
-    .stat-chips { display:flex; gap:6px; padding:0 18px 12px; }
-    .stat-chip { background:var(--card); border:1px solid var(--border); border-radius:9px; padding:10px 6px; text-align:center; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:62px; }
-    .stat-chip-v { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; color:var(--accent); line-height:1.2; }
-    .stat-chip-l { font-size:8px; letter-spacing:.08em; text-transform:uppercase; color:var(--tx3); margin-top:4px; }
-    .top-rated-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; padding:0 18px 14px; }
-    .top-rated-card { background:var(--card); border:1px solid var(--border); border-radius:9px; padding:9px 8px; border-top-width:2px; }
-    .top-rated-roaster { font-size:8px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--tx3); margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .top-rated-name { font-family:'Cormorant Garamond',serif; font-size:12px; font-weight:500; line-height:1.3; margin-bottom:5px; word-break:break-word; }
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgb(0 0 0 / .4);z-index:40}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--surface);border-radius:22px 22px 0 0;max-height:85vh;overflow:auto;
+  padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.sheet .in{max-width:640px;margin:0 auto}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.sheet h2{font-size:24px;display:flex;justify-content:space-between;align-items:center}
+.sheet h3{font:600 13px var(--f-body);color:var(--muted);margin:20px 0 8px;letter-spacing:.06em;text-transform:uppercase}
+.sheet .chips{flex-wrap:wrap;overflow:visible;margin-inline:0;padding-inline:0}
+.btn{border:0;border-radius:14px;min-height:52px;padding:0 18px;font-weight:600;background:var(--ink);color:var(--bg)}
+.sheet .actions{position:sticky;bottom:0;background:var(--surface);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));margin-top:16px;display:flex}
+.sheet .actions .btn{flex:1}
 
-    /* ── Stars ── */
-    .stars { display:flex; gap:1px; }
-    .star-on { color:var(--accent); }
-    .star-off { color:var(--tx3); }
-    .star-cell { position:relative; display:inline-block; line-height:1; }
-    .star-fill { position:absolute; left:0; top:0; overflow:hidden; white-space:nowrap; color:var(--accent); pointer-events:none; }
-    .star-btn { background:none; border:none; cursor:pointer; font-size:22px; color:var(--tx3); transition:color .1s,transform .1s; padding:0; }
-    .star-btn:hover { transform:scale(1.15); }
-    .star-btn-on { color:var(--accent); }
+/* detail */
+.dhead{padding-block:12px 0;display:flex;justify-content:space-between;align-items:center}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:14px;min-height:44px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:500}
+.hero{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+.hero .roaster{font-weight:600;color:var(--pick);font-size:15px}
+.hero h1{font-size:clamp(30px,8.5vw,42px);line-height:1.04;margin-top:4px;font-weight:800}
+.hero .where{color:var(--muted);margin-top:8px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.badge{font-size:14px;font-weight:500;padding:6px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.badge.p{background:var(--pick);color:var(--pick-ink);border-color:var(--pick)}
+.badge.b{border:1.5px solid var(--pick);color:var(--pick)}
+.verdict{margin-top:22px;font:400 20px/1.5 var(--f-display);letter-spacing:-.005em}
+.lab{display:block;font:600 12px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.section{margin-top:28px}
+.notes-chips{display:flex;flex-wrap:wrap;gap:6px}
+.notes-chips span{background:var(--sunk);border-radius:9px;padding:7px 11px;font-size:15px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0}
+.facts div{background:var(--surface);padding:12px 14px;min-width:0}
+.facts div:last-child:nth-child(odd){grid-column:1 / -1}
+.facts dt{font-size:13px;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-weight:500;overflow-wrap:anywhere}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-top:10px}
+summary{list-style:none;min-height:56px;padding:8px 16px;display:flex;align-items:center;gap:10px;font-weight:600;cursor:pointer}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 22px/1 var(--f-mono);color:var(--muted);margin-left:auto}
+details[open] summary::after{content:"–"}
+summary .sub{font-weight:400;color:var(--muted);font-size:14px;margin-left:auto}
+summary .score{height:30px;min-width:40px;font-size:14px;border-radius:8px}
+.dbody{padding:0 16px 16px;font-size:15px}
+.dbody p{margin:0 0 10px;max-width:65ch}
+.recipe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.recipe div{background:var(--sunk);border-radius:10px;padding:10px}
+.recipe b{display:block;font:600 16px var(--f-mono)}
+.recipe span{font-size:12px;color:var(--muted)}
+.pours{font-size:14px;color:var(--muted)}
+.link{display:inline-flex;gap:6px;align-items:center;min-height:44px;font-weight:500}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:15px;z-index:50}
+.foot{color:var(--muted);font-size:13px;margin:22px 0 10px}
 
-    /* ── Quiz card ── */
-    .quiz-card { margin:0 18px 14px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; }
-    .quiz-cat { font-size:9px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
-    .quiz-q { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:500; line-height:1.4; margin-bottom:14px; }
-    .quiz-opts { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:12px; }
-    .quiz-opt { padding:9px 10px; border-radius:8px; border:1px solid var(--border); background:var(--elevated); font-size:12px; color:var(--tx2); cursor:pointer; transition:all .15s; display:flex; gap:7px; align-items:flex-start; }
-    .quiz-opt:hover { border-color:var(--bh); color:var(--tx1); }
-    .quiz-opt-key { font-family:'DM Mono',monospace; font-size:10px; opacity:.5; flex-shrink:0; margin-top:1px; }
-    .quiz-opt-correct { background:var(--green-d); border-color:rgba(90,136,96,0.4); color:var(--green); }
-    .quiz-opt-wrong { background:var(--red-d); border-color:rgba(160,80,80,0.4); color:var(--red); }
-    .quiz-opt-dim { opacity:.35; }
-    .quiz-explain { font-size:12px; color:var(--tx2); line-height:1.6; padding:10px 12px; background:var(--elevated); border-radius:8px; margin-bottom:10px; }
-    .quiz-footer { display:flex; align-items:center; justify-content:space-between; }
-    .quiz-next { background:none; border:none; color:var(--accent); font-family:'Jost',sans-serif; font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:4px; }
-
-    /* ── Logbook ── */
-    .search-wrap { position:relative; padding:10px 18px; }
-    .search-ico { position:absolute; left:32px; top:50%; transform:translateY(-50%); color:var(--tx3); font-size:14px; pointer-events:none; }
-    .search-input { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:10px; color:var(--tx1); font-family:'Jost',sans-serif; font-size:14px; padding:10px 12px 10px 36px; outline:none; transition:border-color .15s; }
-    .search-input:focus { border-color:var(--accent); }
-    .filter-block { padding:0 18px 6px; }
-    .filter-label { font-size:9px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--tx3); margin-bottom:5px; }
-    .chips { display:flex; gap:5px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; flex-wrap:wrap; }
-    .chip { flex-shrink:0; padding:5px 10px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:.06em; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--tx3); transition:all .15s; }
-    .chip-on { background:var(--accent-d); border-color:var(--accent); color:var(--accent); }
-
-    /* ── Logbook group ── */
-    .lb-group { margin:0 18px 6px; background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-    .lb-header { padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:background .12s; }
-    .lb-header:hover { background:var(--elevated); }
-    .lb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .lb-meta { flex:1; min-width:0; }
-    .lb-roaster { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:3px; }
-    .lb-name { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:500; }
-    .lb-expand { color:var(--tx3); font-size:16px; transition:transform .2s; flex-shrink:0; }
-    .lb-expanded { transform:rotate(90deg); }
-    .lb-body { border-top:1px solid var(--border); }
-    .lb-grids { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
-    .lb-recipe-block { background:var(--elevated); padding:12px 14px; }
-    .lb-recipe-title { font-size:9px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--tx3); margin-bottom:8px; }
-    .lb-recipe-row { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx2); margin-bottom:3px; }
-    .lb-phases { padding:10px 14px; border-top:1px solid var(--border); }
-    .lb-phase-row { display:flex; align-items:center; gap:8px; padding:3px 0; }
-    .lb-phase-num { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); min-width:16px; }
-    .lb-phase-bar { height:2px; background:var(--accent); border-radius:1px; opacity:.5; }
-    .lb-phase-g { font-family:'DM Mono',monospace; font-size:11px; color:var(--tx1); min-width:38px; }
-    .lb-phase-t { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); margin-left:auto; }
-
-    /* ── Detail page ── */
-    .det-topbar { padding:14px 18px 0; display:flex; align-items:center; gap:10px; }
-    .det-hero { padding:16px 18px 16px; border-bottom:1px solid var(--border); }
-    .det-roaster { font-size:22px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; display:flex; align-items:center; gap:8px; }
-    .det-name { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:12px; }
-    .det-badge-row { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px; }
-    .det-badge-left { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
-    .det-badge-right { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
-    .det-date { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); margin-bottom:10px; }
-
-    /* ── Grind strip ── */
-    .gs { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:0 18px 4px; }
-    .gs-cell { padding:12px 6px 10px; text-align:center; border-right:1px solid var(--border); background:var(--elevated); }
-    .gs-cell:last-child { border-right:none; }
-    .gs-label { font-size:8px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); margin-bottom:6px; }
-    .gs-num { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--accent); line-height:1; }
-    .gs-grinder { font-size:8px; color:var(--tx3); margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-
-    /* ── Recipe blocks ── */
-    .recipe-split { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:0 18px 14px; }
-    .recipe-block { background:var(--elevated); border:1px solid var(--border); border-radius:10px; padding:12px; }
-    .recipe-title { font-size:9px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--tx3); margin-bottom:10px; }
-    .recipe-stat { margin-bottom:7px; }
-    .recipe-val { font-family:'DM Mono',monospace; font-size:14px; font-weight:500; color:var(--tx1); }
-    .recipe-lbl { font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--tx3); margin-top:1px; }
-    .phase-list { margin-top:10px; border-top:1px solid var(--border); padding-top:8px; }
-    .phase-row-d { display:flex; align-items:center; gap:7px; padding:4px 0; }
-    .phase-num { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); min-width:16px; }
-    .phase-bar { height:2px; background:var(--accent); border-radius:1px; transition:width .3s; opacity:.55; }
-    .phase-grams { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--tx1); min-width:38px; }
-    .phase-time { font-family:'DM Mono',monospace; font-size:10px; color:var(--tx3); margin-left:auto; }
-
-    /* ── Badges ── */
-    .badge { font-size:9px; font-weight:600; letter-spacing:.06em; padding:3px 7px; border-radius:5px; white-space:nowrap; text-transform:uppercase; }
-    .b-espr { background:rgba(200,120,64,0.12); color:var(--accent); border:1px solid rgba(200,120,64,0.22); }
-    .b-pour { background:rgba(74,136,136,0.12); color:var(--teal); border:1px solid rgba(74,136,136,0.22); }
-    .b-both { background:rgba(122,90,138,0.12); color:#AA80C0; border:1px solid rgba(122,90,138,0.22); }
-    .b-dialed    { background:var(--green-d); color:var(--green); border:1px solid rgba(90,136,96,0.3); }
-    .b-dialing   { background:var(--accent-d); color:var(--accent); border:1px solid rgba(200,120,64,0.3); }
-    .b-waiting   { background:rgba(90,58,34,0.18); color:var(--tx3); border:1px solid rgba(90,58,34,0.28); }
-    .b-abandoned { background:var(--red-d); color:var(--red); border:1px solid rgba(160,80,80,0.28); }
-    .b-exp       { background:transparent; color:var(--accent); border:1px solid rgba(200,120,64,0.4); }
-    .b-kit       { background:var(--elevated); color:var(--tx2); border:1px solid var(--border); }
-    .b-process   { background:var(--blue-d); color:var(--blue); border:1px solid rgba(90,112,152,0.22); }
-    .b-roast     { background:rgba(139,78,26,.12); color:#9A6A44; border:1px solid rgba(139,78,26,.22); }
-    .b-pick      { background:rgba(200,120,64,0.16); color:var(--accent-b); border:1px solid rgba(200,120,64,0.3); }
-    .b-buy       { background:var(--green-d); color:var(--green); border:1px solid rgba(90,136,96,0.3); }
-    .b-early     { background:rgba(120,100,60,0.13); color:#8A7040; border:1px solid rgba(120,100,60,0.23); }
-    .b-open      { background:var(--blue-d); color:#7A9AC0; border:1px solid rgba(90,112,152,0.22); }
-    .b-frozen    { background:rgba(74,136,136,0.12); color:var(--teal); border:1px solid rgba(74,136,136,0.28); }
-    .b-empty     { background:var(--elevated); color:var(--tx3); border:1px solid var(--border); }
-    .b-ease-easy { background:var(--green-d); color:var(--green); border:1px solid rgba(90,136,96,0.28); }
-    .b-ease-med  { background:var(--accent-d); color:var(--accent); border:1px solid rgba(200,120,64,0.28); }
-    .b-ease-hard { background:var(--red-d); color:var(--red); border:1px solid rgba(160,80,80,0.28); }
-    .b-stable    { background:var(--green-d); color:var(--green); border:1px solid rgba(90,136,96,0.28); }
-    .b-unstable  { background:var(--red-d); color:var(--red); border:1px solid rgba(160,80,80,0.28); }
-
-    /* ── Forms ── */
-    .f-grp { margin-bottom:14px; padding:0 18px; }
-    .f-lbl { display:block; font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx2); margin-bottom:5px; }
-    .f-in,.f-sel,.f-ta { width:100%; background:var(--elevated); border:1px solid var(--border); border-radius:8px; color:var(--tx1); font-family:'Jost',sans-serif; font-size:14px; padding:9px 12px; outline:none; transition:border-color .15s; }
-    .f-in:focus,.f-sel:focus,.f-ta:focus { border-color:var(--accent); }
-    .f-sel option { background:var(--elevated); }
-    .f-ta { resize:vertical; min-height:75px; }
-    .f-row { padding:0 18px 14px; display:flex; gap:10px; }
-    .f-row .f-grp { flex:1; padding:0; margin-bottom:0; }
-    .f-hint { font-size:11px; color:var(--tx3); margin-top:4px; line-height:1.5; }
-    .opt-chips { display:flex; gap:7px; flex-wrap:wrap; }
-    .opt-chip { padding:6px 12px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--elevated); color:var(--tx2); transition:all .15s; }
-    .opt-chip-on { background:var(--accent-d); border-color:var(--accent); color:var(--accent); }
-    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 18px; }
-    .toggle-lbl { font-size:13px; color:var(--tx1); }
-    .toggle-sub { font-size:11px; color:var(--tx3); margin-top:1px; }
-    .toggle-btn { width:40px; height:24px; border-radius:12px; border:none; cursor:pointer; transition:background .2s; position:relative; flex-shrink:0; }
-    .toggle-btn::after { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; transition:left .2s; }
-    .toggle-off { background:var(--elevated); border:1px solid var(--border); }
-    .toggle-off::after { left:3px; }
-    .toggle-on { background:var(--accent); }
-    .toggle-on::after { left:19px; }
-    .phase-builder { margin:0 18px; }
-    .phase-build-row { display:flex; align-items:center; gap:6px; margin-bottom:7px; }
-    .phase-build-num { font-family:'DM Mono',monospace; font-size:12px; color:var(--tx3); min-width:20px; }
-    .phase-build-in { flex:1; background:var(--elevated); border:1px solid var(--border); border-radius:7px; color:var(--tx1); font-family:'DM Mono',monospace; font-size:13px; padding:7px 10px; outline:none; transition:border-color .15s; }
-    .phase-build-in:focus { border-color:var(--accent); }
-    .phase-del { background:var(--red-d); border:1px solid rgba(160,80,80,.3); color:var(--red); border-radius:6px; padding:0 9px; height:32px; cursor:pointer; font-size:12px; flex-shrink:0; }
-    .fetch-row { display:flex; gap:8px; }
-    .fetch-row .f-in { flex:1; }
-    .btn-fetch { flex-shrink:0; background:var(--elevated); border:1px solid var(--border); border-radius:8px; color:var(--tx2); font-family:'Jost',sans-serif; font-size:12px; font-weight:500; padding:0 14px; cursor:pointer; transition:all .15s; }
-    .btn-fetch:hover { border-color:var(--bh); color:var(--tx1); }
-    .btn-fetch:disabled { opacity:.4; cursor:not-allowed; }
-
-    /* ── Buttons ── */
-    .btn { border:none; border-radius:9px; padding:12px 18px; font-family:'Jost',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all .15s; letter-spacing:.04em; width:100%; }
-    .btn-p { background:var(--accent); color:#0C0501; }
-    .btn-p:hover { background:var(--accent-b); }
-    .btn-p:disabled { opacity:.45; cursor:not-allowed; }
-    .btn-s { background:var(--elevated); border:1px solid var(--border); color:var(--tx2); }
-    .btn-s:hover { border-color:var(--bh); color:var(--tx1); }
-    .btn-area { padding:14px 18px; display:flex; flex-direction:column; gap:9px; }
-    .btn-quick-row { display:flex; gap:8px; padding:0 18px 14px; }
-    .btn-quick { flex:1; padding:10px; border-radius:8px; font-family:'Jost',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; letter-spacing:.04em; border:1px solid; }
-    .btn-empty { background:var(--elevated); border-color:var(--border); color:var(--tx2); }
-    .btn-empty:hover { border-color:var(--green); color:var(--green); }
-    .btn-abandon { background:var(--red-d); border-color:rgba(160,80,80,.3); color:var(--red); }
-
-    /* ── Settings ── */
-    .settings-row { margin:0 18px 6px; padding:14px 16px; background:var(--card); border:1px solid var(--border); border-radius:10px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:border-color .15s; }
-    .settings-row:hover { border-color:var(--bh); }
-    .settings-ico { width:36px; height:36px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:17px; }
-    .settings-title { font-size:14px; font-weight:500; }
-    .settings-sub { font-size:11px; color:var(--tx3); margin-top:2px; }
-
-    /* ── Bottom nav ── */
-    .bnav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:rgba(12,5,1,.96); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
-    .nav-btn { flex:1; padding:11px 4px 9px; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; color:var(--tx3); border:none; background:none; transition:color .15s; position:relative; }
-    .nav-btn-on { color:var(--accent); }
-    .nav-btn-on::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:24px; height:2px; background:var(--accent); border-radius:1px; }
-    .nav-ico { font-size:19px; line-height:1; }
-    .nav-lbl { font-size:8px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
-
-    /* ── Quiz full screen ── */
-    .quiz-full { padding:16px 18px; }
-    .quiz-progress { height:2px; background:var(--elevated); border-radius:2px; overflow:hidden; margin-bottom:20px; }
-    .quiz-progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width .3s; }
-    .quiz-score-row { display:flex; justify-content:space-between; margin-bottom:20px; }
-    .quiz-full-q { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; line-height:1.4; margin-bottom:20px; }
-    .quiz-full-opts { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
-    .quiz-full-opt { padding:13px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card); font-size:14px; color:var(--tx1); cursor:pointer; transition:all .15s; display:flex; gap:12px; align-items:flex-start; }
-    .quiz-full-opt:hover:not(.qo-revealed) { border-color:var(--bh); }
-    .quiz-full-explain { background:var(--elevated); border:1px solid var(--border); border-radius:10px; padding:14px; font-size:13px; color:var(--tx2); line-height:1.65; margin-bottom:14px; }
-
-    /* ── Misc ── */
-    .spin { animation:spin .7s linear infinite; display:inline-block; }
-    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-    .div { height:1px; background:var(--border); margin:4px 0; }
-    .splash { position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:200; gap:16px; }
-    .splash-title { font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:300; letter-spacing:.08em; color:var(--tx1); }
-    .splash-sub { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--tx3); }
-    .splash-bar { width:100px; height:1px; background:var(--border); position:relative; overflow:hidden; }
-    .splash-bar::after { content:''; position:absolute; left:-40%; width:40%; height:100%; background:var(--accent); animation:load 1.2s ease infinite; }
-    @keyframes load { from{left:-40%} to{left:100%} }
-    .toast { position:fixed; bottom:88px; left:50%; transform:translateX(-50%); background:var(--elevated); border:1px solid var(--border); border-radius:9px; padding:11px 18px; font-size:13px; color:var(--tx1); z-index:1000; white-space:nowrap; animation:toastIn .2s ease; box-shadow:0 4px 20px rgba(0,0,0,.5); }
-    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-    .empty { text-align:center; padding:60px 18px; }
-    .empty-ico { font-size:36px; opacity:.25; margin-bottom:14px; }
-    .empty-t { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--tx2); margin-bottom:7px; }
-    .empty-s { font-size:12px; color:var(--tx3); }
-    .det-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; margin:0 18px 16px; background:var(--elevated); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
-    .det-info-cell { padding:10px 14px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
-    .det-info-cell:nth-child(even) { border-right:none; }
-    .det-info-cell:nth-last-child(-n+2) { border-bottom:none; }
-    .det-info-label { font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--tx3); margin-bottom:4px; }
-    .det-info-val { font-size:13px; color:var(--tx1); }
-    .det-notes { padding:0 18px 16px; font-family:'Cormorant Garamond',serif; font-size:16px; font-style:italic; color:var(--tx2); line-height:1.7; }
-    .about-block { margin:0 18px 20px; padding:14px; background:var(--elevated); border:1px solid var(--border); border-radius:10px; font-size:13px; color:var(--tx2); line-height:1.7; }
-    .palate-edit-ta { width:100%; background:var(--elevated); border:1px solid var(--accent); border-radius:8px; color:var(--tx1); font-family:'Jost',sans-serif; font-size:13px; padding:12px; outline:none; resize:vertical; min-height:180px; line-height:1.7; }
-    .eq-row { display:flex; align-items:flex-start; gap:14px; padding:12px 18px; border-bottom:1px solid var(--border); }
-    .eq-cat { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); min-width:90px; margin-top:2px; }
-  </style>
+/* palate: wrapped-style cards */
+.pal-head{padding-block:16px 4px}
+.pal-head h1{font-size:32px;font-weight:800}
+.pal-head p{margin:4px 0 0;color:var(--muted)}
+.w{border-radius:24px;padding:22px 20px;margin-top:14px;position:relative;overflow:hidden;color:var(--fg,#141414);background:var(--bgc)}
+.w .k{font:700 12px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.w h2{font:800 30px/1.05 var(--f-display);margin-top:10px;letter-spacing:-.02em}
+.w p{margin:10px 0 0;font-size:16px;line-height:1.45;max-width:46ch}
+.w .huge{font:800 clamp(72px,24vw,118px)/.9 var(--f-display);letter-spacing:-.04em;margin-top:12px}
+.w .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.w .row3 b{display:block;font:800 34px/1 var(--f-display)}
+.w .row3 span{font-size:13px;opacity:.8}
+.w button.inline{background:rgb(255 255 255 / .18);border:1.5px solid currentColor;border-radius:999px;min-height:44px;padding:0 16px;font-weight:600;margin-top:16px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;margin-top:16px}
+.vs div{text-align:center}
+.vs b{display:block;font:800 clamp(56px,17vw,84px)/.9 var(--f-display);letter-spacing:-.03em}
+.vs span{font-size:14px;font-weight:600}
+.vs em{font-style:normal;font:700 15px var(--f-body);opacity:.7;padding-bottom:22px}
+.vs .lo b{opacity:.45}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:8px;margin-top:18px}
+.podium div{border-radius:14px 14px 4px 4px;padding:10px 8px;text-align:center;background:rgb(255 255 255 / .28);display:flex;flex-direction:column;justify-content:flex-end;min-width:0}
+.podium b{font:800 26px/1 var(--f-display)}
+.podium span{font-size:13px;font-weight:600;line-height:1.2;margin-top:6px;overflow-wrap:anywhere}
+.podium small{font-size:12px;opacity:.75}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.split > div{border-radius:16px;padding:14px;background:rgb(255 255 255 / .22)}
+.split h3{font:700 12px var(--f-body);letter-spacing:.08em;text-transform:uppercase;opacity:.8;margin-bottom:8px}
+.split ol{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.split li{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:15px}
+.split li span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.split li span:last-child{font-family:var(--f-mono);font-weight:500}
+.facts-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.facts-list li{background:rgb(255 255 255 / .1);border-radius:14px;padding:12px 14px;font-size:15.5px;line-height:1.4}
+.facts-list li b{font-family:var(--f-display);font-weight:800;font-size:18px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tags span{border-radius:999px;padding:7px 13px;font-weight:600;font-size:15px;background:rgb(255 255 255 / .35)}
+.tags span small{font:500 12px var(--f-mono);opacity:.7;margin-left:4px}
+.tags.dark span{background:rgb(0 0 0 / .12)}
+.nerd{margin-top:28px}
+.nerd > h2{font-size:22px}
+.nerd > p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:12px}
+.card > h3{font-size:18px}
+.card > p.sub{margin:4px 0 12px;color:var(--muted);font-size:14px}
+.card .chips{margin-inline:0;padding-inline:0;flex-wrap:wrap;margin-bottom:8px}
+.drow{display:grid;grid-template-columns:minmax(0,8em) minmax(0,1fr) 4.4em;gap:10px;align-items:center;font-size:14px;min-height:30px}
+.drow .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{position:relative;height:18px}
+.track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}
+.track .mean{position:absolute;top:0;bottom:0;width:1.5px;background:var(--muted);opacity:.7}
+.track .dot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:hsl(var(--h) 70% 45%);border:2px solid var(--surface)}
+.drow .v{text-align:right;font-family:var(--f-mono);font-size:13px}
+.drow .v small{color:var(--muted);font-size:11px;display:block;line-height:1}
+.axis{display:grid;grid-template-columns:minmax(0,8em) minmax(0,1fr) 4.4em;gap:10px;font:11px var(--f-mono);color:var(--muted);margin-top:4px}
+.axis div:nth-child(2){display:flex;justify-content:space-between}
+svg text{fill:var(--muted);font:10px var(--f-mono)}
+.hist{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:22px}
+.hist div{flex:1;border-radius:4px 4px 0 0;position:relative;min-height:2px;background:hsl(var(--h) 65% 50%)}
+.hist div span{position:absolute;top:-18px;left:0;right:0;text-align:center;font:11px var(--f-mono);color:var(--muted)}
+.hlab{display:flex;gap:4px;font:11px var(--f-mono);color:var(--muted);margin-top:4px}
+.hlab span{flex:1;text-align:center}
+@media (prefers-reduced-motion:no-preference){ .sheet{animation:up .22s ease-out} @keyframes up{from{transform:translateY(30px);opacity:.6}} }
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const { useState, useEffect, useMemo, useRef, useCallback } = React;
+<div id="app"></div>
+<script>
+"use strict";
+/* Read-only: the logbook is written by tools/dialin_api.py (via Claude). The app only reads dialins.json. */
+const REPO = "trynerlu/coffee-dialins", CACHE_KEY = "dialin.cache.v2";
+let SEED = { entries: [] };
+const SYNC = { state: "loading", at: null };
+const KITS = {"home-espresso":"Home espresso","home-pour-over":"Home pour-over","home-french-press":"Home French press","office-espresso":"Office espresso","office-pour-over":"Office pour-over","office-french-press":"Office French press"};
+const NEG_TAGS = new Set(["flat","boring","not well responding"]);
+const $ = (s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtR = r => r ? (Number.isInteger(r) ? r + ".0" : String(r)) : "–";
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtDate = d => { if(!d) return ""; const [y,m,dd]=d.split("-"); return `${+dd} ${MONTHS[+m-1]} ${y}`; };
+const fmtMonth = d => { if(!d) return "Undated"; const [y,m]=d.split("-"); return `${MONTHS[+m-1]} ${y}`; };
+const hue = r => Math.round(4 + Math.max(0,Math.min(4,r-1))/4*126);   /* 1 → red, 3 → yellow, 5 → green */
+const scoreEl = (r,big) => r
+  ? `<span class="score${big?" big":""}" style="--h:${hue(r)}" aria-label="Rated ${r} of 5">${fmtR(r)}${big?"<small>out of 5</small>":""}</span>`
+  : `<span class="score none${big?" big":""}" aria-label="Not rated">–${big?"<small>unrated</small>":""}</span>`;
+const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const splitList = s => (s||"").split(/[,·/]| and /).map(x=>x.trim()).filter(Boolean);
+const ORIGIN_ALIAS = {"Sumatra":"Indonesia"};
+const origins = s => splitList(s).map(o=>ORIGIN_ALIAS[o]||o).filter(o=>o!=="Blend");
+function avg(a){ a=a.filter(x=>x>0); return a.length ? a.reduce((s,x)=>s+x,0)/a.length : 0; }
+function wavg(items){ let s=0,w=0; for(const [r,wt] of items){ if(r>0){ s+=r*wt; w+=wt; } } return w ? s/w : 0; }
+const W = e => e.isEarlyEntry ? 0.5 : 1;
 
-// ── CONSTANTS ─────────────────────────────────────────────────────────────────
-const APP_VERSION   = "4.2.0";
-const LS            = { settings:"ca_settings", kits:"ca_kits", dialins:"ca_dialins", quiz:"ca_quiz", wishlist:"ca_wishlist" };
-const PROCESSES     = ["Washed","Natural","Honey","Anaerobic Natural","Anaerobic Washed","Anaerobic","Carbonic Maceration","Wet-Hulled","Experimental","Blend"];
-const ROASTS        = ["Light","Medium-Light","Medium","Medium-Dark","Dark"];
-const BREW_METHODS  = ["Espresso","Pour Over","French Press"];
-const DIAL_STATUSES = ["waiting","dialing","dialed","abandoned"];
-const BEAN_LOCS     = ["shelf","open","frozen","empty"];
-const DIAL_TAGS     = ["interesting","complex","funky","versatile","well responding","good value","good for milk","crowd-pleaser","affogato","my choice","flat","boring","not well responding"];
+function buildCoffees(entries){
+  const m = new Map();
+  for(const e of entries){ const k=(e.roaster+"|"+e.coffeeName).toLowerCase(); if(!m.has(k)) m.set(k,[]); m.get(k).push(e); }
+  return [...m.values()].map(list => {
+    list.sort((a,b)=> (b.rating-a.rating) || (b.date||"").localeCompare(a.date||""));
+    const best=list[0], pick=f=>(list.find(e=>e[f])||{})[f]||"";
+    return { key:"c-"+slug(best.roaster+"-"+best.coffeeName), name:best.coffeeName, roaster:best.roaster, entries:list, best,
+      rating:best.rating, date:list.map(e=>e.date||"").sort().pop(),
+      origin:pick("origin"), region:pick("region"), process:pick("process"), roastLevel:pick("roastLevel"),
+      variety:pick("variety"), producer:pick("producer"), farm:pick("farm"), altitude:pick("altitude"),
+      flavorNotes:pick("flavorNotes"), review:pick("review"), coffeeUrl:pick("coffeeUrl"), coffeeDescription:pick("coffeeDescription"),
+      isChoice:list.some(e=>e.isChoice), wouldBuy:list.some(e=>e.wouldBuy),
+      tags:[...new Set(list.flatMap(e=>e.tags||[]))], methods:[...new Set(list.flatMap(e=>e.brewMethods||[]))],
+      early:list.every(e=>e.isEarlyEntry),
+      search:[best.coffeeName,best.roaster,pick("origin"),pick("region"),pick("process"),pick("variety"),pick("producer"),pick("farm"),pick("flavorNotes"),list.flatMap(e=>e.tags||[]).join(" ")].join(" ").toLowerCase() };
+  });
+}
 
-const KIT_GRID = { "home-espresso":"he","home-pour-over":"hp","home-french-press":"hp","office-espresso":"oe","office-pour-over":"op","office-french-press":"op" };
+const S = { coffees:[], q:"", quick:"all", sort:"rating", group:"none",
+  f:{origin:new Set(),process:new Set(),roast:new Set(),roaster:new Set(),tag:new Set()}, sheet:false, pf:"roast" };
+try{ const v=JSON.parse(localStorage.getItem("dialin.view")||"{}"); if(v.sort) S.sort=v.sort; if(v.group) S.group=v.group; }catch(e){}
+const saveView=()=>{ try{ localStorage.setItem("dialin.view",JSON.stringify({sort:S.sort,group:S.group})); }catch(e){} };
 
-// Brew method → color
-const DOT_COLOR = {
-  espr: "#C87840",
-  pour: "#4A8888",
-  both: "#8A6A9A",
-  frpr: "#4A8888",
+const QUICK=[["all","All"],["picks","My picks"],["buy","Buy again"],["filter","Pour over"],["espresso","Espresso"],["misses","Misses"]];
+const FACETS=[["origin","Origin",c=>origins(c.origin).length?origins(c.origin):(c.origin==="Blend"?["Blend"]:[])],["process","Process",c=>c.process?[c.process]:[]],
+  ["roast","Roast",c=>c.roastLevel?[c.roastLevel]:[]],["roaster","Roaster",c=>[c.roaster]],["tag","Tags",c=>c.tags]];
+
+function filtered(){
+  const q=S.q.trim().toLowerCase();
+  return S.coffees.filter(c=>{
+    if(q && !q.split(/\s+/).every(t=>c.search.includes(t))) return false;
+    if(S.quick==="picks"&&!c.isChoice) return false;
+    if(S.quick==="buy"&&!c.wouldBuy) return false;
+    if(S.quick==="filter"&&!c.methods.includes("Pour Over")) return false;
+    if(S.quick==="espresso"&&!c.methods.includes("Espresso")) return false;
+    if(S.quick==="misses"&&!(c.rating>0&&c.rating<=2)) return false;
+    for(const [k,,get] of FACETS){ const s=S.f[k]; if(s.size&&!get(c).some(v=>s.has(v))) return false; }
+    return true;
+  }).sort((a,b)=> S.sort==="rating" ? (b.rating-a.rating)||(b.date||"").localeCompare(a.date||"")
+    : S.sort==="low" ? ((a.rating||9)-(b.rating||9))||(b.date||"").localeCompare(a.date||"")
+    : S.sort==="date" ? (b.date||"").localeCompare(a.date||"") : a.roaster.localeCompare(b.roaster)||a.name.localeCompare(b.name));
+}
+const fcount=()=>Object.values(S.f).reduce((n,s)=>n+s.size,0);
+
+const ICON={
+  search:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  back:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+  share:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v14"/></svg>',
+  book:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5z"/><path d="M4 19a2 2 0 0 0 2 2h13"/></svg>',
+  palate:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z"/></svg>',
+  filter:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>',
 };
 
-function brewDotColor(brewMethods) {
-  if (!brewMethods||!brewMethods.length) return "#5A3A22";
-  const hasE = brewMethods.includes("Espresso");
-  const hasP = brewMethods.includes("Pour Over")||brewMethods.includes("French Press");
-  if (hasE&&hasP) return DOT_COLOR.both;
-  if (hasE) return DOT_COLOR.espr;
-  return DOT_COLOR.pour;
+function rowHTML(c){
+  const where=[c.origin,c.process].filter(Boolean).join(" · ");
+  return `<li><button class="row" data-open="${c.key}">
+    <span style="min-width:0"><span class="name">${esc(c.name)}</span><span class="meta">${esc(c.roaster)}${where?" · "+esc(where):""}</span></span>
+    <span class="flagcol" aria-label="${[c.isChoice&&"My pick",c.wouldBuy&&"Would buy again"].filter(Boolean).join(", ")}">${c.isChoice?'<span class="flag p">Pick</span>':"<span></span>"}${c.wouldBuy?'<span class="flag b">Buy</span>':"<span></span>"}</span>
+    ${scoreEl(c.rating)}</button></li>`;
 }
+function groupKey(c){ if(S.group==="roaster") return c.roaster; if(S.group==="origin") return origins(c.origin)[0]||(c.origin==="Blend"?"Blends":"Unknown origin"); if(S.group==="month") return c.date?c.date.slice(0,7):"0000"; return ""; }
 
-// ── FRESHNESS MATRIX ──────────────────────────────────────────────────────────
-const FRESH_MATRIX = {
-  "Light":        { espresso:[7,28,60,120], filter:[5,21,45,90] },
-  "Medium-Light": { espresso:[6,24,52,105], filter:[4,17,40,80] },
-  "Medium":       { espresso:[5,21,45,90],  filter:[4,14,35,70] },
-  "Medium-Dark":  { espresso:[4,17,37,75],  filter:[3,12,30,55] },
-  "Dark":         { espresso:[3,14,30,60],  filter:[2,10,25,50] },
-};
-
-function getEffectiveAgeDays(roastDate, frozenDate, thawDate) {
-  if (!roastDate) return null;
-  const roast  = new Date(roastDate);
-  const now    = new Date();
-  const frozen = frozenDate ? new Date(frozenDate) : null;
-  const thawed = thawDate   ? new Date(thawDate)   : null;
-  if (!frozen) return (now - roast) / 86400000;
-  const shelfBefore = (frozen - roast) / 86400000;
-  const frozenEnd   = thawed || now;
-  const frozenDays  = (frozenEnd - frozen) / 86400000;
-  const shelfAfter  = thawed ? (now - thawed) / 86400000 : 0;
-  return shelfBefore + (frozenDays * 0.05) + shelfAfter;
-}
-
-function getFreshness(roastDate, beanLocation, roastLevel, brewMethods, settings, frozenDate, thawDate) {
-  if (beanLocation==="frozen"||beanLocation==="empty") return null;
-  if (!roastDate) return null;
-  const days = getEffectiveAgeDays(roastDate, frozenDate, thawDate);
-  if (days===null||days<0) return null;
-  const brewKey = (brewMethods||[]).includes("Espresso") ? "espresso" : "filter";
-  const level   = roastLevel||"Medium";
-  const [tf,pe,ge,ae] = (settings?.freshnessOverrides?.[level]?.[brewKey]) || (FRESH_MATRIX[level]||FRESH_MATRIX["Medium"])[brewKey];
-  if (days<tf)  return {label:"TOO FRESH", color:"#8A7040", bg:"rgba(120,100,60,0.13)"};
-  if (days<=pe) return {label:"✓ PRIME",   color:"var(--green)",  bg:"var(--green-d)"};
-  if (days<=ge) return {label:"◷ GOOD",    color:"var(--tx2)",   bg:"rgba(154,112,80,0.1)"};
-  if (days<=ae) return {label:"⚡ AGING",  color:"var(--accent)", bg:"var(--accent-d)"};
-  return              {label:"PAST PEAK", color:"var(--red)",   bg:"var(--red-d)"};
-}
-
-// ── UTILS ─────────────────────────────────────────────────────────────────────
-const fmt      = d => d ? new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "";
-const fmtShort = d => d ? new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short"}) : "";
-const ratio    = (a,b) => (a&&b) ? `1:${(b/a).toFixed(1)}` : null;
-const uid      = () => `d-${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-const lsGet    = k => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch{return null;} };
-const lsSet    = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
-const secToMSS = s => { const n=+s||0; return `${Math.floor(n/60)}:${String(n%60).padStart(2,"0")}`; };
-const mssToSec = t => { if(!t)return 0; const p=String(t).split(":"); return p.length===2?+p[0]*60+(+p[1]||0):+t||0; };
-const tempDisp = (t,unit) => t>0 ? `${unit==="F"?Math.round(t*9/5+32):t}°${unit||"C"}` : null;
-const shortGrind = val => { if(!val)return null; const m=String(val).match(/^[\d.]+/); return m?m[0]:String(val).slice(0,5); };
-
-function normalizeDiaLin(d) {
-  const base = {
-    roastDate:"", frozenDate:"", thawDate:"",
-    beanLocation:"open", dialStatus:"dialed",
-    experimenting:false, isEarlyEntry:false,
-    wouldBuy:false, isChoice:false, tags:[], brewMethods:[],
-    dialEase:null, dialStability:null, filterPours:[],
-    coffeeUrl:"", coffeeDescription:"", notes:"",
-    review:"", variety:"", producer:"", farm:"", altitude:"",
-    ...d
-  };
-  if (!base.brewMethods?.length && base.intendedFor) {
-    const iv=String(base.intendedFor).toLowerCase();
-    if (iv.includes("espresso")) base.brewMethods=["Espresso"];
-    else if (iv.includes("filter")||iv.includes("pour")) base.brewMethods=["Pour Over"];
-    else if (iv.includes("french")) base.brewMethods=["French Press"];
+function libraryHTML(){
+  const list=filtered(), fc=fcount(), showShelf=!S.q&&S.quick==="all"&&!fc;
+  const picks=S.coffees.filter(c=>c.isChoice).sort((a,b)=>b.rating-a.rating||(b.date||"").localeCompare(a.date||""));
+  let body="";
+  if(!S.coffees.length) body=`<div class="empty">${SYNC.state==="error"?"Couldn't load the logbook. Check your connection and tap Refresh.":"Loading the logbook…"}</div>`;
+  else if(!list.length) body=`<div class="empty">No coffees match.<br><button class="chip" style="margin-top:12px" data-act="clear">Clear filters</button></div>`;
+  else if(S.group==="none") body=`<ul class="list" style="margin-top:8px">${list.map(rowHTML).join("")}</ul>`;
+  else{
+    const g=new Map(); for(const c of list){ const k=groupKey(c); if(!g.has(k)) g.set(k,[]); g.get(k).push(c); }
+    let keys=[...g.keys()];
+    if(S.group==="month") keys.sort().reverse(); else keys.sort((a,b)=>avg(g.get(b).map(c=>c.rating))-avg(g.get(a).map(c=>c.rating))||a.localeCompare(b));
+    body=keys.map(k=>{ const cs=g.get(k); return `<section class="group"><h2>${esc(S.group==="month"?fmtMonth(k==="0000"?"":k):k)} <span>${cs.length} · avg ${avg(cs.map(c=>c.rating)).toFixed(1)}</span></h2><ul class="list">${cs.map(rowHTML).join("")}</ul></section>`; }).join("");
   }
-  if (!base.dialEase && base.dialDifficulty!=null) base.dialEase=base.dialDifficulty<=2?"easy":base.dialDifficulty<=3?"medium":"hard";
-  if (!base.dialStability && base.shotStability!=null) base.dialStability=base.shotStability>=4?"stable":"unstable";
-  if (typeof base.filterPours==="number"||!Array.isArray(base.filterPours)) {
-    const phases=[];
-    if (d.filterBloomGrams>0) phases.push({phase:1,targetGrams:d.filterBloomGrams,startSeconds:0});
-    base.filterPours=phases;
+  const active=FACETS.flatMap(([k])=>[...S.f[k]].map(v=>`<button class="chip" aria-pressed="true" data-unf="${k}" data-v="${esc(v)}">${esc(v)} <span aria-hidden="true">×</span></button>`)).join("");
+  return `
+  <header class="top"><div class="wrap">
+    <div class="titlerow"><h1>Library</h1><span class="count" id="libcount">${list.length} of ${S.coffees.length} coffees</span></div>
+    <label class="search">${ICON.search}<input id="q" type="search" placeholder="Coffee, roaster, origin, notes" value="${esc(S.q)}" autocomplete="off" aria-label="Search"></label>
+    <div class="chips" role="group" aria-label="Quick filters">${QUICK.map(([k,l])=>`<button class="chip" aria-pressed="${S.quick===k}" data-quick="${k}">${l}</button>`).join("")}</div>
+    <div class="chips">
+      <button class="chip${fc?" on":""}" data-act="sheet">${ICON.filter} Filter${fc?` · ${fc}`:""}</button>
+      <span class="selwrap"><select id="sort" aria-label="Sort"><option value="rating">Best rated</option><option value="low">Lowest rated</option><option value="date">Newest</option><option value="roaster">Roaster A–Z</option></select></span>
+      <span class="selwrap"><select id="group" aria-label="Group"><option value="none">No grouping</option><option value="roaster">By roaster</option><option value="origin">By origin</option><option value="month">By month</option></select></span>
+    </div>
+    ${active?`<div class="chips">${active}</div>`:""}
+  </div></header>
+  <main class="wrap" id="libmain">
+    ${showShelf&&picks.length?`<section class="shelf"><h2>My picks <span>${picks.length} to show a friend</span></h2>
+      <div class="rail">${picks.map(c=>`<button class="pick" data-open="${c.key}">
+        <span class="rt"><span style="min-width:0"><span class="ro">${esc(c.roaster)}</span><h3>${esc(c.name)}</h3></span>${scoreEl(c.rating)}</span>
+        <span class="wh">${esc([c.origin,c.process].filter(Boolean).join(" · "))}</span>
+        <span class="notes">${esc(c.flavorNotes||c.review)}</span></button>`).join("")}</div></section>
+      <h2 style="font-size:20px;margin-top:24px">All coffees</h2>`:""}
+    ${body}
+    <div class="legend"><span>1</span><span class="bar"></span><span>5</span><span style="margin-left:6px">Pick = my pick · Buy = would buy again</span></div>
+    <p class="foot">${syncLine()} New coffees arrive through Claude.</p>
+  </main>`;
+}
+
+function sheetHTML(){
+  const counts={}; for(const [k,,get] of FACETS){ counts[k]=new Map(); for(const c of S.coffees) for(const v of get(c)) counts[k].set(v,(counts[k].get(v)||0)+1); }
+  return `<div class="scrim" data-act="close"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Filters"><div class="in"><div class="grab"></div>
+    <h2>Filters <button class="chip" data-act="reset">Reset</button></h2>
+    ${FACETS.map(([k,label])=>`<h3>${label}</h3><div class="chips">${[...counts[k].entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([v,n])=>`<button class="chip" aria-pressed="${S.f[k].has(v)}" data-f="${k}" data-v="${esc(v)}">${esc(v)} <span class="n">${n}</span></button>`).join("")}</div>`).join("")}
+    <div class="actions"><button class="btn" data-act="close">Show ${filtered().length} coffees</button></div>
+  </div></div>`;
+}
+
+function detailHTML(c){
+  const facts=[["Origin",[c.origin,c.region].filter(Boolean).join(", ")],["Producer",[c.producer,c.farm].filter(Boolean).join(" · ")],["Variety",c.variety],["Process",c.process],["Altitude",c.altitude],["Roast",c.roastLevel]].filter(f=>f[1]);
+  const notes=splitList(c.flavorNotes);
+  const badges=[c.isChoice?'<span class="badge p">My pick</span>':"",c.wouldBuy?'<span class="badge b">Would buy again</span>':"",...c.tags.map(t=>`<span class="badge">${esc(t)}</span>`)].join("");
+  const brews=c.entries.map(e=>{
+    const esp=(e.brewMethods||[]).includes("Espresso"), cells=[];
+    if(e.doseIn) cells.push([e.doseIn+" g","Dose"]);
+    if(e.yieldOut) cells.push([e.yieldOut+" g",esp?"Yield":"Water"]);
+    if(e.doseIn&&e.yieldOut) cells.push(["1:"+(e.yieldOut/e.doseIn).toFixed(esp?1:0),"Ratio"]);
+    if(e.temperature) cells.push([e.temperature+"°C","Temp"]);
+    if(e.timeSeconds) cells.push([Math.floor(e.timeSeconds/60)+":"+String(e.timeSeconds%60).padStart(2,"0"),"Time"]);
+    if(e.grindSetting) cells.push([e.grindSetting,(e.grinder||"Grind").replace(/^(Timemore|Eureka|Baratza) /,"")]);
+    const pours=(e.filterPours||[]).length?`<p class="pours mono">${e.filterPours.map(p=>`${p.targetGrams} g @ ${Math.floor(p.startSeconds/60)}:${String(p.startSeconds%60).padStart(2,"0")}`).join(" → ")}</p>`:"";
+    const ease=[e.dialEase,e.dialStability].filter(Boolean).join(", ");
+    return `<details><summary>${esc(KITS[e.kitId]||(e.brewMethods||[]).join(", ")||"Brew")}${c.entries.length>1?" "+scoreEl(e.rating):""}<span class="sub">${esc(fmtDate(e.date))}</span></summary>
+      <div class="dbody">${cells.length?`<div class="recipe">${cells.map(([v,l])=>`<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</div>`:`<p class="pours">No recipe recorded.</p>`}
+      ${pours}${ease?`<p class="pours">Dial-in: ${esc(ease)}</p>`:""}${e.notes?`<p>${esc(e.notes)}</p>`:""}</div></details>`;
+  }).join("");
+  return `<div class="wrap">
+    <div class="dhead"><button class="iconbtn" data-act="back">${ICON.back} Back</button><button class="iconbtn" data-act="share">${ICON.share} Share</button></div>
+    <article>
+      <div class="hero"><div style="min-width:0"><div class="roaster">${esc(c.roaster)}</div><h1>${esc(c.name)}</h1>
+        <div class="where">${esc([c.origin,c.process].filter(Boolean).join(" · "))}${c.date?" · "+esc(fmtMonth(c.date)):""}</div></div>${scoreEl(c.rating,true)}</div>
+      ${badges?`<div class="badges">${badges}</div>`:""}
+      ${c.review?`<p class="verdict"><span class="lab">My verdict</span>${esc(c.review)}</p>`:""}
+      ${notes.length?`<section class="section"><span class="lab">Roaster's tasting notes</span><div class="notes-chips">${notes.map(n=>`<span>${esc(n)}</span>`).join("")}</div></section>`:""}
+      ${facts.length?`<section class="section"><span class="lab">The coffee</span><dl class="facts">${facts.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+        ${c.coffeeUrl?`<a class="link" href="${esc(c.coffeeUrl)}" target="_blank" rel="noopener">Roaster's page ↗</a>`:""}</section>`:""}
+      <section class="section"><span class="lab">How I brewed it</span>${brews}
+        ${c.coffeeDescription?`<details><summary>From the bag and roaster</summary><div class="dbody"><p>${esc(c.coffeeDescription)}</p></div></details>`:""}</section>
+    </article>
+    ${c.early?`<p class="foot">Early entry, before March 2026. Counts half in Palate.</p>`:""}
+  </div>`;
+}
+
+/* ---------- palate ---------- */
+const PRODUCERS=["Panama","Guatemala","Burundi","El Salvador","Yemen","Mexico","Bolivia","Ecuador","Papua New Guinea","China","India","Thailand","Myanmar","Kenya","Rwanda","Colombia","Ethiopia","Brazil","Costa Rica","Peru","Honduras","Nicaragua","Uganda","Tanzania","Indonesia","Vietnam"];
+const PROCESSES=["Washed","Natural","Honey","Anaerobic","Carbonic maceration","Thermal shock","Wet-hulled","Co-fermented"];
+function groupStats(entries,get,minN=2){ const g=new Map(); for(const e of entries) for(const v of get(e)){ if(!g.has(v)) g.set(v,[]); g.get(v).push(e); }
+  return [...g.entries()].filter(([,a])=>a.length>=minN).map(([k,a])=>({k,n:a.length,m:wavg(a.map(e=>[e.rating,W(e)])),list:a})).sort((a,b)=>b.m-a.m); }
+const monthsAgo=d=>{ const a=new Date(d), b=new Date(); return (b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth(); };
+const r2=x=>x.toFixed(2), r1=x=>x.toFixed(1);
+
+function palateHTML(){
+  if(!SEED.entries.some(e=>e.rating>0&&e.date)) return `<div class="wrap"><header class="pal-head"><h1>Palate</h1></header><div class="empty">${SYNC.state==="error"?"Couldn't load the logbook.":"Loading the logbook…"}</div></div>`;
+  const E=SEED.entries, R=E.filter(e=>e.rating>0), overall=wavg(R.map(e=>[e.rating,W(e)]));
+  const C=S.coffees, roasters=new Set(E.map(e=>e.roaster)), orgs=new Set(E.flatMap(e=>origins(e.origin)));
+  const dates=E.map(e=>e.date).filter(Boolean).sort(), since=dates[0];
+  const byMonth=groupStats(E,e=>e.date?[e.date.slice(0,7)]:[],1).sort((a,b)=>b.n-a.n);
+  const cards=[];
+
+  // 1. intro
+  cards.push(`<section class="w" style="--bgc:var(--w-lime)"><div class="k">Since ${fmtMonth(since)}</div>
+    <div class="huge">${E.length}</div><h2 style="margin-top:4px">brews logged</h2>
+    <div class="row3"><div><b>${C.length}</b><span>coffees</span></div><div><b>${roasters.size}</b><span>roasters</span></div><div><b>${orgs.size}</b><span>origins</span></div></div>
+    <p>Busiest month: <b>${fmtMonth(byMonth[0].k)}</b>, ${byMonth[0].n} brews.</p></section>`);
+
+  // 2. number one
+  const top=[...C].sort((a,b)=>b.rating-a.rating||(b.date||"").localeCompare(a.date||""))[0];
+  const quote=(top.review||"").split(/(?<=\.)\s/)[0];
+  cards.push(`<section class="w" style="--bgc:var(--w-violet);--fg:#fff"><div class="k">Your number one</div>
+    <h2 style="font-size:clamp(34px,10vw,48px)">${esc(top.name)}</h2><p style="opacity:.85">${esc(top.roaster)} · ${esc(top.origin)} · rated ${fmtR(top.rating)}</p>
+    ${quote?`<p style="font:400 20px/1.4 var(--f-display);margin-top:14px">“${esc(quote)}”</p>`:""}
+    <button class="inline" data-open="${top.key}">Open the coffee</button></section>`);
+
+  // 3. roast face-off
+  const roast=groupStats(R,e=>e.roastLevel?[e.roastLevel]:[]);
+  const light=roast.find(s=>s.k==="Light"), darker=roast.filter(s=>s.k!=="Light").sort((a,b)=>b.n-a.n)[0];
+  if(light&&darker){ const lightWins=light.m>=darker.m;
+    cards.push(`<section class="w" style="--bgc:var(--w-coral)"><div class="k">Roast face-off</div>
+      <h2>${lightWins?"You're a light-roast person.":"Darker roasts are winning."}</h2>
+      <div class="vs"><div class="${lightWins?"":"lo"}"><b>${r1(light.m)}</b><span>Light · ${light.n}</span></div><em>vs</em><div class="${lightWins?"lo":""}"><b>${r1(darker.m)}</b><span>${esc(darker.k)} · ${darker.n}</span></div></div>
+      <p>${roast.length?`${E.filter(e=>!e.roastLevel).length} brews have no roast level, so this could sharpen.`:""}</p></section>`); }
+
+  // 4. magic word
+  const tagStats=groupStats(R,e=>e.tags||[],4).filter(s=>!NEG_TAGS.has(s.k));
+  if(tagStats.length){ const t=tagStats[0], worst=groupStats(R,e=>e.tags||[],3).filter(s=>NEG_TAGS.has(s.k)).sort((a,b)=>a.m-b.m)[0];
+    cards.push(`<section class="w" style="--bgc:var(--w-yellow)"><div class="k">The magic word</div>
+      <div class="huge" style="font-size:clamp(56px,17vw,92px)">${esc(t.k)}</div>
+      <p>Coffees you tag <b>${esc(t.k)}</b> average <b>${r2(t.m)}</b>, against your overall ${r2(overall)}.${worst?` The kiss of death is <b>${esc(worst.k)}</b> at ${r2(worst.m)}.`:""}</p>
+      <div class="tags dark">${groupStats(R,e=>e.tags||[],3).map(s=>`<span>${esc(s.k)}<small>${r1(s.m)}</small></span>`).join("")}</div></section>`); }
+
+  // 5. roaster podium
+  const rs=groupStats(R,e=>[e.roaster]);
+  if(rs.length>=3){ const [a,b,c]=rs; const h=[110,140,90];
+    cards.push(`<section class="w" style="--bgc:var(--w-sky)"><div class="k">Roaster podium</div><h2>${esc(a.k)} takes gold.</h2>
+      <div class="podium">${[[b,2,h[0]],[a,1,h[1]],[c,3,h[2]]].map(([s,p,ht])=>`<div style="height:${ht}px"><small>#${p}</small><b>${r1(s.m)}</b><span>${esc(s.k)}</span><small>${s.n} brews</small></div>`).join("")}</div>
+      <p>At least 2 brews to qualify. Bottom of the table: ${rs.slice(-2).map(s=>`${esc(s.k)} (${r1(s.m)})`).join(", ")}.</p></section>`); }
+
+  // 6. origins
+  const os=groupStats(R,e=>origins(e.origin));
+  if(os.length>=4){ const best=os.slice(0,3), worst=os.slice(-3).reverse(); const most=[...os].sort((a,b)=>b.n-a.n)[0];
+    cards.push(`<section class="w" style="--bgc:var(--w-green);--fg:#fff"><div class="k">Around the world</div><h2>Where your best cups grow</h2>
+      <div class="split"><div><h3>Hall of fame</h3><ol>${best.map(s=>`<li><span>${esc(s.k)}</span><span>${r1(s.m)}</span></li>`).join("")}</ol></div>
+        <div><h3>Hall of shame</h3><ol>${worst.map(s=>`<li><span>${esc(s.k)}</span><span>${r1(s.m)}</span></li>`).join("")}</ol></div></div>
+      <p>${esc(most.k)} is your most-logged origin (${most.n} brews) and averages ${r1(most.m)}.</p></section>`); }
+
+  // 7. weird things
+  const weird=[];
+  const kits=groupStats(R,e=>e.kitId?[e.kitId]:[],3); const ho=kits.find(s=>s.k==="home-espresso"), oo=kits.find(s=>s.k==="office-espresso");
+  if(ho&&oo&&Math.abs(ho.m-oo.m)>=0.5){ const [w,l]=oo.m>ho.m?[oo,ho]:[ho,oo]; weird.push(`<b>${KITS[w.k]}</b> beats ${KITS[l.k].toLowerCase()}: ${r1(w.m)} vs ${r1(l.m)}. Same coffee style, different machine.`); }
+  const cp=tagStats.find(s=>s.k==="crowd-pleaser"); if(cp&&tagStats[0].m-cp.m>=0.25) weird.push(`<b>Crowd-pleasers</b> average ${r1(cp.m)}. You respect them more than you love them.`);
+  const noteWords=groupStats(R,e=>splitList(e.flavorNotes).map(w=>w.toLowerCase()),3).sort((a,b)=>a.m-b.m);
+  if(noteWords.length&&noteWords[0].m<overall-0.3) weird.push(`Bags promising <b>${esc(noteWords[0].k)}</b> score ${r1(noteWords[0].m)} on average (${noteWords[0].n} bags). Read that label twice.`);
+  const modes=[...groupStats(R,e=>[String(e.rating)],1)].sort((a,b)=>b.n-a.n)[0];
+  if(modes) weird.push(`Your most common score is <b>${modes.k}</b>. Only ${Math.round(R.filter(e=>e.rating>=4).length/R.length*100)}% of brews reach 4 or more. Tough judge.`);
+  const ext=groupStats(R,e=>/anaerob|experimental|thermal|carbonic/i.test(e.process||"")?["wild"]:["classic"],1); const wi=ext.find(s=>s.k==="wild"), cl=ext.find(s=>s.k==="classic");
+  if(wi&&cl) weird.push(`Funky processes (anaerobic, experimental) average <b>${r1(wi.m)}</b> vs ${r1(cl.m)} for classic ones${wi.m>cl.m?". The wild stuff pays off.":"."}`);
+  if(weird.length) cards.push(`<section class="w" style="--bgc:var(--w-ink);--fg:#fff"><div class="k">Weird but true</div><h2>Things the logbook noticed</h2><ul class="facts-list">${weird.map(x=>`<li>${x}</li>`).join("")}</ul></section>`);
+
+  // 8. try next
+  const triedO=new Set(E.flatMap(e=>origins(e.origin))); const newO=PRODUCERS.filter(p=>!triedO.has(p)).slice(0,6);
+  const procText=E.map(e=>(e.process+" "+e.coffeeDescription).toLowerCase()).join(" ");
+  const newP=PROCESSES.filter(p=>!procText.includes(p.toLowerCase().split(" ")[0].replace("-hulled","")));
+  const methods=new Set(E.flatMap(e=>e.brewMethods||[])); const newM=["Espresso","Pour Over","French Press"].filter(m=>!methods.has(m));
+  const thinO=os.filter(s=>s.n<=2&&s.m>=overall+0.4).map(s=>s.k);
+  cards.push(`<section class="w" style="--bgc:var(--w-orange)"><div class="k">Uncharted</div><h2>What you haven't tried yet</h2>
+    <p><b>Origins never logged</b></p><div class="tags">${newO.map(o=>`<span>${esc(o)}</span>`).join("")}</div>
+    ${newP.length?`<p><b>Processes never logged</b></p><div class="tags">${newP.map(o=>`<span>${esc(o)}</span>`).join("")}</div>`:""}
+    ${newM.length?`<p><b>Never brewed as</b></p><div class="tags">${newM.map(o=>`<span>${esc(o)}</span>`).join("")}</div>`:""}
+    ${thinO.length?`<p>Small sample, big promise: <b>${thinO.map(esc).join(", ")}</b>. Worth a few more bags before you call it.</p>`:""}</section>`);
+
+  // 9. worth revisiting
+  const comeback=C.filter(c=>c.wouldBuy&&c.date&&monthsAgo(c.date)>=4).sort((a,b)=>b.rating-a.rating).slice(0,4);
+  const lostR=rs.filter(s=>s.m>=overall+0.5).map(s=>({...s,last:s.list.map(e=>e.date).sort().pop()})).filter(s=>monthsAgo(s.last)>=4);
+  const second=C.filter(c=>c.early&&c.rating>0&&c.rating<=2&&rs.some(s=>s.k===c.roaster&&s.m>=overall)).slice(0,3);
+  if(comeback.length||lostR.length||second.length) cards.push(`<section class="w" style="--bgc:var(--w-pink)"><div class="k">Worth revisiting</div><h2>Time to go back?</h2>
+    ${comeback.length?`<p><b>Would buy again, not bought in months</b></p><ul class="facts-list" style="margin-top:8px">${comeback.map(c=>`<li style="background:rgb(255 255 255 / .35)"><button data-open="${c.key}" style="all:unset;cursor:pointer;display:block"><b style="font-size:16px">${esc(c.name)}</b><br>${esc(c.roaster)} · ${fmtR(c.rating)} · ${fmtMonth(c.date)}</button></li>`).join("")}</ul>`:""}
+    ${lostR.length?`<p><b>Roasters you rate highly but haven't had since:</b> ${lostR.map(s=>`${esc(s.k)} (${fmtMonth(s.last)})`).join(", ")}.</p>`:""}
+    ${second.length?`<p><b>Second chance:</b> ${second.map(c=>esc(c.name)).join(", ")}. Logged early, before the grinder settled, from a roaster you now rate.</p>`:""}</section>`);
+
+  // 10. notes loved vs not
+  const word=(lo,hi)=>{ const m=new Map(); for(const e of R) if(e.rating>=lo&&e.rating<=hi) for(const w of splitList(e.flavorNotes).map(s=>s.toLowerCase())) m.set(w,(m.get(w)||0)+1); return [...m.entries()].filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]).slice(0,8); };
+  const loved=word(3.5,5), meh=word(0.5,2.5);
+  if(loved.length||meh.length) cards.push(`<section class="w" style="--bgc:var(--w-cream)"><div class="k">On the bag</div><h2>Tasting notes that call your name</h2>
+    <div class="split"><div style="background:rgb(22 155 98 / .15)"><h3>On coffees you loved</h3><div class="tags dark" style="margin-top:0">${loved.map(([w,n])=>`<span>${esc(w)}<small>${n}</small></span>`).join("")}</div></div>
+      <div style="background:rgb(255 106 85 / .15)"><h3>On ones that missed</h3><div class="tags dark" style="margin-top:0">${meh.map(([w,n])=>`<span>${esc(w)}<small>${n}</small></span>`).join("")}</div></div></div></section>`);
+
+  // nerdy
+  const FT=[["roast","Roast"],["process","Process"],["origin","Origin"],["roaster","Roaster"],["tags","Tags"],["kit","Kit"]];
+  const getter={roast:e=>e.roastLevel?[e.roastLevel]:[],process:e=>e.process?[e.process]:[],origin:e=>origins(e.origin),roaster:e=>[e.roaster],tags:e=>e.tags||[],kit:e=>e.kitId?[KITS[e.kitId]]:[]}[S.pf];
+  const st=groupStats(R,getter); const x=v=>((v-1)/4*100).toFixed(1);
+  const dots=st.map(s=>`<div class="drow"><span class="lb">${esc(s.k)}</span><span class="track"><span class="mean" style="left:${x(overall)}%"></span><span class="dot" style="left:${x(s.m)}%;--h:${hue(s.m)}"></span></span><span class="v">${r2(s.m)}<small>${s.n} brews</small></span></div>`).join("");
+  const dated=R.filter(e=>e.date).sort((a,b)=>a.date.localeCompare(b.date)); const t0=Date.parse(dated[0].date), t1=Date.parse(dated[dated.length-1].date);
+  const VW=340,VH=170,L=24,Rr=8,T=10,B=24, px=d=>L+(Date.parse(d)-t0)/(t1-t0||1)*(VW-L-Rr), py=r=>T+(5-r)/4.5*(VH-T-B);
+  let ticks=""; const s0=new Date(t0); for(let d=new Date(s0.getFullYear(),s0.getMonth()+1,1); d.getTime()<=t1; d.setMonth(d.getMonth()+1)){ if(d.getMonth()%2) continue; const xx=px(d.toISOString().slice(0,10)); ticks+=`<text x="${xx.toFixed(1)}" y="${VH-6}" text-anchor="middle">${MONTHS[d.getMonth()]}</text>`; }
+  const grid=[1,2,3,4,5].map(r=>`<line x1="${L}" x2="${VW-Rr}" y1="${py(r)}" y2="${py(r)}" stroke="var(--line)"/><text x="${L-6}" y="${py(r)+3}" text-anchor="end">${r}</text>`).join("");
+  const roll=dated.map((e,i)=>[px(e.date),py(avg(dated.slice(Math.max(0,i-5),i+1).map(z=>z.rating)))]);
+  const path="M"+roll.map(p=>p.map(v=>v.toFixed(1)).join(",")).join("L");
+  const pts=dated.map(e=>`<circle cx="${px(e.date).toFixed(1)}" cy="${py(e.rating).toFixed(1)}" r="4.5" fill="hsl(${hue(e.rating)} 70% 45%)" fill-opacity="${e.isEarlyEntry?0.35:0.85}"><title>${esc(e.coffeeName)} · ${e.rating}</title></circle>`).join("");
+  const bins=[]; for(let r=0.5;r<=5;r+=0.5) bins.push([r,R.filter(e=>e.rating===r).length]); const hmax=Math.max(...bins.map(b=>b[1]));
+
+  return `<div class="wrap">
+    <header class="pal-head"><h1>Palate</h1><p>Your coffee taste, recalculated on every sync.</p></header>
+    ${cards.join("")}
+    <section class="nerd"><h2>The nerdy bits</h2><p>Early entries (before March 2026) count half. Unrated brews are left out.</p>
+      <div class="card"><h3>What predicts a good cup</h3><p class="sub">Average rating by group, 2+ brews. The grey line is your overall ${r2(overall)}.</p>
+        <div class="chips" role="group" aria-label="Group by">${FT.map(([k,l])=>`<button class="chip" aria-pressed="${S.pf===k}" data-pf="${k}">${l}</button>`).join("")}</div>
+        ${dots}<div class="axis"><div></div><div><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div><div></div></div></div>
+      <div class="card"><h3>Your journey</h3><p class="sub">Every rated brew over time. The line is the average of your last six.</p>
+        <svg viewBox="0 0 ${VW} ${VH}" width="100%" role="img" aria-label="Ratings over time">${grid}${ticks}<path d="${path}" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-opacity=".7"/>${pts}</svg></div>
+      <div class="card"><h3>How you score</h3><p class="sub">${R.length} rated brews by score.</p>
+        <div class="hist">${bins.map(([r,n])=>`<div style="height:${(n/hmax*100).toFixed(0)}%;--h:${hue(r)}"><span>${n||""}</span></div>`).join("")}</div>
+        <div class="hlab">${bins.map(([r])=>`<span>${r}</span>`).join("")}</div></div>
+      <div class="card"><h3>Gaps in the logbook</h3><p class="sub">Fill these and the stats above get sharper.</p>
+        <div class="tags dark" style="margin-top:0">${[["roast level",e=>!e.roastLevel],["variety",e=>!e.variety],["producer",e=>!e.producer],["verdict",e=>!e.review],["rating",e=>!e.rating]].map(([l,f])=>[l,E.filter(f).length]).filter(x=>x[1]).map(([l,n])=>`<span>${n} without ${l}</span>`).join("")}</div></div>
+    </section>
+    <p class="foot">${syncLine()}</p>
+  </div>`;
+}
+
+/* ---------- router & render ---------- */
+let toastT;
+function toast(msg){ clearTimeout(toastT); let t=$(".toast"); if(!t){ t=document.createElement("div"); t.className="toast"; t.setAttribute("role","status"); document.body.appendChild(t);} t.textContent=msg; toastT=setTimeout(()=>t.remove(),2200); }
+function route(){ const h=location.hash.slice(1); if(h.startsWith("c-")) return {view:"coffee",key:h}; if(h==="palate") return {view:"palate"}; return {view:"library"}; }
+let lastView="library", scrolls={library:0,palate:0}, navDepth=0;
+function render(){
+  const r=route(), app=$("#app");
+  if(r.view!=="coffee"&&lastView===r.view){}
+  let html="";
+  if(r.view==="coffee"){ const c=S.coffees.find(c=>c.key===r.key); html=c?detailHTML(c):`<div class="wrap empty">Coffee not found. <a href="#library">Back to the library</a></div>`; }
+  else if(r.view==="palate") html=palateHTML(); else html=libraryHTML();
+  const tab=r.view==="palate"?"palate":"library";
+  html+=`<nav class="tabs" aria-label="Sections"><div class="in">
+    <button class="tab" data-go="library" ${tab==="library"&&r.view!=="coffee"?'aria-current="page"':""}>${ICON.book} Library</button>
+    <button class="tab" data-go="palate" ${tab==="palate"?'aria-current="page"':""}>${ICON.palate} Palate</button></div></nav>`;
+  if(S.sheet&&r.view==="library") html+=sheetHTML();
+  app.innerHTML=html;
+  const so=$("#sort"), gr=$("#group"); if(so) so.value=S.sort; if(gr) gr.value=S.group;
+}
+function go(view){ if(lastView!=="coffee") scrolls[lastView]=scrollY; render(); const r=route().view; scrollTo(0, r==="coffee"?0:(lastView===r?scrollY:scrolls[r]||0)); lastView=r; }
+function keep(fn){ const y=scrollY, sc=$(".sheet")?.scrollTop; fn(); render(); scrollTo(0,y); if(sc!=null&&$(".sheet")) $(".sheet").scrollTop=sc; }
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-open],[data-quick],[data-f],[data-unf],[data-act],[data-go],[data-pf]"); if(!t) return;
+  if(t.dataset.open){ navDepth++; location.hash=t.dataset.open; return; }
+  if(t.dataset.go){ if(location.hash.slice(1)===t.dataset.go||(!location.hash&&t.dataset.go==="library")){ scrollTo({top:0,behavior:"smooth"}); return; } location.hash=t.dataset.go; return; }
+  if(t.dataset.quick){ S.quick=t.dataset.quick; render(); scrollTo(0,0); return; }
+  if(t.dataset.pf){ return keep(()=>S.pf=t.dataset.pf); }
+  if(t.dataset.f||t.dataset.unf){ const k=t.dataset.f||t.dataset.unf, v=t.dataset.v; return keep(()=>S.f[k].has(v)?S.f[k].delete(v):S.f[k].add(v)); }
+  const a=t.dataset.act;
+  if(a==="sheet"){ S.sheet=true; render(); }
+  else if(a==="close"){ S.sheet=false; render(); }
+  else if(a==="reset") keep(()=>{ for(const s of Object.values(S.f)) s.clear(); });
+  else if(a==="clear"){ for(const s of Object.values(S.f)) s.clear(); S.q=""; S.quick="all"; render(); }
+  else if(a==="back"){ if(navDepth>0){ navDepth--; history.back(); } else location.hash="library"; }
+  else if(a==="share"){ const url=location.href; (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast("Link copied"),()=>toast("Copy the link from the address bar")); }
+});
+window.addEventListener("hashchange",()=>{ S.sheet=false; go(); });
+document.addEventListener("input",e=>{ if(e.target.id==="q"){ S.q=e.target.value; const tmp=document.createElement("div"); tmp.innerHTML=libraryHTML(); $("#libmain").replaceWith(tmp.querySelector("#libmain")); $("#libcount").textContent=tmp.querySelector("#libcount").textContent; } });
+document.addEventListener("change",e=>{ if(e.target.id==="sort"){ S.sort=e.target.value; saveView(); render(); } if(e.target.id==="group"){ S.group=e.target.value; saveView(); render(); } });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&S.sheet){ S.sheet=false; render(); } });
+window.addEventListener("scroll",()=>{ const t=$(".top"); if(t) t.classList.toggle("scrolled",scrollY>4); },{passive:true});
+function syncLine(){
+  const t = SYNC.at ? new Date(SYNC.at).toLocaleString([], {day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) : "";
+  const label = SYNC.state==="loading" ? "Syncing…" : SYNC.state==="error" ? (t?`Offline · showing data from ${t}.`:"Offline.") : `Synced ${t}.`;
+  return `${label} <button class="chip" style="min-height:36px;margin-left:6px" data-act="refresh">Refresh</button>`;
+}
+function setData(data, at){ SEED = data; S.coffees = buildCoffees(data.entries||[]); SYNC.at = at; }
+async function load(){
+  SYNC.state = "loading";
+  const urls = [`https://raw.githubusercontent.com/${REPO}/main/dialins.json?_=${Date.now()}`, `dialins.json?_=${Date.now()}`];
+  for(const u of urls){
+    try{
+      const r = await fetch(u, {cache:"no-store"}); if(!r.ok) continue;
+      const data = await r.json(); if(!Array.isArray(data.entries)) continue;
+      const at = Date.now(); setData(data, at); SYNC.state = "ok";
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify({at, data})); }catch(e){}
+      keep(()=>{}); return;
+    }catch(e){}
   }
-  return base;
+  SYNC.state = "error"; keep(()=>{});
 }
-
-function buildCoffeeGroups(dialins) {
-  const key = d => `${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`;
-  const map = {};
-  dialins.map(normalizeDiaLin).forEach(d => {
-    const k=key(d);
-    if (!map[k]) map[k]={coffeeName:d.coffeeName,roaster:d.roaster,entries:[]};
-    map[k].entries.push(d);
-  });
-  return Object.values(map);
-}
-
-function getGrindPair(entries) {
-  // Returns {home, office} — best dialed grind for each location
-  const get = (loc) => {
-    const kitIds = Object.entries(KIT_GRID)
-      .filter(([k])=>k.startsWith(loc))
-      .map(([k])=>k);
-    const match = entries
-      .filter(e=>kitIds.includes(e.kitId)&&e.grindSetting)
-      .sort((a,b)=>{ const p=d=>d.dialStatus==="dialed"?3:d.dialStatus==="dialing"?2:1; return p(b)-p(a); })[0];
-    return match ? shortGrind(match.grindSetting) : null;
-  };
-  return { home: get("home"), office: get("office") };
-}
-
-function getBestEntry(entries, brewType) {
-  const kitIds = brewType==="espr"
-    ? ["home-espresso","office-espresso"]
-    : ["home-pour-over","office-pour-over","home-french-press","office-french-press"];
-  return entries
-    .filter(e=>kitIds.includes(e.kitId)&&e.doseIn>0)
-    .sort((a,b)=>(b.dialStatus==="dialed"?2:1)-(a.dialStatus==="dialed"?2:1))[0]||null;
-}
-
-function groupDuplicates(dialins) {
-  const key=d=>`${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`;
-  const groups={};
-  dialins.forEach(d=>{const k=key(d);if(!groups[k])groups[k]=[];groups[k].push(d);});
-  return Object.values(groups).filter(g=>g.length>1);
-}
-
-// ── DEFAULT DATA ──────────────────────────────────────────────────────────────
-const DEF_KITS = [
-  {id:"home-espresso",name:"Home Espresso",subtitle:"Quick Mill Pop-Up · Timemore Sculptor 064S",color:"#C87840",location:"home",brewMethod:"espresso",equipment:[{category:"Machine",name:"Quick Mill Pop-Up",notes:"Single boiler, PID + pressure profiling"},{category:"Grinder",name:"Timemore Sculptor 064S",notes:"64mm flat burrs, seasoned — stepless"},{category:"Portafilter",name:"MHW-3BOMBER Bottomless",notes:"Naked 58mm"},{category:"Basket",name:"Pullman Barista Basket",notes:"Precision 58mm"},{category:"Tamper",name:"Ikape V6 Calibrated",notes:"Click tamper"},{category:"Scale",name:"Timemore Black Mirror Mini",notes:"Real-time flow rate"},{category:"Kettle",name:"Timemore Fish Pro X",notes:"Electric gooseneck 900ml"}]},
-  {id:"home-pour-over",name:"Home Pour-Over",subtitle:"Hario V60 · Timemore Sculptor 064S",color:"#4A8888",location:"home",brewMethod:"filter",equipment:[{category:"Dripper",name:"Hario V60 02",notes:""},{category:"Filters",name:"Hario V60 02 Paper",notes:""},{category:"Grinder",name:"Timemore Sculptor 064S",notes:"Shared with home espresso"},{category:"Scale",name:"Timemore Black Mirror Mini",notes:"Shared"},{category:"Kettle",name:"Timemore Fish Pro X",notes:"Shared"}]},
-  {id:"home-french-press",name:"Home French Press",subtitle:"IKEA UPPHETTA · Timemore Sculptor 064S",color:"#7A5A8A",location:"home",brewMethod:"fpress",equipment:[{category:"Brewer",name:"IKEA UPPHETTA",notes:"Wood variant"},{category:"Grinder",name:"Timemore Sculptor 064S",notes:"Shared"}]},
-  {id:"office-espresso",name:"Office Espresso",subtitle:"Gaggia Classic Evo Pro · Eureka Zenith 65E",color:"#5A886A",location:"office",brewMethod:"espresso",equipment:[{category:"Machine",name:"Gaggia Classic Evo Pro",notes:"Black — bought used"},{category:"PID",name:"GaggiaMate Standard Kit",notes:"Smart PID installed"},{category:"Grinder",name:"Eureka Zenith 65E",notes:"65mm flat burrs"},{category:"Portafilter",name:"MHW-3BOMBER Bottomless",notes:"58mm"},{category:"Scale",name:"Generic Digital Scale",notes:"Manual read"}]},
-  {id:"office-pour-over",name:"Office Pour-Over",subtitle:"Hario V60 · Baratza Encore",color:"#5A7098",location:"office",brewMethod:"filter",equipment:[{category:"Dripper",name:"Hario V60 02",notes:""},{category:"Grinder",name:"Baratza Encore",notes:"Filter grinder"},{category:"Scale",name:"Generic Digital Scale",notes:"Shared"}]},
-  {id:"office-french-press",name:"Office French Press",subtitle:"IKEA UPPHETTA · Baratza Encore",color:"#7A5A8A",location:"office",brewMethod:"fpress",equipment:[{category:"Brewer",name:"IKEA UPPHETTA",notes:"Plastic variant"},{category:"Grinder",name:"Baratza Encore",notes:"Shared"}]},
-];
-
-// ── GITHUB API ────────────────────────────────────────────────────────────────
-async function ghRead(s, file) {
-  const r = await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/${file}?_=${Date.now()}`);
-  if (!r.ok) throw new Error(`${file}: HTTP ${r.status}`);
-  const parsed = await r.json();
-  if (file==="dialins.json"&&parsed&&!Array.isArray(parsed)) return {data:parsed.entries||[],ts:parsed._appWrittenAt||0};
-  return {data:parsed,ts:0};
-}
-async function ghGetSha(s, file) {
-  if (!s.token) return null;
-  const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}?ref=main`,{headers:{Authorization:`Bearer ${s.token}`,Accept:"application/vnd.github+json"}});
-  if (!r.ok) return null;
-  return (await r.json()).sha||null;
-}
-async function ghWrite(s, file, data) {
-  if (!s.token) throw new Error("No token");
-  const api = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${file}`;
-  const hdr = {Authorization:`Bearer ${s.token}`,Accept:"application/vnd.github+json","Content-Type":"application/json"};
-  const sha  = await ghGetSha(s,file);
-  const payload = file==="dialins.json" ? {_appWrittenAt:Date.now(),entries:data} : data;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2))));
-  const res = await fetch(api,{method:"PUT",headers:hdr,body:JSON.stringify({message:`Update ${file} via Dial-In v4`,content,branch:"main",...(sha?{sha}:{})})});
-  if (!res.ok) {const e=await res.json();throw new Error(e.message);}
-}
-
-// ── MICRO COMPONENTS ──────────────────────────────────────────────────────────
-// Half-star aware: n in 0.5 steps (3.5 → ★★★½☆)
-function starFill(n,i){ return n>=i?1:(n>=i-0.5?0.5:0); }
-function Stars({n,size=11}) {
-  const v=+n||0;
-  return <div className="stars" title={v?`${v} / 5`:""}>{[1,2,3,4,5].map(i=>{
-    const f=starFill(v,i);
-    return <span key={i} className="star-cell" style={{fontSize:`${size}px`}}>
-      <span className="star-off">★</span>
-      {f>0&&<span className="star-fill" style={{width:f===1?"100%":"50%"}}>★</span>}
-    </span>;
-  })}</div>;
-}
-function Toggle({on,onToggle}) {
-  return <button className={`toggle-btn ${on?"toggle-on":"toggle-off"}`} onClick={onToggle}/>;
-}
-// Tap left half of a star = x.5, right half = whole star, tap current value again = clear
-function StarInput({val,set}) {
-  const v=+val||0;
-  const pick=(e,i)=>{ const r=e.currentTarget.getBoundingClientRect(); const nv=(e.clientX-r.left)<r.width/2?i-0.5:i; set(nv===v?0:nv); };
-  return (
-    <div className="star-in" style={{display:"flex",alignItems:"center",gap:"2px"}}>
-      {[1,2,3,4,5].map(i=>{
-        const f=starFill(v,i);
-        return <button key={i} type="button" className="star-btn star-cell" onClick={e=>pick(e,i)} aria-label={`${i-0.5} or ${i} stars`}>
-          <span className="star-off">★</span>
-          {f>0&&<span className="star-fill" style={{width:f===1?"100%":"50%"}}>★</span>}
-        </button>;
-      })}
-      <span style={{fontFamily:"'DM Mono',monospace",fontSize:"13px",color:v?"var(--accent)":"var(--tx3)",marginLeft:"10px",minWidth:"28px"}}>{v?v.toFixed(1):"—"}</span>
-    </div>
-  );
-}
-
-function BrewDot({brewMethods,size=8}) {
-  return <div style={{width:`${size}px`,height:`${size}px`,borderRadius:"50%",background:brewDotColor(brewMethods||[]),flexShrink:0}}/>;
-}
-
-function FreshnessTag({freshness}) {
-  if (!freshness) return null;
-  return <span style={{fontSize:"10px",fontWeight:600,letterSpacing:".04em",color:freshness.color}}>{freshness.label}</span>;
-}
-
-function StatusChip({dialStatus, experimenting}) {
-  if (experimenting) return <span className="badge b-exp">EXP</span>;
-  if (dialStatus==="dialed")    return <span className="badge b-dialed">DIALED</span>;
-  if (dialStatus==="dialing")   return <span className="badge b-dialing">DIALING</span>;
-  if (dialStatus==="waiting")   return <span className="badge b-waiting">WAITING</span>;
-  if (dialStatus==="abandoned") return <span className="badge b-abandoned">ABANDONED</span>;
-  return null;
-}
-
-function BeanBadge({beanLocation}) {
-  if (!beanLocation||beanLocation==="open") return null;
-  if (beanLocation==="shelf")  return <span className="badge b-open">SHELF</span>;
-  if (beanLocation==="frozen") return <span className="badge b-frozen">❄ FROZEN</span>;
-  if (beanLocation==="empty")  return <span className="badge b-empty">DONE</span>;
-  return null;
-}
-
-// ── ACTIVE COFFEE CARD ────────────────────────────────────────────────────────
-function ActiveCard({group, onClick, settings}) {
-  const {coffeeName, roaster, entries} = group;
-  const norm = entries[0];
-  const grindPair = useMemo(()=>getGrindPair(entries),[entries]);
-  const esprE = useMemo(()=>getBestEntry(entries,"espr"),[entries]);
-  const pourE = useMemo(()=>getBestEntry(entries,"pour"),[entries]);
-  const allBrewMethods = [...new Set(entries.flatMap(e=>e.brewMethods||[]))];
-
-  // Dominant status
-  const stPriority = ["experimenting","dialing","dialed","waiting","abandoned"];
-  const isExperimenting = entries.some(e=>e.experimenting);
-  const domStatus = isExperimenting ? "experimenting" : ["dialing","dialed","waiting","abandoned"].find(s=>entries.some(e=>e.dialStatus===s)) || "dialed";
-
-  // Freshness from most recent entry with roastDate
-  const freshEntry = [...entries].filter(e=>e.roastDate).sort((a,b)=>b.roastDate.localeCompare(a.roastDate))[0];
-  const domLoc = ["open","shelf","frozen","empty"].find(l=>entries.some(e=>e.beanLocation===l));
-  const freshness = freshEntry ? getFreshness(freshEntry.roastDate, domLoc, freshEntry.roastLevel, freshEntry.brewMethods, settings, freshEntry.frozenDate, freshEntry.thawDate) : null;
-
-  // Params from best entry
-  const paramEntry = esprE || pourE;
-  const isFilter = !esprE && pourE;
-  const r = paramEntry?.doseIn&&paramEntry?.yieldOut ? ratio(paramEntry.doseIn,paramEntry.yieldOut) : null;
-  const temp = tempDisp(paramEntry?.temperature, settings?.tempUnit);
-  const timeStr = paramEntry?.timeSeconds > 0 ? (isFilter ? secToMSS(paramEntry.timeSeconds) : `${paramEntry.timeSeconds}s`) : null;
-
-  return (
-    <div className="acc" onClick={onClick}>
-      {/* Row 1 */}
-      <div className="acc-r1">
-        <BrewDot brewMethods={allBrewMethods}/>
-        <span className="acc-roaster">{roaster}</span>
-        <FreshnessTag freshness={freshness}/>
-      </div>
-      {/* Row 2 */}
-      <div className="acc-r2">
-        <span className="acc-name">{coffeeName}</span>
-        <StatusChip dialStatus={domStatus==="experimenting"?entries[0]?.dialStatus:domStatus} experimenting={isExperimenting}/>
-      </div>
-      {/* Row 3 */}
-      {(grindPair.home||grindPair.office||paramEntry) && (
-        <div className="acc-r3">
-          <div className="acc-grinds">
-            <span className="acc-grind-num">{grindPair.home||"—"}</span>
-            <span className="acc-grind-sep">·</span>
-            <span className="acc-grind-num">{grindPair.office||"—"}</span>
-          </div>
-          <div className="acc-divider"/>
-          {paramEntry && (
-            <div className="acc-params-wrap">
-              <div className="acc-params">
-                {temp && <span className="acc-param">{temp}</span>}
-                {paramEntry.doseIn>0&&paramEntry.yieldOut>0 && <span className="acc-param">{paramEntry.doseIn}→{paramEntry.yieldOut}g</span>}
-                {r && <span className="acc-param">{r}</span>}
-                {timeStr && <span className="acc-param">{timeStr}</span>}
-              </div>
-              {isFilter && paramEntry.filterPours?.length>1 && (
-                <div className="acc-phases">
-                  {paramEntry.filterPours.map((p,i)=>(
-                    <span key={i}>{i>0&&<span style={{color:"var(--border)",margin:"0 2px"}}>›</span>}{p.targetGrams}g</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── HOME QUIZ CARD ────────────────────────────────────────────────────────────
-function HomeQuizCard({questions, quizState, onAnswer, onNext, onLaunchFull}) {
-  if (!questions||!questions.length) return null;
-  const [localRevealed, setLocalRevealed] = useState(null); // {selected, correct} for current card only
-  const {currentIdx} = quizState;
-  const q = questions[currentIdx % questions.length];
-  const CAT_COLOR = {"General":"var(--blue)","My Journey":"var(--accent)","Technique":"var(--green)"};
-
-  const handleSelect = (i) => {
-    if (localRevealed) return;
-    const correct = i === q.a;
-    setLocalRevealed({selected:i, correct});
-    onAnswer(q.id, i);
-  };
-
-  const handleNext = () => {
-    setLocalRevealed(null);
-    onNext();
-  };
-
-  return (
-    <div className="quiz-card">
-      <div className="quiz-cat">
-        <span style={{display:"flex",alignItems:"center",gap:"6px"}}>
-          <span style={{fontSize:"14px"}}>{q.emoji}</span>
-          <span style={{color:CAT_COLOR[q.cat]||"var(--tx3)"}}>{q.cat}</span>
-        </span>
-        <button onClick={onLaunchFull} style={{background:"none",border:"none",cursor:"pointer",fontSize:"18px",color:"var(--tx2)",padding:0}} title="Play full quiz">🏆</button>
-      </div>
-      <div className="quiz-q">{q.q}</div>
-      <div className="quiz-opts">
-        {q.opts.map((opt,i)=>{
-          let cls = "quiz-opt";
-          if (localRevealed) {
-            if (i===q.a) cls+=" quiz-opt-correct";
-            else if (i===localRevealed.selected) cls+=" quiz-opt-wrong";
-            else cls+=" quiz-opt-dim";
-          }
-          return (
-            <div key={i} className={cls} onClick={()=>!localRevealed&&handleSelect(i)}>
-              <span className="quiz-opt-key">{String.fromCharCode(65+i)}</span>
-              <span style={{fontSize:"11px",lineHeight:1.35}}>{opt}</span>
-            </div>
-          );
-        })}
-      </div>
-      {localRevealed && (
-        <>
-          <div className="quiz-explain" style={{borderLeft:`2px solid ${localRevealed.correct?"var(--green)":"var(--red)"}`}}>
-            <span style={{fontSize:"10px",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:localRevealed.correct?"var(--green)":"var(--red)",display:"block",marginBottom:"5px"}}>{localRevealed.correct?"✓ Correct":"✗ Incorrect"}</span>
-            {q.explain}
-          </div>
-          <div className="quiz-footer">
-            <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(quizState.answered).length} answered</span>
-            <button className="quiz-next" onClick={handleNext}>Next question →</button>
-          </div>
-        </>
-      )}
-      {!localRevealed && (
-        <div className="quiz-footer">
-          <span style={{fontSize:"11px",color:"var(--tx3)"}}>{Object.keys(quizState.answered).length} answered · tap an option</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── FULL QUIZ SCREEN ──────────────────────────────────────────────────────────
-function QuizFullScreen({questions, nav}) {
-  const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [revealed, setRevealed] = useState(false);
-  const [score, setScore] = useState({correct:0,wrong:0,history:[]});
-  const [done, setDone] = useState(false);
-
-  // Pick 20 random questions
-  const session = useMemo(()=>{
-    const shuffled = [...questions].sort(()=>Math.random()-.5);
-    return shuffled.slice(0,Math.min(20,shuffled.length));
-  },[]);
-
-  const q = session[current];
-  const CAT_COLOR = {"General":"var(--blue)","My Journey":"var(--accent)","Technique":"var(--green)"};
-
-  const handleSelect = (i) => {
-    if (revealed) return;
-    setSelected(i);
-    setRevealed(true);
-    setScore(s=>({correct:s.correct+(i===q.a?1:0),wrong:s.wrong+(i!==q.a?1:0),history:[...s.history,{qid:q.id,cat:q.cat,correct:i===q.a}]}));
-  };
-
-  const next = () => {
-    if (current<session.length-1){setCurrent(c=>c+1);setSelected(null);setRevealed(false);}
-    else setDone(true);
-  };
-
-  if (done) return (
-    <div className="screen fade-in">
-      <div style={{padding:"16px 18px 0",display:"flex",alignItems:"center",gap:"10px"}}>
-        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
-        <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"22px",fontWeight:500}}>Results</span>
-      </div>
-      <div style={{textAlign:"center",padding:"32px 18px 20px"}}>
-        <div style={{fontSize:"48px",marginBottom:"12px"}}>{score.correct>=16?"🏆":score.correct>=12?"☕":score.correct>=8?"📚":"🌱"}</div>
-        <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"32px",fontWeight:500,marginBottom:"6px"}}>{score.correct} / {session.length}</div>
-        <div style={{fontSize:"13px",color:"var(--tx2)"}}>{score.correct>=16?"Excellent — you know your coffee":score.correct>=12?"Good — keep tasting":"Keep exploring"}</div>
-      </div>
-      {["General","My Journey","Technique"].map(cat=>{
-        const catH=score.history.filter(h=>h.cat===cat);
-        if(!catH.length) return null;
-        const catC=catH.filter(h=>h.correct).length;
-        return (
-          <div key={cat} style={{margin:"0 18px 8px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"10px",padding:"14px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div>
-              <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:CAT_COLOR[cat],marginBottom:"3px"}}>{cat}</div>
-              <div style={{fontSize:"13px"}}>{catC}/{catH.length} correct</div>
-            </div>
-            <div style={{fontFamily:"'DM Mono',monospace",fontSize:"22px",fontWeight:500,color:catC===catH.length?"var(--green)":catC>=catH.length/2?"var(--accent)":"var(--red)"}}>
-              {Math.round(catC/catH.length*100)}%
-            </div>
-          </div>
-        );
-      })}
-      <div className="btn-area" style={{paddingTop:"8px"}}>
-        <button className="btn btn-p" onClick={()=>nav("home")}>Done</button>
-      </div>
-    </div>
-  );
-
-  const progress = (current/session.length)*100;
-  return (
-    <div className="screen fade-in">
-      <div style={{padding:"16px 18px 0",display:"flex",alignItems:"center",gap:"10px"}}>
-        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
-        <div style={{flex:1}}>
-          <div className="quiz-progress" style={{marginBottom:0}}>
-            <div className="quiz-progress-fill" style={{width:`${progress}%`}}/>
-          </div>
-        </div>
-        <span style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"var(--tx3)"}}>{current+1}/{session.length}</span>
-      </div>
-      <div className="quiz-full">
-        <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px"}}>
-          <span style={{fontSize:"16px"}}>{q.emoji}</span>
-          <span style={{fontSize:"9px",fontWeight:700,letterSpacing:".14em",textTransform:"uppercase",color:CAT_COLOR[q.cat]}}>{q.cat}</span>
-          <span style={{marginLeft:"auto",fontFamily:"'DM Mono',monospace",fontSize:"12px",color:"var(--green)"}}>✓ {score.correct}</span>
-          <span style={{fontFamily:"'DM Mono',monospace",fontSize:"12px",color:"var(--red)"}}>✗ {score.wrong}</span>
-        </div>
-        <div className="quiz-full-q">{q.q}</div>
-        <div className="quiz-full-opts">
-          {q.opts.map((opt,i)=>{
-            let cls="quiz-full-opt";
-            const isRevealed=revealed?"qo-revealed":"";
-            if(revealed){
-              if(i===q.a) cls+=" quiz-opt-correct";
-              else if(i===selected) cls+=" quiz-opt-wrong";
-              else cls+=" quiz-opt-dim";
-            }
-            return (
-              <div key={i} className={`${cls} ${isRevealed}`} onClick={()=>handleSelect(i)}>
-                <span style={{fontFamily:"'DM Mono',monospace",fontSize:"11px",opacity:.5,flexShrink:0}}>{String.fromCharCode(65+i)}</span>
-                <span style={{fontSize:"14px",lineHeight:1.4}}>{opt}</span>
-                {revealed&&i===q.a&&<span style={{marginLeft:"auto"}}>✓</span>}
-                {revealed&&i===selected&&i!==q.a&&<span style={{marginLeft:"auto"}}>✗</span>}
-              </div>
-            );
-          })}
-        </div>
-        {revealed&&(
-          <>
-            <div className="quiz-full-explain" style={{borderLeft:`2px solid ${selected===q.a?"var(--green)":"var(--red)"}`}}>
-              <div style={{fontSize:"10px",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",color:selected===q.a?"var(--green)":"var(--red)",marginBottom:"6px"}}>{selected===q.a?"✓ Correct":"✗ Incorrect"}</div>
-              {q.explain}
-            </div>
-            <button className="btn btn-p" onClick={next}>{current<session.length-1?"Next Question →":"See Results"}</button>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── HOME SCREEN ───────────────────────────────────────────────────────────────
-function HomeScreen({kits, dialins, nav, onSync, syncing, lastSync, settings, questions, quizState, onQuizAnswer, onQuizNext}) {
-  const [frozenOpen, setFrozenOpen] = useState(false);
-  const [sort, setSort] = useState("recent");
-
-  const groups = useMemo(()=>buildCoffeeGroups(dialins),[dialins]);
-  const active = useMemo(()=>groups.filter(g=>g.entries.some(e=>["shelf","open"].includes(e.beanLocation))),[groups]);
-  const frozen = useMemo(()=>groups.filter(g=>g.entries.some(e=>e.beanLocation==="frozen")&&!g.entries.some(e=>["shelf","open"].includes(e.beanLocation))),[groups]);
-
-  const sorted = useMemo(()=>{
-    const newestDate=g=>[...g.entries].sort((x,y)=>(y.date||"").localeCompare(x.date||""))[0]?.date||"";
-    const bestRating=g=>Math.max(0,...g.entries.map(e=>e.rating||0));
-    return [...active].sort((a,b)=>{
-      if(sort==="rating") return bestRating(b)-bestRating(a);
-      if(sort==="name")   return (a.coffeeName||"").localeCompare(b.coffeeName||"");
-      return newestDate(b).localeCompare(newestDate(a));
-    });
-  },[active,sort]);
-
-  // Journey stats
-  const norm = useMemo(()=>dialins.map(normalizeDiaLin),[dialins]);
-
-  // Best-rated origin (avg rating, min 2 entries)
-  const bestRatedOrigin = useMemo(()=>{
-    const originRatings={};
-    norm.forEach(d=>{
-      if(!d.origin||d.origin==="Blend"||!d.rating) return;
-      if(!originRatings[d.origin]) originRatings[d.origin]={sum:0,count:0};
-      originRatings[d.origin].sum+=d.rating;
-      originRatings[d.origin].count+=1;
-    });
-    return Object.entries(originRatings)
-      .filter(([,v])=>v.count>=1)
-      .sort((a,b)=>(b[1].sum/b[1].count)-(a[1].sum/a[1].count))[0]?.[0]||"—";
-  },[norm]);
-
-  // Most frequent origin
-  const originCounts = useMemo(()=>{
-    const c={};
-    norm.forEach(d=>{if(d.origin&&d.origin!=="Blend")c[d.origin]=(c[d.origin]||0)+1;});
-    return c;
-  },[norm]);
-  const favOrigin = Object.entries(originCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
-
-  const processCounts = useMemo(()=>{
-    const c={};
-    norm.forEach(d=>{if(d.process&&d.process!=="Blend")c[d.process]=(c[d.process]||0)+1;});
-    return c;
-  },[norm]);
-  const topProcess = Object.entries(processCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||"—";
-
-  // Top rated: 2 espresso + 2 pour over
-  const topRated = useMemo(()=>{
-    const isE=d=>(d.brewMethods||[]).includes("Espresso")||["home-espresso","office-espresso"].includes(d.kitId);
-    const espr=norm.filter(d=>d.rating>0&&isE(d)).sort((a,b)=>b.rating-a.rating).slice(0,2);
-    const pour=norm.filter(d=>d.rating>0&&!isE(d)).sort((a,b)=>b.rating-a.rating).slice(0,2);
-    return [...espr,...pour];
-  },[norm]);
-
-  return (
-    <div className="screen fade-in">
-      <div className="topbar">
-        <div>
-          <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"26px",fontWeight:500,letterSpacing:".02em"}}>Dial-In</div>
-          <div style={{fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"1px"}}>{lastSync?`Synced ${lastSync}`:`${active.length} active`}</div>
-        </div>
-        <div className="topbar-actions">
-          <button className="icon-btn" onClick={()=>nav("discovery")} title="Discovery">🔭</button>
-          <button className="icon-btn" onClick={()=>nav("add")} title="Add coffee">☕</button>
-          <button className="icon-btn" onClick={()=>nav("settings")} title="Settings">⚙</button>
-          <button className="icon-btn" onClick={onSync} title="Sync"><span className={syncing?"spin":""}>{syncing?"↻":"⟳"}</span></button>
-        </div>
-      </div>
-
-      {/* Active coffees */}
-      <div className="sec"><span className="sec-title">Active Coffees</span></div>
-      {sorted.length===0
-        ? <div className="empty"><div className="empty-ico">☕</div><div className="empty-t">No active coffees</div><div className="empty-s">Tap ☕ to add one</div></div>
-        : sorted.map(g=><ActiveCard key={`${g.coffeeName}⌀${g.roaster}`} group={g} settings={settings} onClick={()=>nav("dialin",g.entries[0],"home")}/>)
-      }
-
-      {/* Frozen */}
-      {frozen.length>0&&(
-        <>
-          <div className="frozen-row" onClick={()=>setFrozenOpen(o=>!o)}>
-            <span style={{fontSize:"16px"}}>❄</span>
-            <span className="frozen-row-title">{frozen.length} Frozen Coffee{frozen.length!==1?"s":""}</span>
-            <span style={{color:"var(--tx3)",fontSize:"14px",transition:"transform .2s",display:"inline-block",transform:frozenOpen?"rotate(90deg)":"none"}}>›</span>
-          </div>
-          {frozenOpen&&frozen.map(g=>(
-            <div key={`${g.coffeeName}⌀${g.roaster}`} className="frozen-item" onClick={()=>nav("dialin",g.entries[0],"home")}>
-              <div style={{width:"7px",height:"7px",borderRadius:"50%",background:brewDotColor([...new Set(g.entries.flatMap(e=>e.brewMethods||[]))]),flexShrink:0}}/>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"2px"}}>{g.roaster}</div>
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"14px"}}>{g.coffeeName}</div>
-              </div>
-              {g.entries[0]?.flavorNotes&&<div style={{fontSize:"10px",color:"var(--tx3)",fontStyle:"italic",textAlign:"right",maxWidth:"120px",lineHeight:1.3}}>{g.entries[0].flavorNotes.split(",")[0]}</div>}
-            </div>
-          ))}
-        </>
-      )}
-
-      {/* My Journey */}
-      <div className="sec"><span className="sec-title">My Journey</span></div>
-      <div className="stat-chips">
-        <div className="stat-chip"><div className="stat-chip-v">{dialins.length}</div><div className="stat-chip-l">Logged</div></div>
-        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{favOrigin}</div><div className="stat-chip-l">Top Origin</div></div>
-        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{topProcess}</div><div className="stat-chip-l">Top Process</div></div>
-        <div className="stat-chip"><div className="stat-chip-v" style={{fontSize:"13px"}}>{bestRatedOrigin}</div><div className="stat-chip-l">Best Rated</div></div>
-      </div>
-      {topRated.length>0&&(
-        <>
-          <div style={{padding:"0 18px 6px",fontSize:"9px",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:"var(--tx3)"}}>Top Rated</div>
-          <div className="top-rated-grid">
-            {topRated.map(d=>{
-              const isEspr=(d.brewMethods||[]).includes("Espresso")||["home-espresso","office-espresso"].includes(d.kitId);
-              const dotColor=isEspr?DOT_COLOR.espr:DOT_COLOR.pour;
-              return (
-                <div key={d.id} className="top-rated-card" onClick={()=>nav("dialin",d,"home")} style={{borderTopColor:dotColor,borderTopWidth:"2px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:"4px",marginBottom:"3px"}}>
-                    <div style={{width:"5px",height:"5px",borderRadius:"50%",background:dotColor,flexShrink:0}}/>
-                    <div className="top-rated-roaster">{d.roaster}</div>
-                  </div>
-                  <div className="top-rated-name">{d.coffeeName}</div>
-                  <Stars n={d.rating} size={9}/>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* Quiz */}
-      <div className="sec"><span className="sec-title">Coffee Knowledge</span></div>
-      {questions.length>0&&<HomeQuizCard questions={questions} quizState={quizState} onAnswer={onQuizAnswer} onNext={onQuizNext} onLaunchFull={()=>nav("quiz")}/>}
-    </div>
-  );
-}
-
-// ── LOGBOOK SCREEN ────────────────────────────────────────────────────────────
-function LogbookScreen({kits, dialins, nav, settings}) {
-  const [q,       setQ]       = useState("");
-  const [brewF,   setBrewF]   = useState([]);
-  const [roastF,  setRoastF]  = useState([]);
-  const [statusF, setStatusF] = useState("all");
-  const [beansF,  setBeansF]  = useState("all");
-  const [sort,    setSort]    = useState("recent");
-  const [expanded,setExpanded]= useState({});
-
-  const toggleArr=(arr,set,val)=>set(arr.includes(val)?arr.filter(x=>x!==val):[...arr,val]);
-  const ROAST_KEY={"Light":"light","Medium-Light":"ml","Medium":"med","Medium-Dark":"md","Dark":"dark"};
-
-  const filteredGroups = useMemo(()=>{
-    return buildCoffeeGroups(dialins).filter(g=>{
-      const sm=!q||[g.coffeeName,g.roaster,...g.entries.flatMap(e=>[e.origin,e.region,e.process,e.flavorNotes,e.variety,e.producer,e.farm,e.review])].join(" ").toLowerCase().includes(q.toLowerCase());
-      const allBrews=[...new Set(g.entries.flatMap(e=>e.brewMethods||[]))];
-      const allRoasts=g.entries.map(e=>ROAST_KEY[e.roastLevel]).filter(Boolean);
-      const allStatus=g.entries.map(e=>e.dialStatus);
-      const anyExp=g.entries.some(e=>e.experimenting);
-      const allBeans=g.entries.map(e=>e.beanLocation);
-      const bm=brewF.length===0||(brewF.every(v=>(v==="espr"&&allBrews.includes("Espresso"))||(v==="pour"&&allBrews.includes("Pour Over"))||(v==="frpr"&&allBrews.includes("French Press"))));
-      const rm=roastF.length===0||roastF.some(v=>allRoasts.includes(v));
-      const stm=statusF==="all"||(statusF==="experimenting"?anyExp:allStatus.includes(statusF));
-      const blm=beansF==="all"||allBeans.includes(beansF);
-      return sm&&bm&&rm&&stm&&blm;
-    }).sort((a,b)=>{
-      const d=g=>[...g.entries].sort((x,y)=>(y.date||"").localeCompare(x.date||""))[0]?.date||"";
-      const r=g=>[...g.entries].filter(e=>e.roastDate).sort((x,y)=>y.roastDate.localeCompare(x.roastDate))[0]?.roastDate||"";
-      if(sort==="rating") return Math.max(0,...b.entries.map(e=>e.rating||0))-Math.max(0,...a.entries.map(e=>e.rating||0));
-      if(sort==="name")   return (a.coffeeName||"").localeCompare(b.coffeeName||"");
-      if(sort==="roast")  return r(b).localeCompare(r(a));
-      return d(b).localeCompare(d(a));
-    });
-  },[dialins,q,brewF,roastF,statusF,beansF,sort]);
-
-  const MultiRow=({label,opts,val,set})=>(
-    <div className="filter-block">
-      <div className="filter-label">{label}</div>
-      <div className="chips">{opts.map(([v,l])=><div key={v} className={`chip${val.includes(v)?" chip-on":""}`} onClick={()=>toggleArr(val,set,v)}>{l}</div>)}</div>
-    </div>
-  );
-  const SingleRow=({label,opts,val,set})=>(
-    <div className="filter-block">
-      <div className="filter-label">{label}</div>
-      <div className="chips">{opts.map(([v,l])=><div key={v} className={`chip${val===v?" chip-on":""}`} onClick={()=>set(v)}>{l}</div>)}</div>
-    </div>
-  );
-
-  return (
-    <div className="screen fade-in">
-      <div className="topbar" style={{marginBottom:"8px"}}>
-        <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"26px",fontWeight:500}}>Logbook</span>
-        <select className="sort-sel" value={sort} onChange={e=>setSort(e.target.value)}>
-          <option value="recent">Recent</option><option value="rating">Rating ↓</option><option value="name">Name A–Z</option><option value="roast">Roast Date</option>
-        </select>
-      </div>
-      <div className="search-wrap">
-        <span className="search-ico">⌕</span>
-        <input className="search-input" placeholder="Search coffee, origin, flavour…" value={q} onChange={e=>setQ(e.target.value)}/>
-      </div>
-      <div style={{padding:"4px 0 10px"}}>
-        <MultiRow  label="Brew"   opts={[["espr","ESPR"],["pour","POUR"],["frpr","FRPR"]]}                                      val={brewF}  set={setBrewF}/>
-        <MultiRow  label="Roast"  opts={[["light","LIGHT"],["ml","MED-L"],["med","MEDIUM"],["md","MED-D"],["dark","DARK"]]}      val={roastF} set={setRoastF}/>
-        <SingleRow label="Status" opts={[["all","ALL"],["waiting","WAITING"],["dialing","DIALING"],["dialed","DIALED"],["abandoned","ABANDONED"],["experimenting","EXP"]]} val={statusF} set={setStatusF}/>
-        <SingleRow label="Beans"  opts={[["all","ALL"],["shelf","SHELF"],["open","OPEN"],["frozen","FROZEN"],["empty","DONE"]]}  val={beansF} set={setBeansF}/>
-      </div>
-      <div style={{padding:"0 18px 6px",fontSize:"10px",color:"var(--tx3)"}}>{filteredGroups.length} coffee{filteredGroups.length!==1?"s":""} · {dialins.length} total entries</div>
-      {filteredGroups.length===0
-        ? <div className="empty"><div className="empty-ico">◉</div><div className="empty-t">No results</div><div className="empty-s">{q?"Try different search":"No entries match these filters"}</div></div>
-        : filteredGroups.map(g=>{
-            const key=`${g.coffeeName}⌀${g.roaster}`;
-            const isExp=expanded[key];
-            const allBrewMethods=[...new Set(g.entries.flatMap(e=>e.brewMethods||[]))];
-            const bestRating=Math.max(0,...g.entries.map(e=>e.rating||0));
-            const esprE=getBestEntry(g.entries,"espr");
-            const pourE=getBestEntry(g.entries,"pour");
-            const gGrid={he:null,hp:null,oe:null,op:null};
-            g.entries.forEach(e=>{const pos=KIT_GRID[e.kitId];if(pos&&e.grindSetting)gGrid[pos]=shortGrind(e.grindSetting);});
-            return (
-              <div key={key} className="lb-group">
-                <div className="lb-header" onClick={()=>setExpanded(p=>({...p,[key]:!p[key]}))}>
-                  <BrewDot brewMethods={allBrewMethods}/>
-                  <div className="lb-meta">
-                    <div className="lb-roaster">{g.roaster}</div>
-                    <div className="lb-name">{g.coffeeName}</div>
-                  </div>
-                  {bestRating>0&&<Stars n={bestRating} size={12}/>}
-                  <span className={`lb-expand${isExp?" lb-expanded":""}`}>›</span>
-                </div>
-                {isExp&&(
-                  <div className="lb-body">
-                    <div className="lb-grids">
-                      {esprE&&(
-                        <div className="lb-recipe-block">
-                          <div className="lb-recipe-title">Espresso</div>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px",marginBottom:"8px"}}>
-                            {[["H·E",gGrid.he],["O·E",gGrid.oe]].map(([lbl,val])=>val&&(
-                              <div key={lbl} style={{textAlign:"center",background:"var(--card)",borderRadius:"6px",padding:"6px"}}>
-                                <div style={{fontFamily:"'DM Mono',monospace",fontSize:"18px",fontWeight:500,color:"var(--accent)"}}>{val}</div>
-                                <div style={{fontSize:"8px",letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"2px"}}>{lbl}</div>
-                              </div>
-                            ))}
-                          </div>
-                          {esprE.temperature>0&&<div className="lb-recipe-row">{tempDisp(esprE.temperature,settings?.tempUnit)}</div>}
-                          {esprE.doseIn>0&&esprE.yieldOut>0&&<div className="lb-recipe-row">{esprE.doseIn}→{esprE.yieldOut}g · {ratio(esprE.doseIn,esprE.yieldOut)}</div>}
-                          {esprE.timeSeconds>0&&<div className="lb-recipe-row">{esprE.timeSeconds}s</div>}
-                        </div>
-                      )}
-                      {pourE&&(
-                        <div className="lb-recipe-block">
-                          <div className="lb-recipe-title">Pour Over</div>
-                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px",marginBottom:"8px"}}>
-                            {[["H·P",gGrid.hp],["O·P",gGrid.op]].map(([lbl,val])=>val&&(
-                              <div key={lbl} style={{textAlign:"center",background:"var(--card)",borderRadius:"6px",padding:"6px"}}>
-                                <div style={{fontFamily:"'DM Mono',monospace",fontSize:"18px",fontWeight:500,color:"var(--teal)"}}>{val}</div>
-                                <div style={{fontSize:"8px",letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginTop:"2px"}}>{lbl}</div>
-                              </div>
-                            ))}
-                          </div>
-                          {pourE.temperature>0&&<div className="lb-recipe-row">{tempDisp(pourE.temperature,settings?.tempUnit)}</div>}
-                          {pourE.doseIn>0&&pourE.yieldOut>0&&<div className="lb-recipe-row">{pourE.doseIn}→{pourE.yieldOut}g · {ratio(pourE.doseIn,pourE.yieldOut)}</div>}
-                          {pourE.timeSeconds>0&&<div className="lb-recipe-row">{secToMSS(pourE.timeSeconds)}</div>}
-                        </div>
-                      )}
-                    </div>
-                    {pourE?.filterPours?.length>0&&(
-                      <div className="lb-phases">
-                        <div style={{fontSize:"9px",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:"var(--tx3)",marginBottom:"6px"}}>Pour Phases</div>
-                        {pourE.filterPours.map((p,i)=>{
-                          const maxG=Math.max(...pourE.filterPours.map(x=>x.targetGrams));
-                          return (
-                            <div key={i} className="lb-phase-row">
-                              <span className="lb-phase-num">{"①②③④⑤⑥"[p.phase-1]}</span>
-                              <div style={{flex:1}}><div className="lb-phase-bar" style={{width:`${(p.targetGrams/maxG)*100}%`}}/></div>
-                              <span className="lb-phase-g">{p.targetGrams}g</span>
-                              <span className="lb-phase-t">{secToMSS(p.startSeconds)}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <div style={{padding:"10px 14px 12px",borderTop:"1px solid var(--border)",display:"flex",justifyContent:"flex-end"}}>
-                      <button onClick={()=>nav("dialin",g.entries[0],"logbook")} style={{background:"none",border:"none",color:"var(--accent)",fontFamily:"'Jost',sans-serif",fontSize:"12px",fontWeight:500,cursor:"pointer"}}>Full details →</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })
-      }
-    </div>
-  );
-}
-
-// ── POUR PHASES DISPLAY ───────────────────────────────────────────────────────
-function PourPhasesDisplay({phases}) {
-  if (!phases||!phases.length) return null;
-  const maxG=Math.max(...phases.map(p=>p.targetGrams));
-  return (
-    <div className="phase-list">
-      {phases.map((p,i)=>(
-        <div key={i} className="phase-row-d">
-          <span className="phase-num">{"①②③④⑤⑥"[p.phase-1]||`${p.phase}.`}</span>
-          <div style={{flex:1}}><div className="phase-bar" style={{width:`${(p.targetGrams/maxG)*100}%`}}/></div>
-          <span className="phase-grams">{p.targetGrams}g</span>
-          <span className="phase-time">{secToMSS(p.startSeconds)}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── DIAL-IN DETAIL ────────────────────────────────────────────────────────────
-function DialInDetail({d, kits, dialins, nav, onEdit, listScreen, settings, onQuickStatus}) {
-  if (!d) return null;
-  const kit  = kits.find(k=>k.id===d.kitId);
-  const norm = normalizeDiaLin(d);
-  const freshness = getFreshness(norm.roastDate, norm.beanLocation, d.roastLevel, norm.brewMethods, settings, norm.frozenDate, norm.thawDate);
-  const r = d.doseIn&&d.yieldOut ? ratio(d.doseIn,d.yieldOut) : null;
-  const isFilter = kit?.brewMethod==="filter"||kit?.brewMethod==="fpress";
-
-  // All entries for this coffee (for grind strip + best recipes)
-  const allEntries = useMemo(()=>{
-    const name=(d.coffeeName||"").toLowerCase().trim(), rst=(d.roaster||"").toLowerCase().trim();
-    return dialins.map(normalizeDiaLin).filter(e=>(e.coffeeName||"").toLowerCase().trim()===name&&(e.roaster||"").toLowerCase().trim()===rst);
-  },[dialins,d.coffeeName,d.roaster]);
-
-  const esprEntry = useMemo(()=>getBestEntry(allEntries,"espr"),[allEntries]);
-  const pourEntry = useMemo(()=>getBestEntry(allEntries,"pour"),[allEntries]);
-  const grindGrid = useMemo(()=>({he:null,hp:null,oe:null,op:null,...Object.fromEntries(allEntries.filter(e=>e.grindSetting&&KIT_GRID[e.kitId]).map(e=>[KIT_GRID[e.kitId],shortGrind(e.grindSetting)]))}), [allEntries]);
-
-  const allBrewMethods=[...new Set(allEntries.flatMap(e=>e.brewMethods||[]))];
-
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar">
-        <button className="icon-btn" onClick={()=>nav(listScreen||"home")}>←</button>
-        <div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Dial-In</div>
-        {d.rating>0&&<Stars n={d.rating} size={12}/>}
-        <button className="icon-btn" onClick={()=>onEdit(d)}>✎</button>
-      </div>
-
-      {/* Hero */}
-      <div className="det-hero">
-        <div className="det-date">{fmt(d.date)}{norm.roastDate&&` · Roasted ${fmt(norm.roastDate)}`}</div>
-        <div className="det-roaster">
-          {norm.coffeeUrl
-            ? <a href={norm.coffeeUrl} target="_blank" rel="noopener" style={{color:"var(--accent)",textDecoration:"none",display:"flex",alignItems:"center",gap:"8px"}}>{d.roaster} <span style={{fontSize:"14px"}}>🔗</span></a>
-            : d.roaster}
-        </div>
-        <div className="det-name">{d.coffeeName}</div>
-
-        {/* Badge row 1 */}
-        <div className="det-badge-row">
-          <div className="det-badge-left">
-            <BrewDot brewMethods={allBrewMethods} size={9}/>
-            {allBrewMethods.includes("Espresso")&&<span className="badge b-espr">ESPR</span>}
-            {(allBrewMethods.includes("Pour Over")||allBrewMethods.includes("French Press"))&&<span className="badge b-pour">POUR</span>}
-            {freshness&&<span className="badge" style={{background:freshness.bg,color:freshness.color}}>{freshness.label}</span>}
-          </div>
-          <div className="det-badge-right">
-            <BeanBadge beanLocation={norm.beanLocation}/>
-            <StatusChip dialStatus={norm.dialStatus} experimenting={norm.experimenting}/>
-          </div>
-        </div>
-
-        {/* Badge row 2 */}
-        <div className="det-badge-row" style={{marginTop:"5px"}}>
-          <div className="det-badge-left">
-            {d.process    && <span className="badge b-process">{d.process.toUpperCase()}</span>}
-            {d.roastLevel && <span className="badge b-roast">{d.roastLevel.toUpperCase()}</span>}
-          </div>
-          <div className="det-badge-right">
-            {norm.dialEase     && <span className={`badge b-ease-${norm.dialEase==="easy"?"easy":norm.dialEase==="medium"?"med":"hard"}`}>{norm.dialEase.toUpperCase()}</span>}
-            {norm.dialStability&& <span className={`badge ${norm.dialStability==="stable"?"b-stable":"b-unstable"}`}>{norm.dialStability.toUpperCase()}</span>}
-            {norm.isChoice     && <span className="badge b-pick">★ MY PICK</span>}
-            {norm.wouldBuy     && <span className="badge b-buy">🛒 WOULD BUY</span>}
-            {norm.isEarlyEntry && <span className="badge b-early">EARLY ENTRY</span>}
-          </div>
-        </div>
-
-        {norm.tags?.length>0&&(
-          <div style={{display:"flex",gap:"5px",flexWrap:"wrap",marginTop:"8px"}}>
-            {norm.tags.map(t=><span key={t} style={{fontSize:"10px",padding:"2px 8px",background:"var(--elevated)",borderRadius:"4px",color:"var(--tx3)"}}>{t}</span>)}
-          </div>
-        )}
-      </div>
-
-      {/* Quick status */}
-      {norm.beanLocation!=="empty"&&(
-        <div className="btn-quick-row" style={{paddingTop:"12px"}}>
-          <button className="btn-quick btn-empty" onClick={()=>onQuickStatus(d.id,{beanLocation:"empty"})}>✓ Mark Empty</button>
-          {norm.dialStatus!=="abandoned"&&<button className="btn-quick btn-abandon" onClick={()=>onQuickStatus(d.id,{dialStatus:"abandoned",beanLocation:"empty"})}>✕ Abandon</button>}
-        </div>
-      )}
-
-      {/* Grind strip */}
-      <div className="sec"><span className="sec-title">Grind</span></div>
-      <div className="gs">
-        {[["he","HOME ESPR"],["oe","OFFC ESPR"],["hp","HOME POUR"],["op","OFFC POUR"]].map(([key,lbl])=>(
-          <div key={key} className="gs-cell">
-            <div className="gs-label">{lbl}</div>
-            {grindGrid[key]
-              ? <><div className="gs-num">{grindGrid[key]}</div><div className="gs-grinder">{allEntries.find(e=>KIT_GRID[e.kitId]===key)?.grinder||""}</div></>
-              : <div style={{fontSize:"16px",color:"var(--tx3)",opacity:.3,marginTop:"4px"}}>—</div>
-            }
-          </div>
-        ))}
-      </div>
-
-      {/* Recipes */}
-      {(esprEntry||pourEntry)&&<>
-        <div className="sec"><span className="sec-title">Brew Recipes</span></div>
-        <div className="recipe-split">
-          {esprEntry&&(()=>{const re=esprEntry;const rr=re.doseIn&&re.yieldOut?ratio(re.doseIn,re.yieldOut):null;const t=tempDisp(re.temperature,settings?.tempUnit);return(
-            <div className="recipe-block">
-              <div className="recipe-title" style={{color:"var(--accent)"}}>Espresso</div>
-              {t&&<div className="recipe-stat"><div className="recipe-val">{t}</div><div className="recipe-lbl">Temp</div></div>}
-              {re.doseIn>0&&re.yieldOut>0&&<div className="recipe-stat"><div className="recipe-val">{re.doseIn}→{re.yieldOut}g</div><div className="recipe-lbl">Dose → Yield</div></div>}
-              {rr&&<div className="recipe-stat"><div className="recipe-val">{rr}</div><div className="recipe-lbl">Ratio</div></div>}
-              {re.timeSeconds>0&&<div className="recipe-stat"><div className="recipe-val">{re.timeSeconds}s</div><div className="recipe-lbl">Time</div></div>}
-            </div>
-          );})()}
-          {pourEntry&&(()=>{const rp=pourEntry;const rr=rp.doseIn&&rp.yieldOut?ratio(rp.doseIn,rp.yieldOut):null;const t=tempDisp(rp.temperature,settings?.tempUnit);return(
-            <div className="recipe-block">
-              <div className="recipe-title" style={{color:"var(--teal)"}}>Pour Over</div>
-              {t&&<div className="recipe-stat"><div className="recipe-val">{t}</div><div className="recipe-lbl">Temp</div></div>}
-              {rp.doseIn>0&&rp.yieldOut>0&&<div className="recipe-stat"><div className="recipe-val">{rp.doseIn}→{rp.yieldOut}g</div><div className="recipe-lbl">Coffee → Water</div></div>}
-              {rr&&<div className="recipe-stat"><div className="recipe-val">{rr}</div><div className="recipe-lbl">Ratio</div></div>}
-              {rp.timeSeconds>0&&<div className="recipe-stat"><div className="recipe-val">{secToMSS(rp.timeSeconds)}</div><div className="recipe-lbl">Total Time</div></div>}
-              {rp.filterPours?.length>0&&<PourPhasesDisplay phases={rp.filterPours}/>}
-            </div>
-          );})()}
-        </div>
-      </>}
-
-      {/* Coffee Info */}
-      <div className="sec"><span className="sec-title">Coffee Info</span></div>
-      <div className="det-info-grid">
-        {[["Origin",`${d.origin||""}${d.region?` · ${d.region}`:""}`],["Producer",[norm.producer,norm.farm].filter(Boolean).join(" · ")],["Variety",norm.variety],["Altitude",norm.altitude],["Process",d.process],["Roast",d.roastLevel],["Brewed as",(norm.brewMethods||[]).join(" · ")],["Roast Date",norm.roastDate?fmt(norm.roastDate):null],["Flavour",d.flavorNotes]].filter(([,v])=>v&&String(v).trim()).map(([lbl,val])=>(
-          <div key={lbl} className="det-info-cell">
-            <div className="det-info-label">{lbl}</div>
-            <div className="det-info-val">{val}</div>
-          </div>
-        ))}
-      </div>
-
-      {norm.review&&<><div className="sec"><span className="sec-title">My Verdict</span></div><div className="det-notes" style={{color:"var(--tx1)",fontSize:"18px"}}>{norm.review}</div></>}
-      {norm.notes&&<><div className="sec"><span className="sec-title">My Notes</span></div><div className="det-notes">"{norm.notes}"</div></>}
-
-      {norm.coffeeDescription&&<>
-        <div className="sec"><span className="sec-title">About this Coffee</span></div>
-        <div className="about-block">{norm.coffeeDescription}</div>
-        {norm.coffeeUrl&&<div style={{padding:"0 18px 20px"}}><a href={norm.coffeeUrl} target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"12px",color:"var(--accent)",textDecoration:"none",border:"1px solid var(--border)",borderRadius:"7px",padding:"7px 12px"}}>View coffee page 🔗</a></div>}
-      </>}
-    </div>
-  );
-}
-
-// ── ADD DIAL-IN ───────────────────────────────────────────────────────────────
-function AddDialIn({kits, dialins, onSave, nav, settings}) {
-  const today=new Date().toISOString().split("T")[0];
-  const defKits=settings?.defaultKits||[];
-  const [f,setF]=useState({date:today,selectedKits:defKits,coffeeName:"",roaster:"",origin:"",region:"",process:"Washed",roastLevel:"Light",brewMethods:[],roastDate:"",flavorNotes:"",grindSetting:"",grinder:"",doseIn:"",yieldOut:"",timeSeconds:"",temperature:"",rating:0,dialStatus:"dialing",experimenting:false,dialEase:null,dialStability:null,beanLocation:"shelf",frozenDate:"",wouldBuy:false,isChoice:false,isEarlyEntry:false,tags:[],filterPours:[],coffeeUrl:"",coffeeDescription:"",notes:""});
-  const [fetching,setFetching]=useState(false);
-  const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  const toggleTag=t=>s("tags",f.tags.includes(t)?f.tags.filter(x=>x!==t):[...f.tags,t]);
-  const toggleBrew=m=>s("brewMethods",f.brewMethods.includes(m)?f.brewMethods.filter(x=>x!==m):[...f.brewMethods,m]);
-  const toggleKit=id=>s("selectedKits",f.selectedKits.includes(id)?f.selectedKits.filter(x=>x!==id):[...f.selectedKits,id]);
-  const r=f.doseIn&&f.yieldOut?ratio(+f.doseIn,+f.yieldOut):null;
-  const hasFilter=f.brewMethods.includes("Pour Over")||f.brewMethods.includes("French Press");
-  const addPhase=()=>setF(p=>({...p,filterPours:[...p.filterPours,{phase:p.filterPours.length+1,targetGrams:"",startSeconds:""}]}));
-  const removePhase=i=>setF(p=>({...p,filterPours:p.filterPours.filter((_,j)=>j!==i).map((ph,j)=>({...ph,phase:j+1}))}));
-  const updatePhase=(i,k,v)=>setF(p=>({...p,filterPours:p.filterPours.map((ph,j)=>j===i?{...ph,[k]:v}:ph)}));
-  const fetchDesc=async()=>{
-    if(!f.coffeeUrl.trim())return;setFetching(true);
-    try{const res=await fetch(`https://corsproxy.io/?${encodeURIComponent(f.coffeeUrl)}`);const html=await res.text();const doc=new DOMParser().parseFromString(html,"text/html");const desc=doc.querySelector('meta[property="og:description"]')?.content||doc.querySelector('meta[name="description"]')?.content||"";const title=doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('title')?.textContent||"";if(desc||title)s("coffeeDescription",[title,desc].filter(Boolean).join("\n"));}catch(e){}
-    setFetching(false);
-  };
-  const kitOptions=[{id:"home-espresso",label:"HOME · ESPR"},{id:"home-pour-over",label:"HOME · POUR"},{id:"home-french-press",label:"HOME · FRPR"},{id:"office-espresso",label:"OFFC · ESPR"},{id:"office-pour-over",label:"OFFC · POUR"},{id:"office-french-press",label:"OFFC · FRPR"}];
-  const save=()=>{
-    if(!f.coffeeName||!f.selectedKits.length)return;
-    const base={...f,doseIn:+f.doseIn,yieldOut:+f.yieldOut,timeSeconds:+f.timeSeconds,temperature:+f.temperature,filterPours:f.filterPours.filter(p=>p.targetGrams).map(p=>({phase:p.phase,targetGrams:+p.targetGrams,startSeconds:String(p.startSeconds).includes(":")?mssToSec(p.startSeconds):+p.startSeconds||0}))};
-    delete base.selectedKits;
-    const entries=f.selectedKits.map(kitId=>({...base,id:uid(),kitId,grinder:kits.find(k=>k.id===kitId)?.equipment.find(e=>e.category==="Grinder")?.name||f.grinder}));
-    onSave(entries);
-  };
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("home")}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>New Dial-In</div></div>
-      <div className="sec"><span className="sec-title">Coffee *</span></div>
-      <div className="f-grp"><label className="f-lbl">Coffee Name *</label><input className="f-in" placeholder="e.g. Ethiopia Yirgacheffe" value={f.coffeeName} onChange={e=>s("coffeeName",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Roaster</label><input className="f-in" placeholder="e.g. Kmen" value={f.roaster} onChange={e=>s("roaster",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Kits *</label>
-        <div className="opt-chips">{kitOptions.map(({id,label})=><div key={id} className={`opt-chip${f.selectedKits.includes(id)?" opt-chip-on":""}`} onClick={()=>toggleKit(id)} style={{fontFamily:"'DM Mono',monospace",fontSize:"11px"}}>{label}</div>)}</div>
-      </div>
-      <div className="f-grp"><label className="f-lbl">Brew Methods *</label>
-        <div className="opt-chips">{BREW_METHODS.map(m=><div key={m} className={`opt-chip${f.brewMethods.includes(m)?" opt-chip-on":""}`} onClick={()=>toggleBrew(m)}>{m==="Espresso"?"ESPR":m==="Pour Over"?"POUR":"FRPR"}</div>)}</div>
-      </div>
-      <div className="sec"><span className="sec-title">Details</span></div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Origin</label><input className="f-in" placeholder="Ethiopia" value={f.origin} onChange={e=>s("origin",e.target.value)}/></div>
-        <div className="f-grp"><label className="f-lbl">Region</label><input className="f-in" placeholder="Yirgacheffe" value={f.region} onChange={e=>s("region",e.target.value)}/></div>
-      </div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Process</label><select className="f-sel" value={f.process} onChange={e=>s("process",e.target.value)}>{PROCESSES.map(o=><option key={o}>{o}</option>)}</select></div>
-        <div className="f-grp"><label className="f-lbl">Roast</label><select className="f-sel" value={f.roastLevel} onChange={e=>s("roastLevel",e.target.value)}>{ROASTS.map(o=><option key={o}>{o}</option>)}</select></div>
-      </div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Roast Date</label><input className="f-in" type="date" value={f.roastDate} onChange={e=>s("roastDate",e.target.value)}/></div>
-        <div className="f-grp"><label className="f-lbl">Bean Location</label><select className="f-sel" value={f.beanLocation} onChange={e=>s("beanLocation",e.target.value)}>{BEAN_LOCS.map(o=><option key={o} value={o}>{o.charAt(0).toUpperCase()+o.slice(1)}</option>)}</select></div>
-      </div>
-      {f.beanLocation==="frozen"&&<div className="f-row"><div className="f-grp"><label className="f-lbl">Frozen Date</label><input className="f-in" type="date" value={f.frozenDate||""} onChange={e=>s("frozenDate",e.target.value)}/></div></div>}
-      <div className="f-grp"><label className="f-lbl">Flavour Notes</label><input className="f-in" placeholder="Jasmine, bergamot, honey" value={f.flavorNotes} onChange={e=>s("flavorNotes",e.target.value)}/></div>
-      <div className="sec"><span className="sec-title">Coffee Page</span></div>
-      <div className="f-grp"><label className="f-lbl">Coffee URL</label>
-        <div className="fetch-row"><input className="f-in" type="url" placeholder="https://…" value={f.coffeeUrl} onChange={e=>s("coffeeUrl",e.target.value)}/><button className="btn-fetch" onClick={fetchDesc} disabled={fetching||!f.coffeeUrl.trim()}>{fetching?<span className="spin">↻</span>:"Fetch"}</button></div>
-      </div>
-      <div className="f-grp"><label className="f-lbl">Description</label><textarea className="f-ta" style={{minHeight:"60px"}} value={f.coffeeDescription} onChange={e=>s("coffeeDescription",e.target.value)}/></div>
-      <div className="sec"><span className="sec-title">Grind (optional)</span></div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Setting</label><input className="f-in" placeholder="e.g. 12.5" value={f.grindSetting} onChange={e=>s("grindSetting",e.target.value)}/></div>
-        <div className="f-grp"><label className="f-lbl">Grinder</label><input className="f-in" placeholder="Auto from kit" value={f.grinder} onChange={e=>s("grinder",e.target.value)}/></div>
-      </div>
-      <div className="sec"><span className="sec-title">Extraction (optional)</span></div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">{hasFilter?"Coffee (g)":"Dose (g)"}</label><input className="f-in" type="number" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/></div>
-        <div className="f-grp"><label className="f-lbl">{hasFilter?"Water (g)":"Yield (g)"}{r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label><input className="f-in" type="number" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/></div>
-      </div>
-      <div className="f-row">
-        <div className="f-grp"><label className="f-lbl">Temp (°{settings?.tempUnit||"C"})</label><input className="f-in" type="number" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/></div>
-        <div className="f-grp"><label className="f-lbl">Time (s)</label><input className="f-in" type="number" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/></div>
-      </div>
-      {hasFilter&&<>
-        <div className="sec"><span className="sec-title">Pour Phases (optional)</span></div>
-        <div className="phase-builder">
-          {f.filterPours.map((p,i)=>(
-            <div key={i} className="phase-build-row">
-              <span className="phase-build-num">{"①②③④⑤⑥"[i]}</span>
-              <input className="phase-build-in" style={{maxWidth:"80px"}} type="number" placeholder="g" value={p.targetGrams} onChange={e=>updatePhase(i,"targetGrams",e.target.value)}/>
-              <input className="phase-build-in" style={{maxWidth:"70px"}} placeholder="0:00" value={p.startSeconds} onChange={e=>updatePhase(i,"startSeconds",e.target.value)}/>
-              <button className="phase-del" onClick={()=>removePhase(i)}>✕</button>
-            </div>
-          ))}
-          <button className="btn btn-s" style={{marginBottom:"14px"}} onClick={addPhase}>+ Add Pour Phase</button>
-        </div>
-      </>}
-      <div className="sec"><span className="sec-title">Assessment (optional)</span></div>
-      <div className="f-grp"><label className="f-lbl">Dial Status</label><div className="opt-chips">{DIAL_STATUSES.map(o=><div key={o} className={`opt-chip${f.dialStatus===o?" opt-chip-on":""}`} onClick={()=>s("dialStatus",o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Experimenting</div></div><Toggle on={f.experimenting} onToggle={()=>s("experimenting",!f.experimenting)}/></div>
-      <div className="f-grp"><label className="f-lbl">Dial Ease</label><div className="opt-chips">{["easy","medium","hard"].map(o=><div key={o} className={`opt-chip${f.dialEase===o?" opt-chip-on":""}`} onClick={()=>s("dialEase",f.dialEase===o?null:o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="f-grp"><label className="f-lbl">Dial Stability</label><div className="opt-chips">{["stable","unstable"].map(o=><div key={o} className={`opt-chip${f.dialStability===o?" opt-chip-on":""}`} onClick={()=>s("dialStability",f.dialStability===o?null:o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="f-grp"><label className="f-lbl">Rating</label><StarInput val={f.rating} set={v=>s("rating",v)}/></div>
-      <div className="f-grp"><label className="f-lbl">Tags</label><div className="opt-chips">{DIAL_TAGS.map(t=><div key={t} className={`opt-chip${f.tags.includes(t)?" opt-chip-on":""}`} onClick={()=>toggleTag(t)}>{t}</div>)}</div></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Would Buy Again</div></div><Toggle on={f.wouldBuy} onToggle={()=>s("wouldBuy",!f.wouldBuy)}/></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">My Pick</div></div><Toggle on={f.isChoice} onToggle={()=>s("isChoice",!f.isChoice)}/></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Early Entry</div></div><Toggle on={f.isEarlyEntry} onToggle={()=>s("isEarlyEntry",!f.isEarlyEntry)}/></div>
-      <div className="f-grp" style={{marginTop:"8px"}}><label className="f-lbl">My Notes</label><textarea className="f-ta" value={f.notes} onChange={e=>s("notes",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Dial-In Date</label><input className="f-in" type="date" value={f.date} onChange={e=>s("date",e.target.value)}/></div>
-      <div className="btn-area">
-        <button className="btn btn-p" onClick={save} disabled={!f.coffeeName||!f.selectedKits.length}>Save {f.selectedKits.length>1?`${f.selectedKits.length} Entries`:"Dial-In"}</button>
-        <button className="btn btn-s" onClick={()=>nav("home")}>Cancel</button>
-      </div>
-    </div>
-  );
-}
-
-// ── EDIT DIAL-IN ──────────────────────────────────────────────────────────────
-function EditDialIn({d, kits, onSave, nav, settings}) {
-  const norm=normalizeDiaLin(d);
-  const [f,setF]=useState({...norm,doseIn:d.doseIn||"",yieldOut:d.yieldOut||"",timeSeconds:d.timeSeconds||"",temperature:d.temperature||"",filterPours:norm.filterPours.map(p=>({...p,startSeconds:secToMSS(p.startSeconds)}))});
-  const [fetching,setFetching]=useState(false);
-  const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  const toggleTag=t=>s("tags",f.tags.includes(t)?f.tags.filter(x=>x!==t):[...f.tags,t]);
-  const toggleBrew=m=>s("brewMethods",f.brewMethods.includes(m)?f.brewMethods.filter(x=>x!==m):[...f.brewMethods,m]);
-  const kit=kits.find(k=>k.id===f.kitId);
-  const isFilter=kit?.brewMethod==="filter"||kit?.brewMethod==="fpress";
-  const r=f.doseIn&&f.yieldOut?ratio(+f.doseIn,+f.yieldOut):null;
-  const addPhase=()=>setF(p=>({...p,filterPours:[...p.filterPours,{phase:p.filterPours.length+1,targetGrams:"",startSeconds:"0:00"}]}));
-  const removePhase=i=>setF(p=>({...p,filterPours:p.filterPours.filter((_,j)=>j!==i).map((ph,j)=>({...ph,phase:j+1}))}));
-  const updatePhase=(i,k,v)=>setF(p=>({...p,filterPours:p.filterPours.map((ph,j)=>j===i?{...ph,[k]:v}:ph)}));
-  const fetchDesc=async()=>{
-    if(!f.coffeeUrl?.trim())return;setFetching(true);
-    try{const res=await fetch(`https://corsproxy.io/?${encodeURIComponent(f.coffeeUrl)}`);const html=await res.text();const doc=new DOMParser().parseFromString(html,"text/html");const desc=doc.querySelector('meta[property="og:description"]')?.content||doc.querySelector('meta[name="description"]')?.content||"";const title=doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('title')?.textContent||"";if(desc||title)s("coffeeDescription",[title,desc].filter(Boolean).join("\n"));}catch(e){}
-    setFetching(false);
-  };
-  const save=()=>{
-    if(!f.coffeeName)return;
-    onSave({...f,doseIn:+f.doseIn,yieldOut:+f.yieldOut,timeSeconds:+f.timeSeconds,temperature:+f.temperature,filterPours:f.filterPours.filter(p=>p.targetGrams).map(p=>({phase:p.phase,targetGrams:+p.targetGrams,startSeconds:String(p.startSeconds).includes(":")?mssToSec(p.startSeconds):+p.startSeconds||0}))});
-  };
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("dialin",d)}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Edit Dial-In</div></div>
-      <div className="sec"><span className="sec-title">Coffee</span></div>
-      <div className="f-grp"><label className="f-lbl">Kit</label><select className="f-sel" value={f.kitId} onChange={e=>s("kitId",e.target.value)}>{kits.map(k=><option key={k.id} value={k.id}>{k.name}</option>)}</select></div>
-      <div className="f-grp"><label className="f-lbl">Coffee Name</label><input className="f-in" value={f.coffeeName} onChange={e=>s("coffeeName",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Roaster</label><input className="f-in" value={f.roaster||""} onChange={e=>s("roaster",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Brew Methods</label><div className="opt-chips">{BREW_METHODS.map(m=><div key={m} className={`opt-chip${f.brewMethods.includes(m)?" opt-chip-on":""}`} onClick={()=>toggleBrew(m)}>{m==="Espresso"?"ESPR":m==="Pour Over"?"POUR":"FRPR"}</div>)}</div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Origin</label><input className="f-in" value={f.origin||""} onChange={e=>s("origin",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Region</label><input className="f-in" value={f.region||""} onChange={e=>s("region",e.target.value)}/></div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Process</label><select className="f-sel" value={f.process||""} onChange={e=>s("process",e.target.value)}>{PROCESSES.map(o=><option key={o}>{o}</option>)}</select></div><div className="f-grp"><label className="f-lbl">Roast</label><select className="f-sel" value={f.roastLevel||""} onChange={e=>s("roastLevel",e.target.value)}>{ROASTS.map(o=><option key={o}>{o}</option>)}</select></div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Dial-In Date</label><input className="f-in" type="date" value={f.date||""} onChange={e=>s("date",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Roast Date</label><input className="f-in" type="date" value={f.roastDate||""} onChange={e=>s("roastDate",e.target.value)}/></div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Bean Location</label><select className="f-sel" value={f.beanLocation} onChange={e=>s("beanLocation",e.target.value)}>{BEAN_LOCS.map(o=><option key={o} value={o}>{o.charAt(0).toUpperCase()+o.slice(1)}</option>)}</select></div></div>
-      {f.beanLocation==="frozen"&&<div className="f-row"><div className="f-grp"><label className="f-lbl">Frozen Date</label><input className="f-in" type="date" value={f.frozenDate||""} onChange={e=>s("frozenDate",e.target.value)}/></div>{f.thawDate&&<div className="f-grp"><label className="f-lbl">Thaw Date</label><input className="f-in" type="date" value={f.thawDate||""} onChange={e=>s("thawDate",e.target.value)}/></div>}</div>}
-      <div className="f-grp"><label className="f-lbl">Flavour Notes</label><input className="f-in" value={f.flavorNotes||""} onChange={e=>s("flavorNotes",e.target.value)}/></div>
-      <div className="sec"><span className="sec-title">Coffee Page</span></div>
-      <div className="f-grp"><label className="f-lbl">Coffee URL</label><div className="fetch-row"><input className="f-in" type="url" value={f.coffeeUrl||""} onChange={e=>s("coffeeUrl",e.target.value)}/><button className="btn-fetch" onClick={fetchDesc} disabled={fetching||!f.coffeeUrl?.trim()}>{fetching?<span className="spin">↻</span>:"Fetch"}</button></div></div>
-      <div className="f-grp"><label className="f-lbl">Description</label><textarea className="f-ta" style={{minHeight:"60px"}} value={f.coffeeDescription||""} onChange={e=>s("coffeeDescription",e.target.value)}/></div>
-      <div className="sec"><span className="sec-title">Grind</span></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Setting</label><input className="f-in" value={f.grindSetting||""} onChange={e=>s("grindSetting",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Grinder</label><input className="f-in" value={f.grinder||""} onChange={e=>s("grinder",e.target.value)}/></div></div>
-      <div className="sec"><span className="sec-title">Extraction</span></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">{isFilter?"Coffee (g)":"Dose (g)"}</label><input className="f-in" type="number" value={f.doseIn} onChange={e=>s("doseIn",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">{isFilter?"Water (g)":"Yield (g)"}{r&&<span style={{color:"var(--accent)",fontFamily:"'DM Mono',monospace",fontSize:"10px",marginLeft:"6px"}}>{r}</span>}</label><input className="f-in" type="number" value={f.yieldOut} onChange={e=>s("yieldOut",e.target.value)}/></div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Time (s)</label><input className="f-in" type="number" value={f.timeSeconds} onChange={e=>s("timeSeconds",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Temp (°{settings?.tempUnit||"C"})</label><input className="f-in" type="number" value={f.temperature} onChange={e=>s("temperature",e.target.value)}/></div></div>
-      {isFilter&&<>
-        <div className="sec"><span className="sec-title">Pour Phases</span></div>
-        <div className="phase-builder">
-          {f.filterPours.map((p,i)=>(
-            <div key={i} className="phase-build-row">
-              <span className="phase-build-num">{"①②③④⑤⑥"[i]}</span>
-              <input className="phase-build-in" style={{maxWidth:"80px"}} type="number" placeholder="g" value={p.targetGrams} onChange={e=>updatePhase(i,"targetGrams",e.target.value)}/>
-              <input className="phase-build-in" style={{maxWidth:"70px"}} placeholder="0:00" value={p.startSeconds} onChange={e=>updatePhase(i,"startSeconds",e.target.value)}/>
-              <button className="phase-del" onClick={()=>removePhase(i)}>✕</button>
-            </div>
-          ))}
-          <button className="btn btn-s" style={{marginBottom:"14px"}} onClick={addPhase}>+ Add Phase</button>
-        </div>
-      </>}
-      <div className="sec"><span className="sec-title">Assessment</span></div>
-      <div className="f-grp"><label className="f-lbl">Dial Status</label><div className="opt-chips">{DIAL_STATUSES.map(o=><div key={o} className={`opt-chip${f.dialStatus===o?" opt-chip-on":""}`} onClick={()=>s("dialStatus",o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Experimenting</div></div><Toggle on={f.experimenting} onToggle={()=>s("experimenting",!f.experimenting)}/></div>
-      <div className="f-grp"><label className="f-lbl">Dial Ease</label><div className="opt-chips">{["easy","medium","hard"].map(o=><div key={o} className={`opt-chip${f.dialEase===o?" opt-chip-on":""}`} onClick={()=>s("dialEase",f.dialEase===o?null:o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="f-grp"><label className="f-lbl">Dial Stability</label><div className="opt-chips">{["stable","unstable"].map(o=><div key={o} className={`opt-chip${f.dialStability===o?" opt-chip-on":""}`} onClick={()=>s("dialStability",f.dialStability===o?null:o)}>{o.charAt(0).toUpperCase()+o.slice(1)}</div>)}</div></div>
-      <div className="f-grp"><label className="f-lbl">Rating</label><StarInput val={f.rating||0} set={v=>s("rating",v)}/></div>
-      <div className="f-grp"><label className="f-lbl">Tags</label><div className="opt-chips">{DIAL_TAGS.map(t=><div key={t} className={`opt-chip${f.tags.includes(t)?" opt-chip-on":""}`} onClick={()=>toggleTag(t)}>{t}</div>)}</div></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Would Buy Again</div></div><Toggle on={f.wouldBuy} onToggle={()=>s("wouldBuy",!f.wouldBuy)}/></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">My Pick</div></div><Toggle on={f.isChoice} onToggle={()=>s("isChoice",!f.isChoice)}/></div>
-      <div className="toggle-row"><div><div className="toggle-lbl">Early Entry</div></div><Toggle on={f.isEarlyEntry} onToggle={()=>s("isEarlyEntry",!f.isEarlyEntry)}/></div>
-      <div className="f-grp" style={{marginTop:"8px"}}><label className="f-lbl">My Verdict</label><textarea className="f-ta" style={{minHeight:"60px"}} value={f.review||""} onChange={e=>s("review",e.target.value)}/></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Producer</label><input className="f-in" value={f.producer||""} onChange={e=>s("producer",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Farm</label><input className="f-in" value={f.farm||""} onChange={e=>s("farm",e.target.value)}/></div></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Variety</label><input className="f-in" value={f.variety||""} onChange={e=>s("variety",e.target.value)}/></div><div className="f-grp"><label className="f-lbl">Altitude</label><input className="f-in" value={f.altitude||""} onChange={e=>s("altitude",e.target.value)}/></div></div>
-      <div className="f-grp"><label className="f-lbl">My Notes</label><textarea className="f-ta" value={f.notes||""} onChange={e=>s("notes",e.target.value)}/></div>
-      <div className="btn-area">
-        <button className="btn btn-p" onClick={save} disabled={!f.coffeeName}>Save Changes</button>
-        <button className="btn btn-s" onClick={()=>nav("dialin",d)}>Cancel</button>
-      </div>
-    </div>
-  );
-}
-
-// ── KIT SCREEN ────────────────────────────────────────────────────────────────
-function KitScreen({kit, dialins, kits, nav, onEditKit}) {
-  if (!kit) return null;
-  const kd=dialins.filter(d=>d.kitId===kit.id);
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("settings-kits")}>←</button><div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>{kit.name}</div><div style={{fontSize:"10px",color:"var(--tx3)"}}>{kit.subtitle}</div></div><button className="icon-btn" onClick={()=>onEditKit(kit)}>✎</button></div>
-      <div className="sec"><span className="sec-title">Equipment</span></div>
-      {kit.equipment.map((e,i)=>(
-        <div key={i} className="eq-row">
-          <div className="eq-cat">{e.category}</div>
-          <div><div style={{fontSize:"14px",fontWeight:500}}>{e.name}</div>{e.notes&&<div style={{fontSize:"12px",color:"var(--tx2)",marginTop:"2px"}}>{e.notes}</div>}</div>
-        </div>
-      ))}
-      {kd.length>0&&<>
-        <div className="sec"><span className="sec-title">Recent Dial-Ins</span></div>
-        {kd.slice(0,4).map(d=>(
-          <div key={d.id} onClick={()=>nav("dialin",d,"settings-kits")} style={{margin:"0 18px 6px",padding:"11px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"10px",cursor:"pointer",display:"flex",alignItems:"center",gap:"10px"}}>
-            <div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"15px"}}>{d.coffeeName}</div><div style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"var(--tx3)",marginTop:"2px"}}>{fmtShort(d.date)}</div></div>
-            {d.grindSetting&&<span style={{fontFamily:"'DM Mono',monospace",fontSize:"18px",fontWeight:500,color:"var(--accent)"}}>{shortGrind(d.grindSetting)}</span>}
-            {d.rating>0&&<Stars n={d.rating}/>}
-          </div>
-        ))}
-      </>}
-    </div>
-  );
-}
-
-function EditKit({kit, onSave, nav}) {
-  const [name,setName]=useState(kit.name);const [sub,setSub]=useState(kit.subtitle||"");const [loc,setLoc]=useState(kit.location||"home");const [brew,setBrew]=useState(kit.brewMethod||"espresso");const [equip,setEquip]=useState(kit.equipment.map(e=>({...e})));
-  const updateEq=(i,k,v)=>setEquip(p=>p.map((e,j)=>j===i?{...e,[k]:v}:e));const addEq=()=>setEquip(p=>[...p,{category:"",name:"",notes:""}]);const removeEq=i=>setEquip(p=>p.filter((_,j)=>j!==i));
-  const save=()=>onSave({...kit,name,subtitle:sub,location:loc,brewMethod:brew,equipment:equip.filter(e=>e.name)});
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("kit",kit)}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Edit Kit</div></div>
-      <div className="sec"><span className="sec-title">Kit Info</span></div>
-      <div className="f-grp"><label className="f-lbl">Name</label><input className="f-in" value={name} onChange={e=>setName(e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Subtitle</label><input className="f-in" value={sub} onChange={e=>setSub(e.target.value)}/></div>
-      <div className="f-row"><div className="f-grp"><label className="f-lbl">Location</label><select className="f-sel" value={loc} onChange={e=>setLoc(e.target.value)}><option value="home">Home</option><option value="office">Office</option></select></div><div className="f-grp"><label className="f-lbl">Brew Method</label><select className="f-sel" value={brew} onChange={e=>setBrew(e.target.value)}><option value="espresso">Espresso</option><option value="filter">Pour Over / Filter</option><option value="fpress">French Press</option></select></div></div>
-      <div className="sec"><span className="sec-title">Equipment</span></div>
-      {equip.map((e,i)=>(
-        <div key={i} style={{margin:"0 18px 10px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"10px",padding:"12px"}}>
-          <div style={{display:"flex",gap:"8px",marginBottom:"8px"}}><input className="f-in" style={{flex:"0 0 90px"}} placeholder="Category" value={e.category} onChange={v=>updateEq(i,"category",v.target.value)}/><input className="f-in" style={{flex:1}} placeholder="Product name" value={e.name} onChange={v=>updateEq(i,"name",v.target.value)}/></div>
-          <div style={{display:"flex",gap:"8px"}}><input className="f-in" style={{flex:1}} placeholder="Notes" value={e.notes||""} onChange={v=>updateEq(i,"notes",v.target.value)}/><button onClick={()=>removeEq(i)} style={{background:"var(--red-d)",border:"1px solid rgba(160,80,80,.3)",color:"var(--red)",borderRadius:"7px",padding:"0 10px",cursor:"pointer",flexShrink:0}}>✕</button></div>
-        </div>
-      ))}
-      <div style={{padding:"0 18px 14px"}}><button className="btn btn-s" onClick={addEq}>+ Add Equipment</button></div>
-      <div className="btn-area"><button className="btn btn-p" onClick={save}>Save Kit</button><button className="btn btn-s" onClick={()=>nav("kit",kit)}>Cancel</button></div>
-    </div>
-  );
-}
-
-// ── SETTINGS ──────────────────────────────────────────────────────────────────
-function SettingsScreen({nav, syncing, onSync, dialins, settings}) {
-  const dupCount=useMemo(()=>groupDuplicates(dialins).length,[dialins]);
-  const incCount=useMemo(()=>dialins.filter(d=>!d.grindSetting||!d.brewMethods?.length||!d.roastDate).length,[dialins]);
-  const rows=[
-    {id:"settings-kits",    ico:"⚙", bg:"rgba(200,120,64,0.1)",  color:"var(--accent)", title:"Kits",        sub:"6 brewing setups"},
-    {id:"settings-github",  ico:"⟳", bg:"rgba(90,112,152,0.1)",  color:"var(--blue)",   title:"GitHub Sync", sub:settings?.owner&&settings?.repo?`${settings.owner}/${settings.repo}`:"Not connected"},
-    {id:"settings-controls",ico:"⊞", bg:"rgba(90,136,96,0.1)",   color:"var(--green)",  title:"Controls",    sub:"Defaults, units, thresholds"},
-    {id:"settings-data",    ico:"◈", bg:dupCount>0||incCount>0?"rgba(200,120,64,0.1)":"rgba(90,136,96,0.1)",color:dupCount>0||incCount>0?"var(--accent)":"var(--green)",title:"Data",sub:dupCount>0?`${dupCount} duplicate group${dupCount!==1?"s":""}`:incCount>0?`${incCount} incomplete entr${incCount===1?"y":"ies"}`:"All clean"},
-  ];
-  return (
-    <div className="screen fade-in">
-      <div className="topbar">
-        <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"26px",fontWeight:500}}>Settings</span>
-        <div className="topbar-actions">
-          <button className="icon-btn" onClick={()=>nav("home")}>←</button>
-          <button className="icon-btn" onClick={onSync}><span className={syncing?"spin":""}>{syncing?"↻":"⟳"}</span></button>
-        </div>
-      </div>
-      <div style={{padding:"6px 18px 8px",fontSize:"10px",color:"var(--tx3)"}}>v{APP_VERSION}</div>
-      <div className="sec"><span className="sec-title">Configuration</span></div>
-      {rows.map(r=>(
-        <div key={r.id} className="settings-row" onClick={()=>nav(r.id)}>
-          <div className="settings-ico" style={{background:r.bg}}><span style={{color:r.color,fontSize:"18px"}}>{r.ico}</span></div>
-          <div style={{flex:1}}><div className="settings-title">{r.title}</div><div className="settings-sub">{r.sub}</div></div>
-          <span style={{color:"var(--tx3)"}}>›</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SettingsKits({kits,nav}) {
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("settings")}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Kits</div></div>
-      <div className="sec"><span className="sec-title">My Kits</span></div>
-      {kits.map(k=>(
-        <div key={k.id} className="settings-row" onClick={()=>nav("kit",k)}>
-          <div style={{width:"36px",height:"36px",borderRadius:"9px",background:`${k.color}20`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-            <span style={{fontFamily:"'DM Mono',monospace",fontSize:"8px",fontWeight:600,color:k.color}}>{k.location==="office"?"OFFC":"HOME"}</span>
-          </div>
-          <div style={{flex:1}}><div className="settings-title">{k.name}</div><div className="settings-sub">{k.subtitle}</div></div>
-          <span style={{color:"var(--tx3)"}}>›</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SettingsGitHub({settings, onSave, nav}) {
-  const [f,setF]=useState({owner:settings.owner||"",repo:settings.repo||"",token:settings.token||""});
-  const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("settings")}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>GitHub Sync</div></div>
-      <div className="sec"><span className="sec-title">Repository</span></div>
-      <div className="f-grp"><label className="f-lbl">Username</label><input className="f-in" placeholder="trynerlu" value={f.owner} onChange={e=>s("owner",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Repository</label><input className="f-in" placeholder="coffee-dialins" value={f.repo} onChange={e=>s("repo",e.target.value)}/></div>
-      <div className="f-grp"><label className="f-lbl">Personal Access Token</label><input className="f-in" type="password" placeholder="ghp_…" value={f.token} onChange={e=>s("token",e.target.value)}/><div className="f-hint">Required for writing. Leave empty for read-only.</div></div>
-      <div className="btn-area"><button className="btn btn-p" onClick={()=>onSave({...settings,...f})} disabled={!f.owner||!f.repo}>Save & Connect</button></div>
-      <div style={{padding:"0 18px 20px"}}><div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:"9px",padding:"14px",fontFamily:"'DM Mono',monospace",fontSize:"11px",color:"var(--tx2)",lineHeight:"1.9"}}>your-repo/<br/>├── index.html<br/>├── kits.json<br/>├── dialins.json<br/>└── questions.json</div></div>
-    </div>
-  );
-}
-
-function SettingsControls({settings, onSave, kits, nav}) {
-  const [f,setF]=useState({defaultKits:settings.defaultKits||[],grindFormat:settings.grindFormat||"decimal",tempUnit:settings.tempUnit||"C"});
-  const s=(k,v)=>setF(p=>({...p,[k]:v}));
-  const toggleKit=id=>s("defaultKits",f.defaultKits.includes(id)?f.defaultKits.filter(x=>x!==id):[...f.defaultKits,id]);
-  const kitOpts=[{id:"home-espresso",label:"HOME · ESPR"},{id:"home-pour-over",label:"HOME · POUR"},{id:"home-french-press",label:"HOME · FRPR"},{id:"office-espresso",label:"OFFC · ESPR"},{id:"office-pour-over",label:"OFFC · POUR"},{id:"office-french-press",label:"OFFC · FRPR"}];
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("settings")}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Controls</div></div>
-      <div className="sec"><span className="sec-title">Add Form Defaults</span></div>
-      <div className="f-grp"><label className="f-lbl">Default Kits</label><div className="opt-chips">{kitOpts.map(({id,label})=><div key={id} className={`opt-chip${f.defaultKits.includes(id)?" opt-chip-on":""}`} onClick={()=>toggleKit(id)} style={{fontFamily:"'DM Mono',monospace",fontSize:"11px"}}>{label}</div>)}</div></div>
-      <div className="sec"><span className="sec-title">Display</span></div>
-      <div className="f-grp"><label className="f-lbl">Temperature Unit</label><div className="opt-chips">{["C","F"].map(u=><div key={u} className={`opt-chip${f.tempUnit===u?" opt-chip-on":""}`} onClick={()=>s("tempUnit",u)}>°{u}</div>)}</div></div>
-      <div className="f-grp"><label className="f-lbl">Grind Format</label><div className="opt-chips"><div className={`opt-chip${f.grindFormat==="decimal"?" opt-chip-on":""}`} onClick={()=>s("grindFormat","decimal")}>Decimal (12.5)</div><div className={`opt-chip${f.grindFormat==="integer"?" opt-chip-on":""}`} onClick={()=>s("grindFormat","integer")}>Integer (12)</div></div></div>
-      <div className="btn-area"><button className="btn btn-p" onClick={()=>onSave({...settings,...f})}>Save Controls</button></div>
-    </div>
-  );
-}
-
-function SettingsData({dialins, onRemove, nav}) {
-  const dupGroups=useMemo(()=>groupDuplicates(dialins),[dialins]);
-  const incomplete=useMemo(()=>dialins.filter(d=>!d.grindSetting||!d.brewMethods?.length||!d.roastDate),[dialins]);
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar"><button className="icon-btn" onClick={()=>nav("settings")}>←</button><div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"20px",fontWeight:500}}>Data</div></div>
-      <div className="sec"><span className="sec-title">Duplicates</span></div>
-      {dupGroups.length===0
-        ? <div style={{padding:"10px 18px",fontSize:"13px",color:"var(--tx3)"}}>✓ No duplicates found</div>
-        : dupGroups.map((group,gi)=>(
-          <div key={gi} style={{margin:"0 18px 10px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"12px",overflow:"hidden"}}>
-            <div style={{padding:"10px 16px",borderBottom:"1px solid var(--border)",background:"var(--elevated)"}}>
-              <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"15px",fontWeight:500}}>{group[0].coffeeName}</div>
-              <div style={{fontSize:"10px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginTop:"2px"}}>{group[0].roaster}</div>
-            </div>
-            {[...group].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map((d,di,arr)=>(
-              <div key={d.id} style={{display:"flex",alignItems:"center",gap:"10px",padding:"10px 16px",borderBottom:di<arr.length-1?"1px solid var(--border)":"none"}}>
-                <div style={{flex:1}}><div style={{fontFamily:"'DM Mono',monospace",fontSize:"10px",color:"var(--tx3)"}}>{fmt(d.date)}</div><div style={{display:"flex",gap:"7px",alignItems:"center",marginTop:"3px"}}>{d.grindSetting&&<span style={{fontFamily:"'DM Mono',monospace",fontSize:"14px",color:"var(--accent)"}}>{shortGrind(d.grindSetting)}</span>}{d.dialStatus&&<span className={`badge b-${d.dialStatus}`} style={{fontSize:"9px"}}>{d.dialStatus.toUpperCase()}</span>}</div></div>
-                <button onClick={()=>onRemove(d.id)} style={{background:"var(--red-d)",border:"1px solid rgba(160,80,80,.3)",color:"var(--red)",borderRadius:"7px",padding:"6px 11px",cursor:"pointer",fontSize:"12px",fontFamily:"'Jost',sans-serif",fontWeight:500}}>Remove</button>
-              </div>
-            ))}
-          </div>
-        ))
-      }
-      <div className="sec"><span className="sec-title">Incomplete Entries</span></div>
-      {incomplete.length===0
-        ? <div style={{padding:"10px 18px",fontSize:"13px",color:"var(--tx3)"}}>✓ All entries complete</div>
-        : incomplete.map(d=>(
-          <div key={d.id} onClick={()=>nav("editdialin",d)} style={{margin:"0 18px 6px",padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"10px",cursor:"pointer",display:"flex",alignItems:"center",gap:"10px"}}>
-            <div style={{flex:1}}><div style={{fontSize:"10px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"2px"}}>{d.roaster}</div><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"14px"}}>{d.coffeeName}</div></div>
-            <div style={{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center"}}>
-              {!d.grindSetting&&<span className="badge b-dialing" style={{fontSize:"8px"}}>NO GRIND</span>}
-              {!d.brewMethods?.length&&<span className="badge b-dialing" style={{fontSize:"8px"}}>NO BREW</span>}
-              {!d.roastDate&&<span className="badge b-dialing" style={{fontSize:"8px"}}>NO DATE</span>}
-              <span style={{color:"var(--tx3)",fontSize:"14px"}}>›</span>
-            </div>
-          </div>
-        ))
-      }
-    </div>
-  );
-}
-
-// ── DISCOVERY SCREEN ─────────────────────────────────────────────────────────
-function DiscoveryScreen({wishlist, dialins, nav, onMarkOrdered, onRemove}) {
-  const [tab, setTab] = useState("radar"); // radar | tasted | reorder
-
-  // Auto-populate reorder: 4★+ wouldBuy:true, no recent open/shelf entry
-  const reorders = useMemo(()=>{
-    const norm = dialins.map(normalizeDiaLin);
-    const activeKeys = new Set(
-      norm.filter(d=>["shelf","open"].includes(d.beanLocation))
-          .map(d=>`${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`)
-    );
-    const seen = new Set();
-    return norm
-      .filter(d=>d.rating>=4&&d.wouldBuy&&!activeKeys.has(`${(d.coffeeName||"").toLowerCase().trim()}⌀${(d.roaster||"").toLowerCase().trim()}`))
-      .filter(d=>{ const k=`${(d.coffeeName||"").toLowerCase()}⌀${(d.roaster||"").toLowerCase()}`; if(seen.has(k))return false; seen.add(k); return true; })
-      .sort((a,b)=>b.rating-a.rating);
-  },[dialins]);
-
-  const radar   = wishlist.filter(w=>w.type==="radar"&&!w.ordered);
-  const tasted  = wishlist.filter(w=>w.type==="tasted"&&!w.ordered);
-
-  const TABS=[["radar",`🔭 Radar (${radar.length})`],["tasted",`☕ Tasted (${tasted.length})`],["reorder",`♻ Reorder (${reorders.length})`]];
-
-  const WishCard=({w})=>(
-    <div style={{margin:"0 18px 8px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"12px",padding:"14px 16px"}}>
-      <div style={{display:"flex",alignItems:"flex-start",gap:"8px",marginBottom:w.coffeeName||w.flavorNotes||w.source?8:0}}>
-        <div style={{flex:1,minWidth:0}}>
-          {w.coffeeName
-            ? <><div style={{fontSize:"11px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)",marginBottom:"3px"}}>{w.roaster}</div>
-               <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"17px",fontWeight:500}}>{w.coffeeName}</div></>
-            : <div style={{fontSize:"16px",fontWeight:600,letterSpacing:".04em",color:"var(--tx1)"}}>{w.roaster}</div>
-          }
-        </div>
-        <button onClick={()=>onRemove(w.id)} style={{background:"none",border:"none",color:"var(--tx3)",cursor:"pointer",fontSize:"16px",padding:"0 0 0 8px",flexShrink:0}}>✕</button>
-      </div>
-      {w.source&&<div style={{fontSize:"11px",color:"var(--tx3)",marginBottom:"4px"}}>📍 {w.source}</div>}
-      {w.flavorNotes&&<div style={{fontSize:"11px",color:"var(--tx2)",fontStyle:"italic",marginBottom:"4px"}}>{w.flavorNotes}</div>}
-      {w.notes&&<div style={{fontSize:"12px",color:"var(--tx2)",lineHeight:1.55,marginBottom:"6px"}}>"{w.notes}"</div>}
-      {w.url&&<a href={w.url} target="_blank" rel="noopener" style={{fontSize:"11px",color:"var(--accent)",textDecoration:"none"}}>🔗 View coffee page</a>}
-      <div style={{display:"flex",gap:"8px",marginTop:"10px",paddingTop:"10px",borderTop:"1px solid var(--border)"}}>
-        <button onClick={()=>onMarkOrdered(w.id)} style={{flex:1,background:"var(--green-d)",border:"1px solid rgba(90,136,96,0.3)",color:"var(--green)",borderRadius:"7px",padding:"7px 10px",cursor:"pointer",fontFamily:"'Jost',sans-serif",fontSize:"12px",fontWeight:500}}>✓ Ordered</button>
-        {w.addedDate&&<span style={{fontSize:"10px",color:"var(--tx3)",alignSelf:"center"}}>{fmtShort(w.addedDate)}</span>}
-      </div>
-    </div>
-  );
-
-  const ReorderCard=({d})=>(
-    <div style={{margin:"0 18px 8px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:"12px",padding:"14px 16px",cursor:"pointer"}} onClick={()=>nav("dialin",d,"discovery")}>
-      <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"4px"}}>
-        <BrewDot brewMethods={d.brewMethods||[]} size={7}/>
-        <div style={{fontSize:"11px",fontWeight:600,letterSpacing:".08em",textTransform:"uppercase",color:"var(--accent)"}}>{d.roaster}</div>
-        <Stars n={d.rating} size={10}/>
-      </div>
-      <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"17px",fontWeight:500,marginBottom:"4px"}}>{d.coffeeName}</div>
-      {d.flavorNotes&&<div style={{fontSize:"11px",color:"var(--tx2)",fontStyle:"italic"}}>{d.flavorNotes}</div>}
-    </div>
-  );
-
-  return (
-    <div className="screen fade-in">
-      <div className="det-topbar">
-        <button className="icon-btn" onClick={()=>nav("home")}>←</button>
-        <div style={{flex:1,fontFamily:"'Cormorant Garamond',serif",fontSize:"22px",fontWeight:500}}>Discovery</div>
-      </div>
-
-      {/* Tabs */}
-      <div style={{display:"flex",gap:"6px",padding:"12px 18px 4px"}}>
-        {TABS.map(([id,lbl])=>(
-          <button key={id} onClick={()=>setTab(id)} style={{flex:1,padding:"8px 4px",borderRadius:"8px",border:"1px solid",borderColor:tab===id?"var(--accent)":"var(--border)",background:tab===id?"var(--accent-d)":"var(--surface)",color:tab===id?"var(--accent)":"var(--tx3)",fontFamily:"'Jost',sans-serif",fontSize:"10px",fontWeight:600,letterSpacing:".06em",cursor:"pointer",transition:"all .15s"}}>
-            {lbl}
-          </button>
-        ))}
-      </div>
-
-      {tab==="radar"&&(
-        <>
-          <div className="sec"><span className="sec-title">Roasters & coffees to explore</span></div>
-          {radar.length===0
-            ? <div className="empty"><div className="empty-ico">🔭</div><div className="empty-t">Nothing on the radar yet</div><div className="empty-s">Use a push link from the other chat to add roasters and coffees you want to explore.</div></div>
-            : radar.map(w=><WishCard key={w.id} w={w}/>)
-          }
-        </>
-      )}
-
-      {tab==="tasted"&&(
-        <>
-          <div className="sec"><span className="sec-title">Coffees you tasted & loved</span></div>
-          {tasted.length===0
-            ? <div className="empty"><div className="empty-ico">☕</div><div className="empty-t">Nothing tasted yet</div><div className="empty-s">Add coffees you had at a café, roastery, or restaurant via push link.</div></div>
-            : tasted.map(w=><WishCard key={w.id} w={w}/>)
-          }
-        </>
-      )}
-
-      {tab==="reorder"&&(
-        <>
-          <div className="sec"><span className="sec-title">From your logbook — worth reordering</span></div>
-          <div style={{padding:"0 18px 8px",fontSize:"11px",color:"var(--tx3)"}}>4★+ coffees marked "Would Buy Again" not currently active.</div>
-          {reorders.length===0
-            ? <div className="empty"><div className="empty-ico">♻</div><div className="empty-t">Nothing to suggest yet</div><div className="empty-s">Rate coffees 4★+ and mark "Would Buy Again" to see them here.</div></div>
-            : reorders.map(d=><ReorderCard key={d.id} d={d}/>)
-          }
-        </>
-      )}
-    </div>
-  );
-}
-
-// ── SPLASH ────────────────────────────────────────────────────────────────────
-function Splash() {
-  return (
-    <div className="splash">
-      <div className="splash-title">Dial-In</div>
-      <div className="splash-sub">Loading your setup</div>
-      <div className="splash-bar"/>
-    </div>
-  );
-}
-
-const DEFAULT_PALATE = `Pour Over — what I love
-Floral, tea-like, jasmine-forward light roasts. Bergamot, white grapes, white tea, honey. Washed process almost exclusively. Costa Rica and Ethiopia as top origins.
-
-Espresso — what I love
-Well-structured, expressive with fruit character or sweet stone fruit notes. Caramel, panela. Easy to dial, stable. Costa Rica and reliable blends earn their place.
-
-What doesn't work
-Difficult, unstable espressos. Flat chocolate profiles. Very dark commercial roasts.
-
-Quick reference
-✓ Light–medium · washed · Costa Rica · Ethiopia
-✓ Jasmine / bergamot / white tea / stone fruit
-✗ Unstable espressos · flat chocolate · dark roasts`;
-
-// ── ROOT APP ──────────────────────────────────────────────────────────────────
-function App() {
-  const [ready,       setReady]     = useState(false);
-  const [screen,      setScreen]    = useState("home");
-  const [listScreen,  setListScreen]= useState("home");
-  const [curKit,      setCurKit]    = useState(null);
-  const [curDial,     setCurDial]   = useState(null);
-  const [kits,        setKits]      = useState(DEF_KITS);
-  const [dialins,     setDialins]   = useState([]);
-  const [questions,   setQuestions] = useState([]);
-  const [wishlist,    setWishlist]  = useState(()=>lsGet(LS.wishlist)||[]);
-  const [syncing,     setSyncing]   = useState(false);
-  const [toast,       setToast]     = useState(null);
-  const [lastSync,    setLastSync]  = useState(null);
-  const [settings,    setSettings]  = useState(()=>lsGet(LS.settings)||{});
-
-  // Quiz state
-  const [quizState, setQuizState] = useState(()=>{
-    const saved=lsGet(LS.quiz)||{};
-    return {currentIdx:0,answered:saved.answered||{},history:saved.history||[]};
-  });
-
-  useEffect(()=>{
-    const ck=lsGet(LS.kits),cd=lsGet(LS.dialins);
-    if(ck) setKits(ck);
-    if(cd) setDialins(cd);
-    setReady(true);
-    const s=lsGet(LS.settings)||{};
-    if(s.owner&&s.repo&&navigator.onLine) autoSync(s,ck,cd);
-    // Load questions and wishlist from repo if available
-    if(s.owner&&s.repo) { loadQuestions(s); loadWishlist(s); }
-    const onVisible=()=>{
-      if(document.visibilityState==="visible"){
-        const sv=lsGet(LS.settings)||{};
-        if(sv.owner&&sv.repo&&navigator.onLine){autoSync(sv,lsGet(LS.kits),lsGet(LS.dialins));loadQuestions(sv);loadWishlist(sv);}
-      }
-    };
-    document.addEventListener("visibilitychange",onVisible);
-    return ()=>document.removeEventListener("visibilitychange",onVisible);
-  },[]);
-
-  const loadWishlist=async(s)=>{
-    try {
-      const r=await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/wishlist.json?_=${Date.now()}`);
-      if(r.status===404) return; // not created yet
-      if(r.ok){const ws=await r.json();if(Array.isArray(ws)){setWishlist(ws);lsSet(LS.wishlist,ws);}}
-    }catch(e){}
-  };
-
-  const loadQuestions=async(s)=>{
-    try {
-      const r=await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/questions.json?_=${Date.now()}`);
-      if(r.ok){const qs=await r.json();if(Array.isArray(qs)&&qs.length)setQuestions(qs);}
-    }catch(e){}
-  };
-
-  const autoSync=async(s,lk,ld)=>{
-    try {
-      const [rk,rd]=await Promise.all([ghRead(s,"kits.json").catch(()=>null),ghRead(s,"dialins.json").catch(()=>null)]);
-      const localMod=lsGet("ca_lastModified")||0;
-      if(rk&&rk.data&&JSON.stringify(rk.data)!==JSON.stringify(lk)&&rk.ts>=localMod){setKits(rk.data);lsSet(LS.kits,rk.data);}
-      if(rd&&rd.data&&rd.ts>localMod){setDialins(rd.data);lsSet(LS.dialins,rd.data);}
-      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
-    }catch(e){}
-  };
-
-  const flash=(msg,ms=2800)=>{setToast(msg);setTimeout(()=>setToast(null),ms);};
-
-  const syncPull=async()=>{
-    if(!settings.owner||!settings.repo){flash("⚠ Configure GitHub in Settings");setScreen("settings");return;}
-    setSyncing(true);
-    try {
-      const [k,d]=await Promise.all([ghRead(settings,"kits.json"),ghRead(settings,"dialins.json")]);
-      setKits(k.data);lsSet(LS.kits,k.data);
-      setDialins(d.data);lsSet(LS.dialins,d.data);
-      if(d.ts)lsSet("ca_lastModified",d.ts);
-      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
-      await loadQuestions(settings);
-      flash("✓ Synced from GitHub");
-    }catch(e){flash(`✗ ${e.message}`);}
-    setSyncing(false);
-  };
-
-  const saveSettings=async(s)=>{
-    setSettings(s);lsSet(LS.settings,s);flash("✓ Settings saved — syncing…");
-    setSyncing(true);
-    try {
-      const [k,d]=await Promise.all([ghRead(s,"kits.json"),ghRead(s,"dialins.json")]);
-      setKits(k.data);lsSet(LS.kits,k.data);setDialins(d.data);lsSet(LS.dialins,d.data);
-      if(d.ts)lsSet("ca_lastModified",d.ts);
-      setLastSync(new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));
-      await loadQuestions(s);flash("✓ Connected & synced");
-    }catch(e){flash(`⚠ Settings saved. Sync failed: ${e.message}`);}
-    setSyncing(false);
-  };
-
-  const nav=(to,data=null,from=null)=>{
-    if(from==="home"||from==="logbook") setListScreen(from);
-    if(to==="kit"&&data)        setCurKit(data);
-    if(to==="dialin"&&data)     setCurDial(data);
-    if(to==="editdialin"&&data) setCurDial(data);
-    setScreen(to);
-  };
-
-  const markWishlistOrdered=async(id)=>{
-    const updated=wishlist.map(w=>w.id===id?{...w,ordered:true,orderedDate:new Date().toISOString().split("T")[0]}:w);
-    setWishlist(updated);lsSet(LS.wishlist,updated);
-    if(settings.token){try{await ghWrite(settings,"wishlist.json",updated);flash("✓ Marked as ordered");}catch(e){flash(`⚠ Saved locally`);}}
-    else flash("✓ Saved locally");
-  };
-
-  const removeWishlist=async(id)=>{
-    const updated=wishlist.filter(w=>w.id!==id);
-    setWishlist(updated);lsSet(LS.wishlist,updated);
-    if(settings.token){try{await ghWrite(settings,"wishlist.json",updated);flash("✓ Removed");}catch(e){flash(`⚠ Saved locally`);}}
-    else flash("✓ Removed locally");
-  };
-
-  const editDialin=(d)=>{setCurDial(d);setScreen("editdialin");};
-  const editKit   =(k)=>{setCurKit(k);setScreen("editkit");};
-
-  const quickStatus=async(id,patch)=>{
-    const current=dialins.find(d=>d.id===id);
-    if(current?.beanLocation==="frozen"&&patch.beanLocation&&patch.beanLocation!=="frozen"){patch.thawDate=new Date().toISOString().split("T")[0];flash("❄ Thawed — wait 12–24h before opening",5000);}
-    const updated=dialins.map(d=>d.id===id?{...d,...patch}:d);
-    setDialins(updated);lsSet(LS.dialins,updated);lsSet("ca_lastModified",Date.now());
-    if(curDial?.id===id)setCurDial(p=>({...p,...patch}));
-    if(settings.token){try{await ghWrite(settings,"dialins.json",updated);flash("✓ Updated");}catch(e){flash(`⚠ Saved locally. GitHub: ${e.message}`);}}
-    else flash("✓ Saved locally");
-  };
-
-  const saveDialin=async(updated)=>{
-    const newList=dialins.map(d=>d.id===updated.id?updated:d);
-    setDialins(newList);lsSet(LS.dialins,newList);lsSet("ca_lastModified",Date.now());
-    setCurDial(updated);
-    if(settings.token){try{await ghWrite(settings,"dialins.json",newList);flash("✓ Saved");}catch(e){flash(`⚠ Saved locally. GitHub: ${e.message}`);}}
-    else flash("✓ Saved locally");
-    setScreen("dialin");
-  };
-
-  const addDialins=async(entries)=>{
-    const updated=[...entries,...dialins];
-    setDialins(updated);lsSet(LS.dialins,updated);lsSet("ca_lastModified",Date.now());
-    if(settings.token){try{await ghWrite(settings,"dialins.json",updated);flash(`✓ ${entries.length>1?entries.length+" entries":"Dial-in"} saved`);}catch(e){flash(`⚠ Saved locally. GitHub: ${e.message}`);}}
-    else flash("✓ Saved locally");
-    setScreen("home");
-  };
-
-  const saveKit=async(updated)=>{
-    const newList=kits.map(k=>k.id===updated.id?updated:k);
-    setKits(newList);lsSet(LS.kits,newList);setCurKit(updated);
-    if(settings.token){try{await ghWrite(settings,"kits.json",newList);flash("✓ Kit saved");}catch(e){flash(`⚠ Saved locally. GitHub: ${e.message}`);}}
-    else flash("✓ Kit saved locally");
-    setScreen("kit");
-  };
-
-  const removeDialin=async(id)=>{
-    const updated=dialins.filter(d=>d.id!==id);
-    setDialins(updated);lsSet(LS.dialins,updated);lsSet("ca_lastModified",Date.now());
-    if(settings.token){try{await ghWrite(settings,"dialins.json",updated);flash("✓ Removed");}catch(e){flash(`⚠ Removed locally. GitHub: ${e.message}`);}}
-    else flash("✓ Removed locally");
-  };
-
-  // Quiz handlers
-  const onQuizAnswer=(qid,selected)=>{
-    const q=questions.find(x=>x.id===qid);
-    if(!q)return;
-    const correct=selected===q.a;
-    const newAnswered={...quizState.answered,[qid]:{selected,correct}};
-    const newHistory=[...quizState.history,{qid,correct,date:new Date().toISOString()}];
-    const ns={...quizState,answered:newAnswered,history:newHistory};
-    setQuizState(ns);
-    lsSet(LS.quiz,{answered:newAnswered,history:newHistory});
-  };
-  const onQuizNext=()=>{
-    setQuizState(s=>({...s,currentIdx:s.currentIdx+1}));
-  };
-
-  const DETAIL_SCREENS=["dialin","editdialin","kit","editkit","add","settings","settings-kits","settings-github","settings-controls","settings-data","quiz","discovery"];
-  const isDetail=DETAIL_SCREENS.includes(screen);
-  if(!ready) return <Splash/>;
-
-  const sharedProps={kits,dialins,nav,settings};
-  const views={
-    home:    <HomeScreen {...sharedProps} onSync={syncPull} syncing={syncing} lastSync={lastSync} questions={questions} quizState={quizState} onQuizAnswer={onQuizAnswer} onQuizNext={onQuizNext}/>,
-    logbook: <LogbookScreen {...sharedProps}/>,
-    add:     <AddDialIn {...sharedProps} onSave={addDialins}/>,
-    dialin:  <DialInDetail d={curDial} kits={kits} dialins={dialins} nav={nav} onEdit={editDialin} listScreen={listScreen} settings={settings} onQuickStatus={quickStatus}/>,
-    editdialin:<EditDialIn d={curDial} kits={kits} onSave={saveDialin} nav={nav} settings={settings}/>,
-    kit:     <KitScreen kit={curKit} dialins={dialins} kits={kits} nav={nav} onEditKit={editKit}/>,
-    editkit: <EditKit kit={curKit} onSave={saveKit} nav={nav}/>,
-    settings:<SettingsScreen nav={nav} syncing={syncing} onSync={syncPull} dialins={dialins} settings={settings}/>,
-    "settings-kits":    <SettingsKits kits={kits} nav={nav}/>,
-    "settings-github":  <SettingsGitHub settings={settings} onSave={saveSettings} nav={nav}/>,
-    "settings-controls":<SettingsControls settings={settings} onSave={saveSettings} kits={kits} nav={nav}/>,
-    "settings-data":    <SettingsData dialins={dialins} onRemove={removeDialin} nav={nav}/>,
-    quiz:    <QuizFullScreen questions={questions} nav={nav}/>,
-    discovery:<DiscoveryScreen wishlist={wishlist} dialins={dialins} nav={nav} onMarkOrdered={markWishlistOrdered} onRemove={removeWishlist}/>,
-  };
-
-  return (
-    <div>
-      {views[screen]||views.home}
-      {!isDetail&&(
-        <nav className="bnav">
-          {[{id:"home",ico:"⌂",lbl:"Home"},{id:"logbook",ico:"◉",lbl:"Logbook"}].map(item=>(
-            <button key={item.id} className={`nav-btn${screen===item.id?" nav-btn-on":""}`} onClick={()=>setScreen(item.id)}>
-              <span className="nav-ico">{item.ico}</span>
-              <span className="nav-lbl">{item.lbl}</span>
-            </button>
-          ))}
-        </nav>
-      )}
-      {syncing&&!toast&&<div className="toast">↻ Syncing…</div>}
-      {toast&&<div className="toast">{toast}</div>}
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+document.addEventListener("click", e => { if(e.target.closest('[data-act="refresh"]')) load(); });
+document.addEventListener("visibilitychange", () => { if(document.visibilityState==="visible" && SYNC.at && Date.now()-SYNC.at > 60000) load(); });
+try{ const c = JSON.parse(localStorage.getItem(CACHE_KEY)||"null"); if(c && c.data && Array.isArray(c.data.entries)) setData(c.data, c.at); }catch(e){}
+render(); lastView=route().view;
+load();
 </script>
 </body>
 </html>
